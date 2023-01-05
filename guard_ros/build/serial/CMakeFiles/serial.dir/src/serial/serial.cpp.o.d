@@ -1,7 +1,7 @@
 CMakeFiles/serial.dir/src/serial/serial.cpp.o: \
- /home/yuanluochen/code/RobotMaster/guard/src/serial/src/serial/serial.cpp \
+ /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/serial/serial.cpp \
  /usr/include/stdc-predef.h \
- /home/yuanluochen/code/RobotMaster/guard/src/serial/include/serial.h \
+ /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/include/serial.h \
  /usr/include/c++/11/iostream \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \

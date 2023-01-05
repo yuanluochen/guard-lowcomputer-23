@@ -54,10 +54,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yuanluochen/code/RobotMaster/guard/src/serial
+CMAKE_SOURCE_DIR = /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yuanluochen/code/RobotMaster/guard/build/serial
+CMAKE_BINARY_DIR = /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -83,14 +83,14 @@ clean: CMakeFiles/serial.dir/clean
 CMakeFiles/uninstall.dir/all: CMakeFiles/serial_uninstall.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/uninstall.dir/build.make CMakeFiles/uninstall.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/uninstall.dir/build.make CMakeFiles/uninstall.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles --progress-num= "Built target uninstall"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles --progress-num= "Built target uninstall"
 .PHONY : CMakeFiles/uninstall.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/uninstall.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/uninstall.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles 0
 .PHONY : CMakeFiles/uninstall.dir/rule
 
 # Convenience name for target.
@@ -109,14 +109,14 @@ CMakeFiles/uninstall.dir/clean:
 CMakeFiles/serial_uninstall.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/serial_uninstall.dir/build.make CMakeFiles/serial_uninstall.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/serial_uninstall.dir/build.make CMakeFiles/serial_uninstall.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles --progress-num= "Built target serial_uninstall"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles --progress-num= "Built target serial_uninstall"
 .PHONY : CMakeFiles/serial_uninstall.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/serial_uninstall.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/serial_uninstall.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles 0
 .PHONY : CMakeFiles/serial_uninstall.dir/rule
 
 # Convenience name for target.
@@ -135,14 +135,14 @@ CMakeFiles/serial_uninstall.dir/clean:
 CMakeFiles/serial.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/serial.dir/build.make CMakeFiles/serial.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/serial.dir/build.make CMakeFiles/serial.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles --progress-num=1,2,3 "Built target serial"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles --progress-num=1,2,3 "Built target serial"
 .PHONY : CMakeFiles/serial.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/serial.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/serial.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles 0
 .PHONY : CMakeFiles/serial.dir/rule
 
 # Convenience name for target.

@@ -1,5 +1,5 @@
 CMakeFiles/serial.dir/src/main.cpp.o: \
- /home/yuanluochen/code/RobotMaster/guard/src/serial/src/main.cpp \
+ /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/main.cpp \
  /usr/include/stdc-predef.h \
  /opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp \
  /usr/include/c++/11/csignal \
@@ -603,7 +603,7 @@ CMakeFiles/serial.dir/src/main.cpp.o: \
  /opt/ros/humble/include/std_msgs/std_msgs/msg/detail/string__struct.hpp \
  /opt/ros/humble/include/std_msgs/std_msgs/msg/detail/string__builder.hpp \
  /opt/ros/humble/include/std_msgs/std_msgs/msg/detail/string__traits.hpp \
- /home/yuanluochen/code/RobotMaster/guard/src/serial/include/serial.h \
+ /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/include/serial.h \
  /usr/include/fcntl.h /usr/include/x86_64-linux-gnu/bits/fcntl.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \

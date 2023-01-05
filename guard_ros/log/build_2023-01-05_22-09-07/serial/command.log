@@ -1,6 +1,0 @@
-Invoking command in '/home/yuanluochen/code/RobotMaster/guard/build/serial': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/yuanluochen/code/RobotMaster/guard/src/serial -DCMAKE_INSTALL_PREFIX=/home/yuanluochen/code/RobotMaster/guard/install/serial
-Invoked command in '/home/yuanluochen/code/RobotMaster/guard/build/serial' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/yuanluochen/code/RobotMaster/guard/src/serial -DCMAKE_INSTALL_PREFIX=/home/yuanluochen/code/RobotMaster/guard/install/serial
-Invoking command in '/home/yuanluochen/code/RobotMaster/guard/build/serial': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/yuanluochen/code/RobotMaster/guard/build/serial -- -j16 -l16
-Invoked command in '/home/yuanluochen/code/RobotMaster/guard/build/serial' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/yuanluochen/code/RobotMaster/guard/build/serial -- -j16 -l16
-Invoking command in '/home/yuanluochen/code/RobotMaster/guard/build/serial': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/yuanluochen/code/RobotMaster/guard/build/serial
-Invoked command in '/home/yuanluochen/code/RobotMaster/guard/build/serial' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/yuanluochen/code/RobotMaster/guard/build/serial

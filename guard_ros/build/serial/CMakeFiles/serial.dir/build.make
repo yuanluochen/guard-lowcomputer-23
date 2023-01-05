@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yuanluochen/code/RobotMaster/guard/src/serial
+CMAKE_SOURCE_DIR = /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yuanluochen/code/RobotMaster/guard/build/serial
+CMAKE_BINARY_DIR = /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial
 
 # Include any dependencies generated for this target.
 include CMakeFiles/serial.dir/depend.make
@@ -70,32 +70,32 @@ include CMakeFiles/serial.dir/progress.make
 include CMakeFiles/serial.dir/flags.make
 
 CMakeFiles/serial.dir/src/main.cpp.o: CMakeFiles/serial.dir/flags.make
-CMakeFiles/serial.dir/src/main.cpp.o: /home/yuanluochen/code/RobotMaster/guard/src/serial/src/main.cpp
+CMakeFiles/serial.dir/src/main.cpp.o: /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/main.cpp
 CMakeFiles/serial.dir/src/main.cpp.o: CMakeFiles/serial.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/serial.dir/src/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/serial.dir/src/main.cpp.o -MF CMakeFiles/serial.dir/src/main.cpp.o.d -o CMakeFiles/serial.dir/src/main.cpp.o -c /home/yuanluochen/code/RobotMaster/guard/src/serial/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/serial.dir/src/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/serial.dir/src/main.cpp.o -MF CMakeFiles/serial.dir/src/main.cpp.o.d -o CMakeFiles/serial.dir/src/main.cpp.o -c /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/main.cpp
 
 CMakeFiles/serial.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/serial.dir/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yuanluochen/code/RobotMaster/guard/src/serial/src/main.cpp > CMakeFiles/serial.dir/src/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/main.cpp > CMakeFiles/serial.dir/src/main.cpp.i
 
 CMakeFiles/serial.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/serial.dir/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yuanluochen/code/RobotMaster/guard/src/serial/src/main.cpp -o CMakeFiles/serial.dir/src/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/main.cpp -o CMakeFiles/serial.dir/src/main.cpp.s
 
 CMakeFiles/serial.dir/src/serial/serial.cpp.o: CMakeFiles/serial.dir/flags.make
-CMakeFiles/serial.dir/src/serial/serial.cpp.o: /home/yuanluochen/code/RobotMaster/guard/src/serial/src/serial/serial.cpp
+CMakeFiles/serial.dir/src/serial/serial.cpp.o: /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/serial/serial.cpp
 CMakeFiles/serial.dir/src/serial/serial.cpp.o: CMakeFiles/serial.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/serial.dir/src/serial/serial.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/serial.dir/src/serial/serial.cpp.o -MF CMakeFiles/serial.dir/src/serial/serial.cpp.o.d -o CMakeFiles/serial.dir/src/serial/serial.cpp.o -c /home/yuanluochen/code/RobotMaster/guard/src/serial/src/serial/serial.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/serial.dir/src/serial/serial.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/serial.dir/src/serial/serial.cpp.o -MF CMakeFiles/serial.dir/src/serial/serial.cpp.o.d -o CMakeFiles/serial.dir/src/serial/serial.cpp.o -c /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/serial/serial.cpp
 
 CMakeFiles/serial.dir/src/serial/serial.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/serial.dir/src/serial/serial.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yuanluochen/code/RobotMaster/guard/src/serial/src/serial/serial.cpp > CMakeFiles/serial.dir/src/serial/serial.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/serial/serial.cpp > CMakeFiles/serial.dir/src/serial/serial.cpp.i
 
 CMakeFiles/serial.dir/src/serial/serial.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/serial.dir/src/serial/serial.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yuanluochen/code/RobotMaster/guard/src/serial/src/serial/serial.cpp -o CMakeFiles/serial.dir/src/serial/serial.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/serial/serial.cpp -o CMakeFiles/serial.dir/src/serial/serial.cpp.s
 
 # Object files for target serial
 serial_OBJECTS = \
@@ -171,7 +171,7 @@ serial: /opt/ros/humble/lib/librosidl_runtime_c.so
 serial: /opt/ros/humble/lib/librcutils.so
 serial: /usr/lib/x86_64-linux-gnu/libpython3.10.so
 serial: CMakeFiles/serial.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable serial"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable serial"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/serial.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -183,6 +183,6 @@ CMakeFiles/serial.dir/clean:
 .PHONY : CMakeFiles/serial.dir/clean
 
 CMakeFiles/serial.dir/depend:
-	cd /home/yuanluochen/code/RobotMaster/guard/build/serial && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/yuanluochen/code/RobotMaster/guard/src/serial /home/yuanluochen/code/RobotMaster/guard/src/serial /home/yuanluochen/code/RobotMaster/guard/build/serial /home/yuanluochen/code/RobotMaster/guard/build/serial /home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles/serial.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles/serial.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/serial.dir/depend
 

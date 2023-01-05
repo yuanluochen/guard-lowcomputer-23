@@ -1,4 +1,0 @@
-[01m[K/home/yuanluochen/code/RobotMaster/guard/src/serial/src/serial/serial.cpp:[m[K In member function ‘[01m[Kvoid SerialSpace::Serial::sendMessage(std::string, int)[m[K’:
-[01m[K/home/yuanluochen/code/RobotMaster/guard/src/serial/src/serial/serial.cpp:198:17:[m[K [01;35m[Kwarning: [m[Ksuggest parentheses around assignment used as truth value [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wparentheses-Wparentheses]8;;[m[K]
-  198 |     if ([01;35m[KdataLen = len[m[K)
-      |         [01;35m[K~~~~~~~~^~~~~[m[K

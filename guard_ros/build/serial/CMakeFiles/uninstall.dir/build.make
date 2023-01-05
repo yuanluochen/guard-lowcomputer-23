@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yuanluochen/code/RobotMaster/guard/src/serial
+CMAKE_SOURCE_DIR = /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yuanluochen/code/RobotMaster/guard/build/serial
+CMAKE_BINARY_DIR = /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial
 
 # Utility rule file for uninstall.
 
@@ -78,6 +78,6 @@ CMakeFiles/uninstall.dir/clean:
 .PHONY : CMakeFiles/uninstall.dir/clean
 
 CMakeFiles/uninstall.dir/depend:
-	cd /home/yuanluochen/code/RobotMaster/guard/build/serial && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/yuanluochen/code/RobotMaster/guard/src/serial /home/yuanluochen/code/RobotMaster/guard/src/serial /home/yuanluochen/code/RobotMaster/guard/build/serial /home/yuanluochen/code/RobotMaster/guard/build/serial /home/yuanluochen/code/RobotMaster/guard/build/serial/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial /home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial /home/yuanluochen/code/RobotMaster/guard/guard_ros/build/serial/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/uninstall.dir/depend
 

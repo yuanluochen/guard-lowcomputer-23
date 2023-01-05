@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/yuanluochen/code/RobotMaster/guard/src/serial/src/main.cpp" "CMakeFiles/serial.dir/src/main.cpp.o" "gcc" "CMakeFiles/serial.dir/src/main.cpp.o.d"
-  "/home/yuanluochen/code/RobotMaster/guard/src/serial/src/serial/serial.cpp" "CMakeFiles/serial.dir/src/serial/serial.cpp.o" "gcc" "CMakeFiles/serial.dir/src/serial/serial.cpp.o.d"
+  "/home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/main.cpp" "CMakeFiles/serial.dir/src/main.cpp.o" "gcc" "CMakeFiles/serial.dir/src/main.cpp.o.d"
+  "/home/yuanluochen/code/RobotMaster/guard/guard_ros/src/serial/src/serial/serial.cpp" "CMakeFiles/serial.dir/src/serial/serial.cpp.o" "gcc" "CMakeFiles/serial.dir/src/serial/serial.cpp.o.d"
   )
 
 # Targets to which this target links.
