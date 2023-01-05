@@ -1,0 +1,117 @@
+[0.000000] (-) TimerEvent: {}
+[0.000314] (serial) JobQueued: {'identifier': 'serial', 'dependencies': OrderedDict()}
+[0.000348] (serial) JobStarted: {'identifier': 'serial'}
+[0.005870] (serial) JobProgress: {'identifier': 'serial', 'progress': 'cmake'}
+[0.006800] (serial) JobProgress: {'identifier': 'serial', 'progress': 'build'}
+[0.006832] (serial) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/yuanluochen/code/RobotMaster/guard/build/serial', '--', '-j16', '-l16'], 'cwd': '/home/yuanluochen/code/RobotMaster/guard/build/serial', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('LANGUAGE', 'zh_CN:en_US:en'), ('USER', 'yuanluochen'), ('LC_TIME', 'en_US.UTF-8'), ('XDG_SESSION_TYPE', 'x11'), ('GIT_ASKPASS', '/usr/share/code/resources/app/extensions/git/dist/askpass.sh'), ('FZF_DEFAULT_OPTS', '--height 90% --layout=reverse --bind=alt-j:down,alt-k:up,alt-i:toggle+down --border --preview "echo {} | ~/.config/fzf/fzf_preview.py" --preview-window=down'), ('SHLVL', '6'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('LESS', '-R'), ('HOME', '/home/yuanluochen'), ('CHROME_DESKTOP', 'code-url-handler.desktop'), ('CONDA_SHLVL', '0'), ('OLDPWD', '/home/yuanluochen/code/RobotMaster/guard/src/serial'), ('TERM_PROGRAM_VERSION', '1.74.2'), ('DESKTOP_SESSION', 'pop'), ('RANGER_LEVEL', '1'), ('LSCOLORS', 'Gxfxcxdxbxegedabagacad'), ('ZSH', '/home/yuanluochen/.oh-my-zsh'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'pop'), ('GTK_MODULES', 'gail:atk-bridge:appmenu-gtk-module'), ('PAGER', 'less'), ('VSCODE_GIT_ASKPASS_MAIN', '/usr/share/code/resources/app/extensions/git/dist/askpass-main.js'), ('LC_MONETARY', 'en_US.UTF-8'), ('VSCODE_GIT_ASKPASS_NODE', '/usr/share/code/code'), ('MANAGERPID', '4035'), ('SYSTEMD_EXEC_PID', '4373'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '5324'), ('ESCDELAY', '25'), ('MANDATORY_PATH', '/usr/share/gconf/pop.mandatory.path'), ('ROS_DISTRO', 'humble'), ('GTK_IM_MODULE', 'ibus'), ('LOGNAME', 'yuanluochen'), ('JOURNAL_STREAM', '8:49745'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('DEFAULTS_PATH', '/usr/share/gconf/pop.default.path'), ('USERNAME', 'yuanluochen'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('DOTNET_ROOT', '/usr/lib/dotnet'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/home/yuanluochen/clash-for-linux:/home/yuanluochen/clash-for-linux:/home/yuanluochen/clash-for-linux:/opt/ros/humble/bin:/home/yuanluochen/micromamba/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/yuanluochen/.dotnet/tools:/home/yuanluochen/.fzf/bin'), ('SESSION_MANAGER', 'local/pop-os:@/tmp/.ICE-unix/4247,unix/pop-os:/tmp/.ICE-unix/4247'), ('INVOCATION_ID', 'b19ab4a9a04349719aab1e70d6fa0db0'), ('PAPERSIZE', 'letter'), ('XDG_MENU_PREFIX', 'gnome-'), ('LC_ADDRESS', 'en_US.UTF-8'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('GDK_BACKEND', 'x11'), ('MAMBA_ROOT_PREFIX', '/home/yuanluochen/micromamba'), ('DISPLAY', ':1'), ('VSCODE_INJECTION', '1'), ('LANG', 'zh_CN.UTF-8'), ('XDG_CURRENT_DESKTOP', 'Unity'), ('DOTNET_BUNDLE_EXTRACT_BASE_DIR', '/home/yuanluochen/.cache/dotnet_bundle_extract'), ('LC_TELEPHONE', 'en_US.UTF-8'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'pop'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/run/user/1000/vscode-git-657a4c1c23.sock'), ('TERM_PROGRAM', 'vscode'), ('SSH_AGENT_LAUNCHER', 'gnome-keyring'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('ORIGINAL_XDG_CURRENT_DESKTOP', 'Unity'), ('SHELL', '/bin/bash'), ('LC_NAME', 'en_US.UTF-8'), ('QT_ACCESSIBILITY', '1'), ('NO_AT_BRIDGE', '1'), ('GDMSESSION', 'pop'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('LC_MEASUREMENT', 'en_US.UTF-8'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('MAMBA_EXE', '/home/yuanluochen/.micromamba/bin/micromamba'), ('LC_IDENTIFICATION', 'en_US.UTF-8'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', '--ms-enable-electron-run-as-node'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/yuanluochen/code/RobotMaster/guard/build/serial'), ('FZF_DEFAULT_COMMAND', 'fdfind --hidden --follow -E ".git" -E "node_modules" . /etc /home'), ('LC_ALL', 'en_US.UTF-8'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-pop:/etc/xdg'), ('XDG_DATA_DIRS', '/usr/share/pop:/usr/share/gnome:/home/yuanluochen/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('LC_NUMERIC', 'en_US.UTF-8'), ('LC_PAPER', 'en_US.UTF-8'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[0.022204] (serial) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.3 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[0.099414] (-) TimerEvent: {}
+[0.106747] (serial) StdoutLine: {'line': b'-- Found rclcpp: 16.0.2 (/opt/ros/humble/share/rclcpp/cmake)\n'}
+[0.126502] (serial) StdoutLine: {'line': b'-- Found rosidl_generator_c: 3.1.4 (/opt/ros/humble/share/rosidl_generator_c/cmake)\n'}
+[0.127900] (serial) StdoutLine: {'line': b'-- Found rosidl_adapter: 3.1.4 (/opt/ros/humble/share/rosidl_adapter/cmake)\n'}
+[0.131400] (serial) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 3.1.4 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)\n'}
+[0.137746] (serial) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.146676] (serial) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.180929] (serial) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 6.1.1 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)\n'}
+[0.181690] (serial) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 6.2.2 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)\n'}
+[0.199546] (-) TimerEvent: {}
+[0.254559] (serial) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[0.299678] (-) TimerEvent: {}
+[0.350093] (serial) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.12.4 (/opt/ros/humble/share/ament_lint_auto/cmake)\n'}
+[0.389249] (serial) StdoutLine: {'line': b"-- Added test 'cppcheck' to perform static code analysis on C / C++ code\n"}
+[0.389460] (serial) StdoutLine: {'line': b'-- Configured cppcheck include dirs: $<BUILD_INTERFACE:/home/yuanluochen/code/RobotMaster/guard/src/serial/include>\n'}
+[0.389534] (serial) StdoutLine: {'line': b'-- Configured cppcheck exclude dirs and/or files: \n'}
+[0.389689] (serial) StdoutLine: {'line': b"-- Added test 'lint_cmake' to check CMake code style\n"}
+[0.390030] (serial) StdoutLine: {'line': b"-- Added test 'uncrustify' to check C / C++ code style\n"}
+[0.390098] (serial) StdoutLine: {'line': b'-- Configured uncrustify additional arguments: \n'}
+[0.390253] (serial) StdoutLine: {'line': b"-- Added test 'xmllint' to check XML markup files\n"}
+[0.390484] (serial) StdoutLine: {'line': b'-- Configuring done\n'}
+[0.395670] (serial) StdoutLine: {'line': b'-- Generating done\n'}
+[0.396413] (serial) StdoutLine: {'line': b'-- Build files have been written to: /home/yuanluochen/code/RobotMaster/guard/build/serial\n'}
+[0.399820] (-) TimerEvent: {}
+[0.416957] (serial) StdoutLine: {'line': b'[ 33%] \x1b[32mBuilding CXX object CMakeFiles/serial.dir/src/serial/serial.cpp.o\x1b[0m\n'}
+[0.417110] (serial) StdoutLine: {'line': b'[ 66%] \x1b[32mBuilding CXX object CMakeFiles/serial.dir/src/main.cpp.o\x1b[0m\n'}
+[0.500011] (-) TimerEvent: {}
+[0.564047] (serial) StderrLine: {'line': b'\x1b[01m\x1b[K/home/yuanluochen/code/RobotMaster/guard/src/serial/src/serial/serial.cpp:\x1b[m\x1b[K In member function \xe2\x80\x98\x1b[01m\x1b[Kvoid SerialSpace::Serial::sendMessage(std::string, int)\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[0.564216] (serial) StderrLine: {'line': b'\x1b[01m\x1b[K/home/yuanluochen/code/RobotMaster/guard/src/serial/src/serial/serial.cpp:198:17:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Ksuggest parentheses around assignment used as truth value [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wparentheses\x07-Wparentheses\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[0.564261] (serial) StderrLine: {'line': b'  198 |     if (\x1b[01;35m\x1b[KdataLen = len\x1b[m\x1b[K)\n'}
+[0.564298] (serial) StderrLine: {'line': b'      |         \x1b[01;35m\x1b[K~~~~~~~~^~~~~\x1b[m\x1b[K\n'}
+[0.600166] (-) TimerEvent: {}
+[0.700493] (-) TimerEvent: {}
+[0.800819] (-) TimerEvent: {}
+[0.901150] (-) TimerEvent: {}
+[1.001414] (-) TimerEvent: {}
+[1.101733] (-) TimerEvent: {}
+[1.202034] (-) TimerEvent: {}
+[1.302360] (-) TimerEvent: {}
+[1.402676] (-) TimerEvent: {}
+[1.503009] (-) TimerEvent: {}
+[1.603335] (-) TimerEvent: {}
+[1.703660] (-) TimerEvent: {}
+[1.803992] (-) TimerEvent: {}
+[1.904321] (-) TimerEvent: {}
+[2.004639] (-) TimerEvent: {}
+[2.104966] (-) TimerEvent: {}
+[2.205238] (-) TimerEvent: {}
+[2.305499] (-) TimerEvent: {}
+[2.405763] (-) TimerEvent: {}
+[2.506072] (-) TimerEvent: {}
+[2.606406] (-) TimerEvent: {}
+[2.706743] (-) TimerEvent: {}
+[2.807087] (-) TimerEvent: {}
+[2.907432] (-) TimerEvent: {}
+[3.007772] (-) TimerEvent: {}
+[3.108114] (-) TimerEvent: {}
+[3.208439] (-) TimerEvent: {}
+[3.308765] (-) TimerEvent: {}
+[3.409114] (-) TimerEvent: {}
+[3.509428] (-) TimerEvent: {}
+[3.609747] (-) TimerEvent: {}
+[3.710058] (-) TimerEvent: {}
+[3.810369] (-) TimerEvent: {}
+[3.910679] (-) TimerEvent: {}
+[4.010997] (-) TimerEvent: {}
+[4.111309] (-) TimerEvent: {}
+[4.211643] (-) TimerEvent: {}
+[4.311959] (-) TimerEvent: {}
+[4.412291] (-) TimerEvent: {}
+[4.512615] (-) TimerEvent: {}
+[4.612944] (-) TimerEvent: {}
+[4.713345] (-) TimerEvent: {}
+[4.813664] (-) TimerEvent: {}
+[4.914006] (-) TimerEvent: {}
+[5.014320] (-) TimerEvent: {}
+[5.114623] (-) TimerEvent: {}
+[5.214935] (-) TimerEvent: {}
+[5.315257] (-) TimerEvent: {}
+[5.415611] (-) TimerEvent: {}
+[5.515958] (-) TimerEvent: {}
+[5.542156] (serial) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX executable serial\x1b[0m\n'}
+[5.616128] (-) TimerEvent: {}
+[5.716471] (-) TimerEvent: {}
+[5.770991] (serial) StdoutLine: {'line': b'[100%] Built target serial\n'}
+[5.776903] (serial) CommandEnded: {'returncode': 0}
+[5.790746] (serial) JobProgress: {'identifier': 'serial', 'progress': 'install'}
+[5.795359] (serial) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/yuanluochen/code/RobotMaster/guard/build/serial'], 'cwd': '/home/yuanluochen/code/RobotMaster/guard/build/serial', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('LANGUAGE', 'zh_CN:en_US:en'), ('USER', 'yuanluochen'), ('LC_TIME', 'en_US.UTF-8'), ('XDG_SESSION_TYPE', 'x11'), ('GIT_ASKPASS', '/usr/share/code/resources/app/extensions/git/dist/askpass.sh'), ('FZF_DEFAULT_OPTS', '--height 90% --layout=reverse --bind=alt-j:down,alt-k:up,alt-i:toggle+down --border --preview "echo {} | ~/.config/fzf/fzf_preview.py" --preview-window=down'), ('SHLVL', '6'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('LESS', '-R'), ('HOME', '/home/yuanluochen'), ('CHROME_DESKTOP', 'code-url-handler.desktop'), ('CONDA_SHLVL', '0'), ('OLDPWD', '/home/yuanluochen/code/RobotMaster/guard/src/serial'), ('TERM_PROGRAM_VERSION', '1.74.2'), ('DESKTOP_SESSION', 'pop'), ('RANGER_LEVEL', '1'), ('LSCOLORS', 'Gxfxcxdxbxegedabagacad'), ('ZSH', '/home/yuanluochen/.oh-my-zsh'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'pop'), ('GTK_MODULES', 'gail:atk-bridge:appmenu-gtk-module'), ('PAGER', 'less'), ('VSCODE_GIT_ASKPASS_MAIN', '/usr/share/code/resources/app/extensions/git/dist/askpass-main.js'), ('LC_MONETARY', 'en_US.UTF-8'), ('VSCODE_GIT_ASKPASS_NODE', '/usr/share/code/code'), ('MANAGERPID', '4035'), ('SYSTEMD_EXEC_PID', '4373'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '5324'), ('ESCDELAY', '25'), ('MANDATORY_PATH', '/usr/share/gconf/pop.mandatory.path'), ('ROS_DISTRO', 'humble'), ('GTK_IM_MODULE', 'ibus'), ('LOGNAME', 'yuanluochen'), ('JOURNAL_STREAM', '8:49745'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('DEFAULTS_PATH', '/usr/share/gconf/pop.default.path'), ('USERNAME', 'yuanluochen'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('DOTNET_ROOT', '/usr/lib/dotnet'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/home/yuanluochen/clash-for-linux:/home/yuanluochen/clash-for-linux:/home/yuanluochen/clash-for-linux:/opt/ros/humble/bin:/home/yuanluochen/micromamba/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/yuanluochen/.dotnet/tools:/home/yuanluochen/.fzf/bin'), ('SESSION_MANAGER', 'local/pop-os:@/tmp/.ICE-unix/4247,unix/pop-os:/tmp/.ICE-unix/4247'), ('INVOCATION_ID', 'b19ab4a9a04349719aab1e70d6fa0db0'), ('PAPERSIZE', 'letter'), ('XDG_MENU_PREFIX', 'gnome-'), ('LC_ADDRESS', 'en_US.UTF-8'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('GDK_BACKEND', 'x11'), ('MAMBA_ROOT_PREFIX', '/home/yuanluochen/micromamba'), ('DISPLAY', ':1'), ('VSCODE_INJECTION', '1'), ('LANG', 'zh_CN.UTF-8'), ('XDG_CURRENT_DESKTOP', 'Unity'), ('DOTNET_BUNDLE_EXTRACT_BASE_DIR', '/home/yuanluochen/.cache/dotnet_bundle_extract'), ('LC_TELEPHONE', 'en_US.UTF-8'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'pop'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/run/user/1000/vscode-git-657a4c1c23.sock'), ('TERM_PROGRAM', 'vscode'), ('SSH_AGENT_LAUNCHER', 'gnome-keyring'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('ORIGINAL_XDG_CURRENT_DESKTOP', 'Unity'), ('SHELL', '/bin/bash'), ('LC_NAME', 'en_US.UTF-8'), ('QT_ACCESSIBILITY', '1'), ('NO_AT_BRIDGE', '1'), ('GDMSESSION', 'pop'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('LC_MEASUREMENT', 'en_US.UTF-8'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('MAMBA_EXE', '/home/yuanluochen/.micromamba/bin/micromamba'), ('LC_IDENTIFICATION', 'en_US.UTF-8'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', '--ms-enable-electron-run-as-node'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/yuanluochen/code/RobotMaster/guard/build/serial'), ('FZF_DEFAULT_COMMAND', 'fdfind --hidden --follow -E ".git" -E "node_modules" . /etc /home'), ('LC_ALL', 'en_US.UTF-8'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-pop:/etc/xdg'), ('XDG_DATA_DIRS', '/usr/share/pop:/usr/share/gnome:/home/yuanluochen/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('LC_NUMERIC', 'en_US.UTF-8'), ('LC_PAPER', 'en_US.UTF-8'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[5.798735] (serial) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[5.798812] (serial) StdoutLine: {'line': b'-- Installing: /home/yuanluochen/code/RobotMaster/guard/install/serial/lib/serial/serial\n'}
+[5.801190] (serial) StdoutLine: {'line': b'-- Set runtime path of "/home/yuanluochen/code/RobotMaster/guard/install/serial/lib/serial/serial" to ""\n'}
+[5.801285] (serial) StdoutLine: {'line': b'-- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/ament_index/resource_index/package_run_dependencies/serial\n'}
+[5.801348] (serial) StdoutLine: {'line': b'-- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/ament_index/resource_index/parent_prefix_path/serial\n'}
+[5.801400] (serial) StdoutLine: {'line': b'-- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/ament_prefix_path.sh\n'}
+[5.801435] (serial) StdoutLine: {'line': b'-- Installing: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/ament_prefix_path.dsv\n'}
+[5.801487] (serial) StdoutLine: {'line': b'-- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/path.sh\n'}
+[5.801550] (serial) StdoutLine: {'line': b'-- Installing: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/path.dsv\n'}
+[5.801586] (serial) StdoutLine: {'line': b'-- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.bash\n'}
+[5.801623] (serial) StdoutLine: {'line': b'-- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.sh\n'}
+[5.801679] (serial) StdoutLine: {'line': b'-- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.zsh\n'}
+[5.801713] (serial) StdoutLine: {'line': b'-- Installing: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.dsv\n'}
+[5.801748] (serial) StdoutLine: {'line': b'-- Installing: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/package.dsv\n'}
+[5.801781] (serial) StdoutLine: {'line': b'-- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/ament_index/resource_index/packages/serial\n'}
+[5.801817] (serial) StdoutLine: {'line': b'-- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/cmake/serialConfig.cmake\n'}
+[5.801851] (serial) StdoutLine: {'line': b'-- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/cmake/serialConfig-version.cmake\n'}
+[5.801885] (serial) StdoutLine: {'line': b'-- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/package.xml\n'}
+[5.802516] (serial) CommandEnded: {'returncode': 0}
+[5.816546] (-) TimerEvent: {}
+[5.831806] (serial) JobEnded: {'identifier': 'serial', 'rc': 0}
+[5.832257] (-) EventReactorShutdown: {}

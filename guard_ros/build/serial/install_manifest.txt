@@ -1,0 +1,16 @@
+/home/yuanluochen/code/RobotMaster/guard/install/serial/lib/serial/serial
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/ament_index/resource_index/package_run_dependencies/serial
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/ament_index/resource_index/parent_prefix_path/serial
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/ament_prefix_path.sh
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/ament_prefix_path.dsv
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/path.sh
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/path.dsv
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.bash
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.sh
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.zsh
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.dsv
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/package.dsv
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/ament_index/resource_index/packages/serial
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/cmake/serialConfig.cmake
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/cmake/serialConfig-version.cmake
+/home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/package.xml

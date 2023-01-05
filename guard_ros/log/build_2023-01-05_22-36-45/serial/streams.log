@@ -1,0 +1,26 @@
+[0.008s] Invoking command in '/home/yuanluochen/code/RobotMaster/guard/build/serial': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/yuanluochen/code/RobotMaster/guard/build/serial -- -j16 -l16
+[0.030s] [35m[1mConsolidate compiler generated dependencies of target serial[0m
+[0.042s] [ 33%] [32mBuilding CXX object CMakeFiles/serial.dir/src/serial/serial.cpp.o[0m
+[0.224s] [ 66%] [32m[1mLinking CXX executable serial[0m
+[0.452s] [100%] Built target serial
+[0.458s] Invoked command in '/home/yuanluochen/code/RobotMaster/guard/build/serial' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/yuanluochen/code/RobotMaster/guard/build/serial -- -j16 -l16
+[0.477s] Invoking command in '/home/yuanluochen/code/RobotMaster/guard/build/serial': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/yuanluochen/code/RobotMaster/guard/build/serial
+[0.480s] -- Install configuration: ""
+[0.480s] -- Installing: /home/yuanluochen/code/RobotMaster/guard/install/serial/lib/serial/serial
+[0.483s] -- Set runtime path of "/home/yuanluochen/code/RobotMaster/guard/install/serial/lib/serial/serial" to ""
+[0.483s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/ament_index/resource_index/package_run_dependencies/serial
+[0.483s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/ament_index/resource_index/parent_prefix_path/serial
+[0.483s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/ament_prefix_path.sh
+[0.483s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/ament_prefix_path.dsv
+[0.483s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/path.sh
+[0.483s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/environment/path.dsv
+[0.483s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.bash
+[0.483s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.sh
+[0.483s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.zsh
+[0.484s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/local_setup.dsv
+[0.484s] -- Installing: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/package.dsv
+[0.484s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/ament_index/resource_index/packages/serial
+[0.484s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/cmake/serialConfig.cmake
+[0.484s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/cmake/serialConfig-version.cmake
+[0.484s] -- Up-to-date: /home/yuanluochen/code/RobotMaster/guard/install/serial/share/serial/package.xml
+[0.485s] Invoked command in '/home/yuanluochen/code/RobotMaster/guard/build/serial' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/yuanluochen/code/RobotMaster/guard/build/serial
