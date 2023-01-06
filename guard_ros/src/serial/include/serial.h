@@ -123,6 +123,9 @@ namespace SerialSpace
         void serialOpen();
         void serialClose();
 
+        //读取发送
+        std::string getTxMessage(void);
+
     };
 }; // namespace Serial
 

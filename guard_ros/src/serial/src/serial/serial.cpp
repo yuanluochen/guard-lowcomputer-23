@@ -218,3 +218,8 @@ void SerialSpace::Serial::serialClose()
 {
     close(this->fd);
 }
+
+std::string SerialSpace::Serial::getTxMessage(void)
+{
+    return this->txMessage;
+}

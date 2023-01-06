@@ -24,7 +24,7 @@ private:
         //读取获取节点数据，节点数据发送到串口
         serial.sendMessage(topicMessage.data, strlen(topicMessage.data.c_str()));
         //打印发送的数据
-        RCLCPP_INFO(this->get_logger(), "发送的数据为 >> %s <<\n", topicMessage.data.c_str());
+        RCLCPP_INFO(this->get_logger(), "发送的数据为 >> %s <<\n", serial.getTxMessage().c_str());
     }
 };
 
