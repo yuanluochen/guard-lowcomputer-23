@@ -28,6 +28,7 @@ private:
         //打印发送的数据
         RCLCPP_INFO(this->get_logger(), "发送的数据为 >> %s <<\n", serial.getTxMessage().c_str());
     }
+    //要创建订阅者指针，没有这个用不了,订阅不了消息
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr serialSubscription_;
     
 };

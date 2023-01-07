@@ -1,0 +1,6 @@
+#文件首字母大写，变量不能有大写
+#request 串口数据请求
+string message
+---
+# 生成的串口数据
+string serial_message
