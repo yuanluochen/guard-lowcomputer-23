@@ -680,14 +680,14 @@
               <FilePath>..\application\servo_task.c</FilePath>
             </File>
             <File>
-              <FileName>vision_usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\vision_usart.c</FilePath>
-            </File>
-            <File>
               <FileName>shoot_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\shoot_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>vision_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\vision_usart.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3413,6 +3413,16 @@
                   </Cads>
                 </FileArmAds>
               </FileOption>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>readme</GroupName>
+          <Files>
+            <File>
+              <FileName>readme.md</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\readme\readme.md</FilePath>
             </File>
           </Files>
         </Group>

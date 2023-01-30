@@ -87,7 +87,7 @@ standard_tpye_c\main.o: ../application/CAN_receive.h
 standard_tpye_c\main.o: ../application/gimbal_task.h
 standard_tpye_c\main.o: ../components/controller/pid.h
 standard_tpye_c\main.o: ../components/algorithm/user_lib.h
-standard_tpye_c\main.o: ..\..\Wheat3.1\rm_usart.h
+standard_tpye_c\main.o: ../application/rm_usart.h
 standard_tpye_c\main.o: ../kalman/kalman.h
 standard_tpye_c\main.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdbool.h
 standard_tpye_c\main.o: ../components/algorithm/Include/arm_math.h

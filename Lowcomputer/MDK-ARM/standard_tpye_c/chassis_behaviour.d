@@ -8,7 +8,7 @@ standard_tpye_c\chassis_behaviour.o: ../components/controller/pid.h
 standard_tpye_c\chassis_behaviour.o: ..\application\remote_control.h
 standard_tpye_c\chassis_behaviour.o: ../bsp/boards/bsp_rc.h
 standard_tpye_c\chassis_behaviour.o: ../components/algorithm/user_lib.h
-standard_tpye_c\chassis_behaviour.o: ..\..\Wheat3.1\rm_usart.h
+standard_tpye_c\chassis_behaviour.o: ..\application\rm_usart.h
 standard_tpye_c\chassis_behaviour.o: ../Inc/main.h
 standard_tpye_c\chassis_behaviour.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 standard_tpye_c\chassis_behaviour.o: ../Inc/stm32f4xx_hal_conf.h

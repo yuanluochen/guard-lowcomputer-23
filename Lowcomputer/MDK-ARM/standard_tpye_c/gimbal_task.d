@@ -6,7 +6,7 @@ standard_tpye_c\gimbal_task.o: ../components/controller/pid.h
 standard_tpye_c\gimbal_task.o: ..\application\remote_control.h
 standard_tpye_c\gimbal_task.o: ../bsp/boards/bsp_rc.h
 standard_tpye_c\gimbal_task.o: ../components/algorithm/user_lib.h
-standard_tpye_c\gimbal_task.o: ..\..\Wheat3.1\rm_usart.h
+standard_tpye_c\gimbal_task.o: ..\application\rm_usart.h
 standard_tpye_c\gimbal_task.o: ../Inc/main.h
 standard_tpye_c\gimbal_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 standard_tpye_c\gimbal_task.o: ../Inc/stm32f4xx_hal_conf.h

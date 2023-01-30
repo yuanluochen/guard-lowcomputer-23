@@ -28,7 +28,7 @@ standard_tpye_c\calibrate_task.o: ..\application\INS_task.h
 standard_tpye_c\calibrate_task.o: ..\application\gimbal_task.h
 standard_tpye_c\calibrate_task.o: ../components/controller/pid.h
 standard_tpye_c\calibrate_task.o: ../components/algorithm/user_lib.h
-standard_tpye_c\calibrate_task.o: ..\..\Wheat3.1\rm_usart.h
+standard_tpye_c\calibrate_task.o: ..\application\rm_usart.h
 standard_tpye_c\calibrate_task.o: ../Inc/main.h
 standard_tpye_c\calibrate_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 standard_tpye_c\calibrate_task.o: ../Inc/stm32f4xx_hal_conf.h

@@ -1,4 +1,4 @@
-standard_tpye_c\vision_usart.o: ..\vision_usart.c
+standard_tpye_c\vision_usart.o: ..\application\vision_usart.c
 standard_tpye_c\vision_usart.o: ../Inc/main.h
 standard_tpye_c\vision_usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 standard_tpye_c\vision_usart.o: ../Inc/stm32f4xx_hal_conf.h
@@ -48,12 +48,12 @@ standard_tpye_c\vision_usart.o: ../Inc/usart.h
 standard_tpye_c\vision_usart.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
 standard_tpye_c\vision_usart.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdio.h
 standard_tpye_c\vision_usart.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\string.h
-standard_tpye_c\vision_usart.o: ..\rm_usart.h
-standard_tpye_c\vision_usart.o: ../application/gimbal_task.h
-standard_tpye_c\vision_usart.o: ../application/struct_typedef.h
-standard_tpye_c\vision_usart.o: ../application/CAN_receive.h
+standard_tpye_c\vision_usart.o: ..\application\rm_usart.h
+standard_tpye_c\vision_usart.o: ..\application\gimbal_task.h
+standard_tpye_c\vision_usart.o: ..\application\struct_typedef.h
+standard_tpye_c\vision_usart.o: ..\application\CAN_receive.h
 standard_tpye_c\vision_usart.o: ../components/controller/pid.h
-standard_tpye_c\vision_usart.o: ../application/remote_control.h
+standard_tpye_c\vision_usart.o: ..\application\remote_control.h
 standard_tpye_c\vision_usart.o: ../bsp/boards/bsp_rc.h
 standard_tpye_c\vision_usart.o: ../components/algorithm/user_lib.h
 standard_tpye_c\vision_usart.o: ../kalman/kalman.h

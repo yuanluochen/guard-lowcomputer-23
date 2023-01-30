@@ -76,7 +76,7 @@ standard_tpye_c\servo_task.o: ..\application\CAN_receive.h
 standard_tpye_c\servo_task.o: ..\application\gimbal_behaviour.h
 standard_tpye_c\servo_task.o: ..\application\gimbal_task.h
 standard_tpye_c\servo_task.o: ../components/controller/pid.h
-standard_tpye_c\servo_task.o: ..\..\Wheat3.1\rm_usart.h
+standard_tpye_c\servo_task.o: ..\application\rm_usart.h
 standard_tpye_c\servo_task.o: ../kalman/kalman.h
 standard_tpye_c\servo_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdlib.h
 standard_tpye_c\servo_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdio.h
