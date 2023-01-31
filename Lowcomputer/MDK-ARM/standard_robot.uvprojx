@@ -675,11 +675,6 @@
               <FilePath>..\application\led_flow_task.c</FilePath>
             </File>
             <File>
-              <FileName>servo_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\servo_task.c</FilePath>
-            </File>
-            <File>
               <FileName>shoot_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\shoot_task.c</FilePath>

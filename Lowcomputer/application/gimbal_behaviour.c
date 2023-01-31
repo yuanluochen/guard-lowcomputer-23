@@ -145,6 +145,17 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
 static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set);
 #endif
 
+/**
+ * @brief                     云台运行控制模式，此时云台处于绝对角度控制或相对角度控制
+ *
+ * @param yaw                 yaw轴角度增量
+ * @param pitch               pitch轴角度增量
+ * @param gimbal_control_set  云台数据指针
+ * @author                    yuanluochen
+ */
+static void gimbal_run_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set);
+
+
 /*----------------------------------结构体---------------------------*/
 //云台行为状态机
 static gimbal_behaviour_e gimbal_behaviour = GIMBAL_RELATIVE_ANGLE;
@@ -155,7 +166,7 @@ fp32 Pitch_Set[8]={0};
 extern chassis_behaviour_e chassis_behaviour_mode;
 
 /**
-  * @brief          被gimbal_set_mode函数调用在gimbal_task.c,云台行为状态机以及电机状态机设置
+  * @brief          gimbal_set_mode函数调用在gimbal_task.c,云台行为状态机以及电机状态机设置
   * @param[out]     gimbal_mode_set: 云台数据指针
   * @retval         none
   */
@@ -172,6 +183,33 @@ void gimbal_behaviour_mode_set(gimbal_control_t *gimbal_mode_set)
 
     //accoring to gimbal_behaviour, set motor control mode
     //根据云台行为状态机设置电机状态机
+#if 1
+
+    switch (gimbal_behaviour)
+    {
+    case GIMBAL_ZERO_FORCE:
+        gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_mode = GIMBAL_MOTOR_RAW;
+        gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_RAW;
+        break;
+
+    case GIMBAL_ABSOLUTE_ANGLE:
+    case GIMBAL_RELATIVE_ANGLE: // 相对角度控制和绝对角度控制以及自动模式都采用一种控制模式
+#if GIMBAL_AUTO_MODE
+    case GIMBAL_AUTO:
+#endif
+        gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;      // yaw轴通过陀螺仪的绝对角控制
+        gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_ENCONDE; // pitch轴通过6020的编码器进行相对角度控制
+        break;
+
+    case GIMBAL_MOTIONLESS:
+        gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_mode = GIMBAL_MOTOR_ENCONDE;
+        gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_ENCONDE;
+        break;
+
+
+    }
+
+#else //原始版本代码
     if (gimbal_behaviour == GIMBAL_ZERO_FORCE)
     {
         gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_mode = GIMBAL_MOTOR_RAW;
@@ -199,18 +237,57 @@ void gimbal_behaviour_mode_set(gimbal_control_t *gimbal_mode_set)
         gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;
     }
 #endif
+#endif
 }
 
 /**
-  * @brief          云台行为控制，根据不同行为采用不同控制函数
-  * @param[out]     add_yaw:设置的yaw角度增加值，单位 rad
-  * @param[out]     add_pitch:设置的pitch角度增加值，单位 rad
-  * @param[in]      gimbal_mode_set:云台数据指针
-  * @retval         none
-  */
+ * @brief                          (修改版)云台行为模式控制，云台pitch轴采用相对角度控制，云台yaw轴采用绝对角度控制,原因为pitch绝对角难以限制
+ * 
+ * @param add_yaw                  yaw 轴的角度增量 为指针
+ * @param add_pitch                pitch 轴的角度增量 为指针 
+ * @param gimbal_control_set       云台结构体指针 
+ */
 void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control_t *gimbal_control_set)
 {
+#if 1
+//修改版的代码,pitch相对角度控制， yaw绝对角度控制
+    if (add_yaw == NULL || add_pitch == NULL || gimbal_control_set == NULL)
+    {
+        return;
+    }
+    //判断底盘模式，根据底盘模式选择底盘控制方式
+    switch(gimbal_behaviour)
+    {
+    case GIMBAL_ZERO_FORCE://无力模式云台无力
+        gimbal_zero_force_control(add_yaw, add_pitch, gimbal_control_set);
+        break;
 
+    case GIMBAL_INIT:      //初始化模式，云台初始化
+        gimbal_init_control(add_yaw, add_pitch, gimbal_control_set);
+        break;
+
+    case GIMBAL_CALI:      //校准模式，云台校准
+        gimbal_cali_control(add_yaw, add_pitch, gimbal_control_set);
+        break;
+        
+    case GIMBAL_ABSOLUTE_ANGLE: //相对角度控制和绝对角度控制都采用统一的控制方式，即pitch轴相对角度控制，yaw轴绝对角度控制
+    case GIMBAL_RELATIVE_ANGLE:
+        gimbal_run_control(add_yaw, add_pitch, gimbal_control_set); 
+        break;
+
+    case GIMBAL_MOTIONLESS: //无信号下的控制,即无力
+        gimbal_motionless_control(add_yaw, add_pitch, gimbal_control_set);
+        break;
+
+#if GIMBAL_AUTO_MODE
+    case GIMBAL_AUTO:       //自动模式，上位机控制
+        gimbal_auto_control(add_yaw, add_pitch, gimbal_control_set);
+        break;
+#endif
+    
+    }
+
+#else //原版代码
     if (add_yaw == NULL || add_pitch == NULL || gimbal_control_set == NULL)
     {
         return;
@@ -247,7 +324,7 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
         gimbal_auto_control(add_yaw, add_pitch, gimbal_control_set);            
     }
 #endif
-
+#endif
 }
 
 /**
@@ -334,7 +411,7 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
             }
         }
     }
-#elif 1
+#else
     //开关控制 云台状态
     if (switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[0])&&chassis_behaviour_mode!=CHASSIS_NO_MOVE)
     {
@@ -372,6 +449,24 @@ static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
 
     *yaw = 0.0f;
     *pitch = 0.0f;
+}
+/**
+ * @brief                     云台运行控制模式，此时云台处于绝对角度控制或相对角度控制
+ *
+ * @param yaw                 yaw轴角度增量
+ * @param pitch               pitch轴角度增量
+ * @param gimbal_control_set  云台数据指针
+ * @author                    yuanluochen
+ */
+static void gimbal_run_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set)
+{
+    //临时值，防止调用出现内存问题
+    fp32 pitch_tem = 0;
+    fp32 yaw_tem = 0;
+    //yaw轴绝对角度
+    gimbal_angle_control(yaw, &pitch_tem, gimbal_control_set);
+    // pitch轴相对角度控制
+    gimbal_relative_angle_control(&yaw_tem, pitch, gimbal_control_set);
 }
 
 /**
@@ -462,8 +557,10 @@ static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control
     {
         return;
     }
-    static int16_t yaw_channel = 0, pitch_channel = 0;
-
+    //遥控器通道值
+    int16_t yaw_channel = 0;
+    int16_t pitch_channel = 0;
+    
     rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
     rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[PITCH_CHANNEL], pitch_channel, RC_DEADBAND);
 

@@ -84,4 +84,3 @@ standard_tpye_c\freertos.o: ../application/oled_task.h
 standard_tpye_c\freertos.o: ../application/referee_usart_task.h
 standard_tpye_c\freertos.o: ../application/usb_task.h
 standard_tpye_c\freertos.o: ../application/voltage_task.h
-standard_tpye_c\freertos.o: ../application/servo_task.h

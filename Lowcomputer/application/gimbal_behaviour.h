@@ -53,6 +53,7 @@
 #include "struct_typedef.h"
 
 #include "gimbal_task.h"
+
 typedef enum
 {
   GIMBAL_ZERO_FORCE = 0, 

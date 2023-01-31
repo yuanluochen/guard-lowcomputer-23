@@ -184,6 +184,11 @@
 
 #endif // !GIMBAL_AUTO_MODE
 
+//云台pitch轴最大值相对角度
+#define GIMBAL_PITCH_MAX_ENCODE 7200
+//元太pitch轴最小相对角
+#define GIMBAL_PITCH_MIN_ENCODE 5500
+
 typedef enum
 {
     GIMBAL_MOTOR_RAW = 0, //电机原始值控制

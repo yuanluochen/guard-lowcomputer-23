@@ -53,7 +53,6 @@
 "standard_tpye_c\can_receive.o"
 "standard_tpye_c\voltage_task.o"
 "standard_tpye_c\led_flow_task.o"
-"standard_tpye_c\servo_task.o"
 "standard_tpye_c\shoot_task.o"
 "standard_tpye_c\vision_usart.o"
 "standard_tpye_c\oled.o"

@@ -38,7 +38,6 @@
 #include "referee_usart_task.h"
 #include "usb_task.h"
 #include "voltage_task.h"
-#include "servo_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
