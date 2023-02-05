@@ -118,15 +118,7 @@ static void gimbal_cali_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
   * @param[out]     pitch:pitch轴角度控制，为角度的增量 单位 rad
   * @param[in]      gimbal_control_set:云台数据指针
   */
-static void gimbal_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
-/**
-  * @brief          云台编码值控制，电机是相对角度控制，
-  * @param[in]      yaw: yaw轴角度控制，为角度的增量 单位 rad
-  * @param[in]      pitch: pitch轴角度控制，为角度的增量 单位 rad
-  * @param[in]      gimbal_control_set: 云台数据指针
-  * @retval         none
-  */
-static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
+static void gimbal_RC_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 /**
   * @brief          云台进入遥控器无输入控制，电机是相对角度控制，
   * @author         RM
@@ -310,11 +302,11 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
     }
     else if (gimbal_behaviour == GIMBAL_ABSOLUTE_ANGLE)
     {
-        gimbal_angle_control(add_yaw, add_pitch, gimbal_control_set);
+        gimbal_RC_control(add_yaw, add_pitch, gimbal_control_set);
     }
     else if (gimbal_behaviour == GIMBAL_RELATIVE_ANGLE)
     {
-        // gimbal_angle_control(add_yaw, add_pitch, gimbal_control_set);
+        // gimbal_RC_control(add_yaw, add_pitch, gimbal_control_set);
         gimbal_relative_angle_control(add_yaw, add_pitch, gimbal_control_set);
     }
     else if (gimbal_behaviour == GIMBAL_MOTIONLESS)
@@ -451,7 +443,7 @@ static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
     *pitch = 0.0f;
 }
 /**
- * @brief                     云台运行控制模式，此时云台处于绝对角度控制或相对角度控制
+ * @brief                     云台运行控制模式，此时云台受遥控器控制，pitch轴为相对角度控制，yaw轴为绝对角度控制
  *
  * @param yaw                 yaw轴角度增量
  * @param pitch               pitch轴角度增量
@@ -460,20 +452,14 @@ static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
  */
 static void gimbal_run_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set)
 {
-    //临时值，防止调用出现内存问题
-    fp32 pitch_tem = 0;
-    fp32 yaw_tem = 0;
-    //yaw轴绝对角度
-    gimbal_angle_control(yaw, &pitch_tem, gimbal_control_set);
-    // pitch轴相对角度控制
-    gimbal_relative_angle_control(&yaw_tem, pitch, gimbal_control_set);
+    gimbal_RC_control(yaw, pitch, gimbal_control_set);
 }
 
 /**
   * @brief          云台控制，电机是角度控制，
   */
 
-static void gimbal_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
+static void gimbal_RC_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
 {
     static fp32 rc_add_yaw, rc_add_pit;
     static fp32 rc_add_yaw_RC, rc_add_pit_RC;
@@ -509,7 +495,7 @@ static void gimbal_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimba
     rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[3], pitch_channel_RC, 15);
 
     rc_add_yaw_RC = yaw_channel_RC * YAW_RC_SEN;
-    rc_add_pit_RC = (pitch_channel_RC * PITCH_RC_SEN);
+    rc_add_pit_RC = -(pitch_channel_RC * PITCH_RC_SEN);
     // 一阶低通滤波代替斜波作为输入
     first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vx_RC, rc_add_yaw_RC);
     first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vy_RC, rc_add_pit_RC);
@@ -519,7 +505,7 @@ static void gimbal_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimba
     rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->mouse.y, pitch_channel, 5);
 
     rc_add_yaw = -yaw_channel * Yaw_Mouse_Sen;
-    rc_add_pit = pitch_channel * Pitch_Mouse_Sen;
+    rc_add_pit = -pitch_channel * Pitch_Mouse_Sen;
     // 滑动滤波
     Fiter(rc_add_pit);
     rc_add_pit = (rc_add_pit * 8 + Pitch_Set[1] - Pitch_Set[7]) / 8;
@@ -536,48 +522,6 @@ static void gimbal_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimba
     *pitch = (gimbal_control_set->gimbal_cmd_slow_set_vy.out + pitch_turn + gimbal_control_set->gimbal_cmd_slow_set_vz.out + gimbal_control_set->gimbal_cmd_slow_set_vy_RC.out);
 }
 
-/**
-  * @brief          when gimbal behaviour mode is GIMBAL_RELATIVE_ANGLE, the function is called
-  *                 and gimbal control mode is encode mode. 
-  * @param[out]     yaw: yaw axia relative angle increment, unit rad
-  * @param[out]     pitch: pitch axia relative angle increment,unit rad
-  * @param[in]      gimbal_control_set: gimbal data
-  * @retval         none
-  */
-/**
-  * @brief          云台编码值控制，电机是相对角度控制，
-  * @param[in]      yaw: yaw轴角度控制，为角度的增量 单位 rad
-  * @param[in]      pitch: pitch轴角度控制，为角度的增量 单位 rad
-  * @param[in]      gimbal_control_set: 云台数据指针
-  * @retval         none
-  */
-static void gimbal_relative_angle_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
-{
-    if (yaw == NULL || pitch == NULL || gimbal_control_set == NULL)
-    {
-        return;
-    }
-    //遥控器通道值
-    int16_t yaw_channel = 0;
-    int16_t pitch_channel = 0;
-    //增量
-    fp32 rc_add_yaw = 0;
-    fp32 rc_add_pitch = 0;
-    
-    rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
-    rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[PITCH_CHANNEL], pitch_channel, RC_DEADBAND);
-
-    rc_add_yaw = yaw_channel * YAW_RC_SEN - gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
-    rc_add_pitch = -(pitch_channel * PITCH_RC_SEN + gimbal_control_set->gimbal_rc_ctrl->mouse.y * PITCH_MOUSE_SEN);
-    // 一阶低通滤波代替斜波作为输入
-    first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vx, rc_add_yaw);
-    first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vy, rc_add_pitch);
-
-    *yaw = gimbal_control_set->gimbal_cmd_slow_set_vx.out;
-    *pitch = gimbal_control_set->gimbal_cmd_slow_set_vy.out;
-
-
-}
 
 
 void Fiter(fp32 pitch)

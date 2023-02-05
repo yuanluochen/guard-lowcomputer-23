@@ -81,7 +81,7 @@ void stm32_pid_init_pitch(void)  //pitch
 }
 void stm32_relative_pid_init_pitch(void)  //pitch
 {
-	stm32_U_pitch.P_P=1000;
+	stm32_U_pitch.P_P=1300;
 	stm32_U_pitch.P_I=1;  
 	stm32_U_pitch.P_D=40;   
 	stm32_U_pitch.P_N=35	;  
