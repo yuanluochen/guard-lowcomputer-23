@@ -31,11 +31,11 @@
 #include "kalman.h"
 //pitch speed close-loop PID params, max out and max iout
 //pitch 速度环 PID参数以及 PID最大输出，积分输出
-#define PITCH_SPEED_PID_KP        2000.0f
-#define PITCH_SPEED_PID_KI       1.0f
-#define PITCH_SPEED_PID_KD        10.0f
-#define PITCH_SPEED_PID_MAX_OUT   30000.0f
-#define PITCH_SPEED_PID_MAX_IOUT  10000.0f
+#define PITCH_SPEED_PID_KP         2000.0f
+#define PITCH_SPEED_PID_KI         1.0f
+#define PITCH_SPEED_PID_KD         10.0f
+#define PITCH_SPEED_PID_MAX_OUT    30000.0f
+#define PITCH_SPEED_PID_MAX_IOUT   10000.0f
 
 //yaw speed close-loop PID params, max out and max iout
 //yaw 速度环 PID参数以及 PID最大输出，积分输出

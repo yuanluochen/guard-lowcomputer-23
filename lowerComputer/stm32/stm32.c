@@ -23,52 +23,48 @@ RT_MODEL_stm32 stm32_M_;
 RT_MODEL_stm32 *const stm32_M = &stm32_M_;
 
 /* Model step function */
-void stm32_auto_pid_init(void)  //yaw
+void stm32_auto_pid_init(void) // yaw
 {
-	stm32_U_auto.P_P=1200;
-	stm32_U_auto.P_I=1;
-	stm32_U_auto.P_D=10	;
-	stm32_U_auto.P_N=100;
-	stm32_U_auto.S_P=50;
-	stm32_U_auto.S_I=0;
-	stm32_U_auto.S_D=5;
-	stm32_U_auto.S_N=40;
-		
+    stm32_U_auto.P_P = 1200;
+    stm32_U_auto.P_I = 1;
+    stm32_U_auto.P_D = 10;
+    stm32_U_auto.P_N = 100;
+    stm32_U_auto.S_P = 50;
+    stm32_U_auto.S_I = 0;
+    stm32_U_auto.S_D = 5;
+    stm32_U_auto.S_N = 40;
 }
-void stm32_pid_auto_init_pitch(void)  //pitch
+void stm32_pid_auto_init_pitch(void) // pitch
 {
-	stm32_U_pitch_auto.P_P=1200;//   1100;
-	stm32_U_pitch_auto.P_I=1;  //1
-	stm32_U_pitch_auto.P_D=52;   //50	 ; 
-	stm32_U_pitch_auto.P_N=30	;  //30
-	stm32_U_pitch_auto.S_P=110;  //280
-	stm32_U_pitch_auto.S_I=1;     //1
-	stm32_U_pitch_auto.S_D=3;    //3
-	stm32_U_pitch_auto.S_N=20;  //20
-		
+    stm32_U_pitch_auto.P_P = 1200; //   1100;
+    stm32_U_pitch_auto.P_I = 1;    // 1
+    stm32_U_pitch_auto.P_D = 52;   // 50	 ;
+    stm32_U_pitch_auto.P_N = 30;   // 30
+    stm32_U_pitch_auto.S_P = 110;  // 280
+    stm32_U_pitch_auto.S_I = 1;    // 1
+    stm32_U_pitch_auto.S_D = 3;    // 3
+    stm32_U_pitch_auto.S_N = 20;   // 20
 }
-void stm32_pid_init(void)  //yaw
+void stm32_pid_init(void) // yaw
 {
-	stm32_U.P_P=1400;
-	stm32_U.P_I=1;
-	stm32_U.P_D=10	;
-	stm32_U.P_N=100;
-	stm32_U.S_P=50;
-	stm32_U.S_I=0;
-	stm32_U.S_D=5;
-	stm32_U.S_N=40;
-		
+    stm32_U.P_P = 1400;
+    stm32_U.P_I = 1;
+    stm32_U.P_D = 10;
+    stm32_U.P_N = 100;
+    stm32_U.S_P = 50;
+    stm32_U.S_I = 0;
+    stm32_U.S_D = 5;
+    stm32_U.S_N = 40;
 }
-void stm32_shoot_pid_init(void)  //yaw
+void stm32_shoot_pid_init(void) // yaw
 {
-	stm32_U.KP=10000;
-	stm32_U.KI=80;
-	stm32_U.KD=10	;
-	stm32_U.N=70;
-		
+    stm32_U.KP = 10000;
+    stm32_U.KI = 80;
+    stm32_U.KD = 10;
+    stm32_U.N = 70;
 }
 
-void stm32_pid_init_pitch(void)  //pitch
+void stm32_pid_init_pitch(void) // pitch
 {
     stm32_U_pitch.P_P = 1200; //   1800;
     stm32_U_pitch.P_I = 1;    // 1
@@ -79,29 +75,27 @@ void stm32_pid_init_pitch(void)  //pitch
     stm32_U_pitch.S_D = 4;    // 3
     stm32_U_pitch.S_N = 45;   // 20
 }
-void stm32_relative_pid_init_pitch(void)  //pitch
+void stm32_relative_pid_init_pitch(void) // pitch
 {
-	stm32_U_pitch.P_P=1300;
-	stm32_U_pitch.P_I=1;  
-	stm32_U_pitch.P_D=40;   
-	stm32_U_pitch.P_N=35	;  
-	stm32_U_pitch.S_P=40;  
-	stm32_U_pitch.S_I=1;     
-	stm32_U_pitch.S_D=4;    
-	stm32_U_pitch.S_N=45;  
-		
+    stm32_U_pitch.P_P = 1400;
+    stm32_U_pitch.P_I = 0.2;
+    stm32_U_pitch.P_D = 19;
+    stm32_U_pitch.P_N = 35;
+    stm32_U_pitch.S_P = 80;
+    stm32_U_pitch.S_I = 1;
+    stm32_U_pitch.S_D = 2;
+    stm32_U_pitch.S_N = 45;
 }
-void stm32_pid_init_pitch_gyro(void)  //pitch
+void stm32_pid_init_pitch_gyro(void) // pitch
 {
-	stm32_U_pitch.P_P=-1200;         //-1400
-	stm32_U_pitch.P_I=-4;            //-1
-	stm32_U_pitch.P_D=-35;          //-35
-	stm32_U_pitch.P_N=200;           //100
-	stm32_U_pitch.S_P=125;           //120
-	stm32_U_pitch.S_I=4;             //1
-	stm32_U_pitch.S_D=1;             //4
-	stm32_U_pitch.S_N=55;            //15
-		
+    stm32_U_pitch.P_P = -1200; //-1400
+    stm32_U_pitch.P_I = -4;    //-1
+    stm32_U_pitch.P_D = -35;   //-35
+    stm32_U_pitch.P_N = 200;   // 100
+    stm32_U_pitch.S_P = 125;   // 120
+    stm32_U_pitch.S_I = 4;     // 1
+    stm32_U_pitch.S_D = 1;     // 4
+    stm32_U_pitch.S_N = 55;    // 15
 }
 typedef struct
 {
