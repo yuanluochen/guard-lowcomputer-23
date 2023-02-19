@@ -77,13 +77,13 @@ void stm32_pid_init_pitch(void) // pitch
 }
 void stm32_relative_pid_init_pitch(void) // pitch
 {
-    stm32_U_pitch.P_P = 1400;
+    stm32_U_pitch.P_P = 8000;
     stm32_U_pitch.P_I = 0.2;
     stm32_U_pitch.P_D = 19;
     stm32_U_pitch.P_N = 35;
-    stm32_U_pitch.S_P = 80;
-    stm32_U_pitch.S_I = 1;
-    stm32_U_pitch.S_D = 2;
+    stm32_U_pitch.S_P = 8;
+    stm32_U_pitch.S_I = 0;
+    stm32_U_pitch.S_D = 0;
     stm32_U_pitch.S_N = 45;
 }
 void stm32_pid_init_pitch_gyro(void) // pitch

@@ -194,7 +194,7 @@ void gimbal_behaviour_mode_set(gimbal_control_t *gimbal_mode_set)
     case GIMBAL_AUTO:
 #endif
         gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;      // yaw轴通过陀螺仪的绝对角控制
-        gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_ENCONDE; // pitch轴通过6020的编码器进行相对角度控制
+        gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_ENCONDE;    // pitch轴通过陀螺仪的绝对角控制
         break;
 
     case GIMBAL_MOTIONLESS:
@@ -443,7 +443,7 @@ static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
     *pitch = 0.0f;
 }
 /**
- * @brief                     云台运行控制模式，此时云台受遥控器控制，pitch轴为相对角度控制，yaw轴为绝对角度控制
+ * @brief                     云台运行控制模式，此时云台受遥控器控制，pitch轴为绝对角度控制，yaw轴为绝对角度控制
  *
  * @param yaw                 yaw轴角度增量
  * @param pitch               pitch轴角度增量

@@ -184,6 +184,7 @@
 
 #endif // !GIMBAL_AUTO_MODE
 
+
 //云台pitch轴最大值相对角度
 #define GIMBAL_PITCH_MAX_ENCODE 7365
 //云台pitch轴最小相对角

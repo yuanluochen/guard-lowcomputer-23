@@ -160,6 +160,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>gimbal_control</ItemText>
         </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>stm32_U_pitch,0x10</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -201,6 +206,11 @@
           <count>7</count>
           <WinNumber>2</WinNumber>
           <ItemText>trigger_control_loop</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>stm32_U_pitch</ItemText>
         </Ww>
       </WatchWindow2>
       <Tracepoint>
