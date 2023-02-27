@@ -684,6 +684,11 @@
               <FileType>1</FileType>
               <FilePath>..\application\vision_usart.c</FilePath>
             </File>
+            <File>
+              <FileName>connect_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\connect_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

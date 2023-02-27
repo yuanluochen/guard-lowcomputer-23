@@ -186,15 +186,15 @@
 
 
 //云台pitch轴最大值相对角度
-#define GIMBAL_PITCH_MAX_ENCODE 7365
+#define GIMBAL_PITCH_MAX_ENCODE 7400
 //云台pitch轴最小相对角
-#define GIMBAL_PITCH_MIN_ENCODE 6084
+#define GIMBAL_PITCH_MIN_ENCODE 6100
 //云台pitch轴中值
 #define GIMBAL_PITCH_OFFSET_ENCODE 6800
-
 //云台yaw轴中值
 #define GIMBAL_YAW_OFFSET_ENCODE 6170
-
+//云台yaw轴陀螺仪误差
+#define INS_YAW_ERROR 0
 
 
 

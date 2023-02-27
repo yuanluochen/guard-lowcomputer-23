@@ -170,7 +170,7 @@ static void Shoot_Feedback_Update(void)
 {
     uint8_t i;
     // 长按计时，更新标志位，控制单点单发
-    if (shoot_mode != SHOOT_STOP && (fric_move.shoot_rc->rc.ch[4] > 50 || fric_move.shoot_rc->mouse.press_l))
+    if (shoot_mode != SHOOT_STOP && (switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_TRIGGER_CHANNEL]) || fric_move.shoot_rc->mouse.press_l))
     {
         shoot_mode = SHOOT_BULLET;
         if (last_fric_mode != SHOOT_BULLET)
@@ -184,6 +184,7 @@ static void Shoot_Feedback_Update(void)
         time_l = 0, flag1 = 0;
         flag = 0;
     }
+
     if (time_l > 150)
     {
         flag = 0;
@@ -193,6 +194,7 @@ static void Shoot_Feedback_Update(void)
     {
         flag = 1;
     }
+
     if (flag == 1 && flag1 == 0)
     {
         trigger_motor.set_angle = rad_format(trigger_motor.set_angle + PI_Four);
@@ -242,8 +244,9 @@ static void Shoot_Feedback_Update(void)
  */
 static void shoot_ready(void)
 {
-    static int flag_shoot;
-    if (!flag_shoot && fric_move.shoot_rc->key.v & KEY_PRESSED_OFFSET_Z) // Z键开启摩擦轮
+    static int flag_shoot = 0;
+    //遥控器拨到下侧摩擦轮转
+    if (!flag_shoot && switch_is_down(fric_move.shoot_rc->rc.s[SHOOT_MODE_CHANNEL]))     
     {
         if (std_fric == 0)
         {
@@ -256,7 +259,7 @@ static void shoot_ready(void)
             Ready_Flag = 0;
         }
     }
-    flag_shoot = fric_move.shoot_rc->key.v & KEY_PRESSED_OFFSET_Z;
+    flag_shoot = switch_is_down(fric_move.shoot_rc->rc.s[SHOOT_MODE_CHANNEL]);
 }
 /**
  * @brief          射击模式设置

@@ -1,95 +1,48 @@
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\Ac506u7\Bin'
 Build target 'standard_robot'
-compiling stm32.c...
-..\stm32\stm32.h(114): warning:  #1295-D: Deprecated declaration stm32_auto_pid_init - give arg types
+compiling chassis_power_control.c...
+compiling gimbal_behaviour.c...
+..\application\gimbal_behaviour.c(462): warning:  #177-D: variable "rc_add_z"  was declared but never referenced
+      fp32 rc_add_z = 0;
+..\application\gimbal_behaviour.c: 1 warning, 0 errors
+compiling vision_usart.c...
+compiling chassis_behaviour.c...
+compiling gimbal_task.c...
+../stm32/stm32.h(114): warning:  #1295-D: Deprecated declaration stm32_auto_pid_init - give arg types
   extern void stm32_auto_pid_init();
-..\stm32\stm32.c(123): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid.rtb_FilterDifferentiatorTF = stm32_U.P_N * 0.0005;
-..\stm32\stm32.c(124): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid.rtb_Sum1 = 1.0 / (stm32_pid.rtb_FilterDifferentiatorTF + 1.0);
-..\stm32\stm32.c(126): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-         (stm32_pid.rtb_FilterDifferentiatorTF - 1.0) * stm32_pid.rtb_Sum1;
-..\stm32\stm32.c(127): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid.rtb_FilterDifferentiatorTF = stm32_U.S_N * 0.0005;
-..\stm32\stm32.c(128): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid.rtb_Reciprocal = 1.0 / (stm32_pid.rtb_FilterDifferentiatorTF + 1.0);
-..\stm32\stm32.c(130): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-         (stm32_pid.rtb_FilterDifferentiatorTF - 1.0) * stm32_pid.rtb_Reciprocal;
-..\stm32\stm32.c(141): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid.Integrator = 0.0005 * stm32_pid.rtb_IProdOut + stm32_DW.Integrator_DSTATE;
-..\stm32\stm32.c(157): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                                  stm32_pid.TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 +
-..\stm32\stm32.c(169): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_DW.Integrator_DSTATE = 0.0005 * stm32_pid.rtb_IProdOut + stm32_pid.Integrator;
-..\stm32\stm32.c(174): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                                        stm32_pid.TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 +
-..\stm32\stm32.c(183): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_auto_pid.rtb_FilterDifferentiatorTF = stm32_U_auto.P_N * 0.0005;
-..\stm32\stm32.c(184): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_auto_pid.rtb_Sum1 = 1.0 / (stm32_auto_pid.rtb_FilterDifferentiatorTF + 1.0);
-..\stm32\stm32.c(186): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-         (stm32_auto_pid.rtb_FilterDifferentiatorTF - 1.0) * stm32_auto_pid.rtb_Sum1;
-..\stm32\stm32.c(187): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_auto_pid.rtb_FilterDifferentiatorTF = stm32_U_auto.S_N * 0.0005;
-..\stm32\stm32.c(188): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_auto_pid.rtb_Reciprocal = 1.0 / (stm32_auto_pid.rtb_FilterDifferentiatorTF + 1.0);
-..\stm32\stm32.c(190): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-         (stm32_auto_pid.rtb_FilterDifferentiatorTF - 1.0) * stm32_auto_pid.rtb_Reciprocal;
-..\stm32\stm32.c(201): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_auto_pid.Integrator = 0.0005 * stm32_auto_pid.rtb_IProdOut + stm32_DW_yaw_auto.Integrator_DSTATE;
-..\stm32\stm32.c(217): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                                       stm32_auto_pid.TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 +
-..\stm32\stm32.c(229): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_DW_yaw_auto.Integrator_DSTATE = 0.0005 * stm32_auto_pid.rtb_IProdOut + stm32_auto_pid.Integrator;
-..\stm32\stm32.c(234): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                                                 stm32_auto_pid.TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 +
-..\stm32\stm32.c(243): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid_auto_pitch.rtb_FilterDifferentiatorTF = stm32_U_pitch_auto.P_N * 0.0005;
-..\stm32\stm32.c(244): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid_auto_pitch.rtb_Sum1 = 1.0 / (stm32_pid_auto_pitch.rtb_FilterDifferentiatorTF + 1.0);
-..\stm32\stm32.c(246): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-         (stm32_pid_auto_pitch.rtb_FilterDifferentiatorTF - 1.0) * stm32_pid_auto_pitch.rtb_Sum1;
-..\stm32\stm32.c(247): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid_auto_pitch.rtb_FilterDifferentiatorTF = stm32_U_pitch_auto.S_N * 0.0005;
-..\stm32\stm32.c(248): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid_auto_pitch.rtb_Reciprocal = 1.0 / (stm32_pid_auto_pitch.rtb_FilterDifferentiatorTF + 1.0);
-..\stm32\stm32.c(250): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-         (stm32_pid_auto_pitch.rtb_FilterDifferentiatorTF - 1.0) * stm32_pid_auto_pitch.rtb_Reciprocal;
-..\stm32\stm32.c(254): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid_auto_pitch.Integrator = 0.0005 * stm32_pid_auto_pitch.rtb_IProdOut + stm32_DW_pitch_auto.Integrator_DSTATE;
-..\stm32\stm32.c(270): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                                             stm32_pid_auto_pitch.TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 +
-..\stm32\stm32.c(282): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_DW_pitch_auto.Integrator_DSTATE = 0.0005 * stm32_pid_auto_pitch.rtb_IProdOut + stm32_pid_auto_pitch.Integrator;
-..\stm32\stm32.c(287): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                                                   stm32_pid_auto_pitch.TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 +
-..\stm32\stm32.c(296): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid_pitch.rtb_FilterDifferentiatorTF = stm32_U_pitch.P_N * 0.0005;
-..\stm32\stm32.c(297): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid_pitch.rtb_Sum1 = 1.0 / (stm32_pid_pitch.rtb_FilterDifferentiatorTF + 1.0);
-..\stm32\stm32.c(299): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-         (stm32_pid_pitch.rtb_FilterDifferentiatorTF - 1.0) * stm32_pid_pitch.rtb_Sum1;
-..\stm32\stm32.c(300): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid_pitch.rtb_FilterDifferentiatorTF = stm32_U_pitch.S_N * 0.0005;
-..\stm32\stm32.c(301): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid_pitch.rtb_Reciprocal = 1.0 / (stm32_pid_pitch.rtb_FilterDifferentiatorTF + 1.0);
-..\stm32\stm32.c(303): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-         (stm32_pid_pitch.rtb_FilterDifferentiatorTF - 1.0) * stm32_pid_pitch.rtb_Reciprocal;
-..\stm32\stm32.c(307): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_pid_pitch.Integrator = 0.0005 * stm32_pid_pitch.rtb_IProdOut + stm32_DW_pitch.Integrator_DSTATE;
-..\stm32\stm32.c(323): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                                        stm32_pid_pitch.TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 +
-..\stm32\stm32.c(335): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     stm32_DW_pitch.Integrator_DSTATE = 0.0005 * stm32_pid_pitch.rtb_IProdOut + stm32_pid_pitch.Integrator;
-..\stm32\stm32.c(340): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                                              stm32_pid_pitch.TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 +
-..\stm32\stm32.c(351): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     rtb_Sum_p = stm32_U.N * 0.0005;
-..\stm32\stm32.c(378): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-     rtb_Sum_p = stm32_U.N * 0.0005;
-..\stm32\stm32.c: 43 warnings, 0 errors
+..\application\gimbal_task.c(305): warning:  #223-D: function "stm32_pid_init" declared implicitly
+      stm32_pid_init();
+..\application\gimbal_task.c(514): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          angle_set_yaw = gimbal_motor->absolute_angle_set + INS_YAW_ERROR; // Õ”¬›“«Œ Ã‚
+..\application\gimbal_task.c(742): warning:  #177-D: function "gimbal_PID_calc"  was declared but never referenced
+  static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
+..\application\gimbal_task.c: 4 warnings, 0 errors
+compiling freertos.c...
+compiling shoot_task.c...
+../stm32/stm32.h(114): warning:  #1295-D: Deprecated declaration stm32_auto_pid_init - give arg types
+  extern void stm32_auto_pid_init();
+..\application\shoot_task.c(52): warning:  #177-D: function "trigger_motor_turn_back"  was declared but never referenced
+  static void trigger_motor_turn_back(void);
+..\application\shoot_task.c: 2 warnings, 0 errors
+compiling chassis_task.c...
+..\application\chassis_task.c(319): warning:  #177-D: variable "vx_channel"  was declared but never referenced
+      int16_t vx_channel, vy_channel;
+..\application\chassis_task.c(319): warning:  #177-D: variable "vy_channel"  was declared but never referenced
+      int16_t vx_channel, vy_channel;
+..\application\chassis_task.c(320): warning:  #177-D: variable "vx_set_channel"  was declared but never referenced
+      fp32 vx_set_channel, vy_set_channel;
+..\application\chassis_task.c(320): warning:  #177-D: variable "vy_set_channel"  was declared but never referenced
+      fp32 vx_set_channel, vy_set_channel;
+..\application\chassis_task.c(420): warning:  #177-D: variable "relative_angle"  was declared but never referenced
+      fp32 relative_angle = 0.0f;
+..\application\chassis_task.c: 5 warnings, 0 errors
+compiling calibrate_task.c...
+compiling main.c...
+../stm32/stm32.h(114): warning:  #1295-D: Deprecated declaration stm32_auto_pid_init - give arg types
+  extern void stm32_auto_pid_init();
+../Src/main.c: 1 warning, 0 errors
 linking...
-Program Size: Code=105332 RO-data=13712 RW-data=1304 ZI-data=59752  
+Program Size: Code=105408 RO-data=13712 RW-data=1304 ZI-data=59752  
 FromELF: creating hex file...
-"standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 43 Warning(s).
-Build Time Elapsed:  00:00:03
+"standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 13 Warning(s).
+Build Time Elapsed:  00:00:07

@@ -194,7 +194,7 @@ void gimbal_behaviour_mode_set(gimbal_control_t *gimbal_mode_set)
     case GIMBAL_AUTO:
 #endif
         gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;      // yaw轴通过陀螺仪的绝对角控制
-        gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_ENCONDE;    // pitch轴通过陀螺仪的绝对角控制
+        gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;    // pitch轴通过陀螺仪的绝对角控制
         break;
 
     case GIMBAL_MOTIONLESS:
@@ -256,15 +256,12 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
     case GIMBAL_ZERO_FORCE://无力模式云台无力
         gimbal_zero_force_control(add_yaw, add_pitch, gimbal_control_set);
         break;
-
     case GIMBAL_INIT:      //初始化模式，云台初始化
         gimbal_init_control(add_yaw, add_pitch, gimbal_control_set);
         break;
-
     case GIMBAL_CALI:      //校准模式，云台校准
         gimbal_cali_control(add_yaw, add_pitch, gimbal_control_set);
         break;
-        
     case GIMBAL_RC: //相对角度控制和绝对角度控制都采用统一的控制方式，即pitch轴相对角度控制，yaw轴绝对角度控制
     case GIMBAL_RELATIVE_ANGLE:
         gimbal_run_control(add_yaw, add_pitch, gimbal_control_set); 
@@ -370,11 +367,10 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
         return;
     }
 #if GIMBAL_AUTO_MODE
-    //判断遥控器开关状态是否为无力模式
     if (switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]) && chassis_behaviour_mode != CHASSIS_NO_MOVE)
     {
-        //无力模式
-        gimbal_behaviour = GIMBAL_ZERO_FORCE;
+        //遥控器控制模式
+        gimbal_behaviour = GIMBAL_RC;
     }
     if (switch_is_mid(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]) && chassis_behaviour_mode != CHASSIS_NO_MOVE)
     {
@@ -492,10 +488,10 @@ static void gimbal_RC_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_c
     }
     // 遥控器控制
     rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel_RC, 15);
-    rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[3], pitch_channel_RC, 15);
+    rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[PITCH_CHANNEL], pitch_channel_RC, 15);
 
     rc_add_yaw_RC = yaw_channel_RC * YAW_RC_SEN;
-    rc_add_pit_RC = -(pitch_channel_RC * PITCH_RC_SEN);
+    rc_add_pit_RC = pitch_channel_RC * PITCH_RC_SEN;
     // 一阶低通滤波代替斜波作为输入
     first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vx_RC, rc_add_yaw_RC);
     first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vy_RC, rc_add_pit_RC);

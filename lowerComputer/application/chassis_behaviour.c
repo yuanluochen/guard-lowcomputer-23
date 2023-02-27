@@ -149,7 +149,7 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
         }
         if (chassis_move_mode->chassis_RC->key.v & KEY_PRESSED_OFFSET_R)
         {
-            chassis_behaviour_mode = CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW;
+            chassis_behaviour_mode = CHASSIS_FOLLOW_GIMBAL_YAW;
         }
     }
     else if ((switch_is_down(chassis_move_mode->chassis_RC->rc.s[1]))||(chassis_move_mode->chassis_RC->key.v &KEY_PRESSED_OFFSET_X))
@@ -158,18 +158,18 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     }
     else if ((switch_is_up(chassis_move_mode->chassis_RC->rc.s[1]))||(chassis_move_mode->chassis_RC->key.v &KEY_PRESSED_OFFSET_R))
     {
-        chassis_behaviour_mode = CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW;
+        chassis_behaviour_mode = CHASSIS_FOLLOW_GIMBAL_YAW;
 		}
 #else
     if (switch_is_down(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
-        // 遥控器拨到下侧挡位为无力模式
-        chassis_behaviour_mode = CHASSIS_ZERO_FORCE;
+        // 遥控器拨到下侧挡位为遥控器控制模式
+        chassis_behaviour_mode = CHASSIS_FOLLOW_GIMBAL_YAW;
     }
     else if (switch_is_mid(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
         // 遥控器中挡为遥控器控制模式，//默认底盘跟随云台 
-        chassis_behaviour_mode = CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW;
+        chassis_behaviour_mode = CHASSIS_FOLLOW_GIMBAL_YAW;
     }
     else if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
@@ -194,7 +194,7 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     {
         chassis_move_mode->chassis_mode = CHASSIS_VECTOR_NO_FOLLOW_YAW; 
     }
-    else if (chassis_behaviour_mode == CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW)
+    else if (chassis_behaviour_mode == CHASSIS_FOLLOW_GIMBAL_YAW)
     {
         chassis_move_mode->chassis_mode = CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW; 
     }
@@ -251,7 +251,7 @@ void chassis_behaviour_control_set(fp32 *vx_set, fp32 *vy_set, fp32 *angle_set, 
     {
         chassis_no_move_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
     }
-    else if (chassis_behaviour_mode == CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW) //跟随云台
+    else if (chassis_behaviour_mode == CHASSIS_FOLLOW_GIMBAL_YAW) //跟随云台
     {
         chassis_infantry_follow_gimbal_yaw_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
     }

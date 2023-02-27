@@ -87,7 +87,7 @@ typedef enum
 {
     CHASSIS_ZERO_FORCE,                  // chassis will be like no power,底盘无力, 跟没上电那样
     CHASSIS_NO_MOVE,                     // chassis will be stop,底盘保持不动
-    CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW,  // chassis will follow gimbal, usually in infantry,正常步兵底盘跟随云台
+    CHASSIS_FOLLOW_GIMBAL_YAW,  // chassis will follow gimbal, usually in infantry,正常步兵底盘跟随云台
     CHASSIS_ENGINEER_FOLLOW_CHASSIS_YAW, // chassis will follow chassis yaw angle, usually in engineer,
                                          // because chassis does have gyro sensor, its yaw angle is calculed by gyro in gimbal and gimbal motor angle,
                                          // if you have a gyro sensor in chassis, please updata yaw, pitch, roll angle in "chassis_feedback_update"  function
