@@ -19,8 +19,8 @@ uint8_t i=0;
 
 void vision_init(void)
 {
-	    //enable the DMA transfer for the receiver request
-    //使能DMA串口接收
+    // enable the DMA transfer for the receiver request
+    // 使能DMA串口接收
     SET_BIT(huart1.Instance->CR3, USART_CR3_DMAR);
 
     //enalbe idle interrupt

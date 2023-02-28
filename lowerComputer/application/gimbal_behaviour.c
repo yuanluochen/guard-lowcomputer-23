@@ -578,9 +578,14 @@ static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal
     }
     else
     {
+#if 1
         //未接收到上位机数据,不移动
         *yaw = 0;
         *pitch = 0;
+#else
+    //未接收到上位机数据，云台自主运动
+    
+#endif
     }
 } 
 #endif

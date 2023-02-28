@@ -75,8 +75,7 @@
 
 /* USER CODE BEGIN PV */
 
-
-
+uint8_t arxbuffer[24];
 
 
 /* USER CODE END PV */
@@ -106,14 +105,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-
-
-
-
-
-
-
-	HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -155,8 +147,12 @@ int main(void)
     delay_init();
     cali_param_init();
     remote_control_init();
+    // 上位机数据处理
     vision_init();
-   /*閰嶇疆涓插彛閮ㄥ垎绋嬪簭锛屾敞閲婃帀鍘熺敓涓插彛鍙戦??*/
+    usart1_tx_dma_init();
+    usart1_tx_dma_enable(arxbuffer, 20);
+
+    /*閰嶇疆涓插彛閮ㄥ垎绋嬪簭锛屾敞閲婃帀鍘熺敓涓插彛鍙戦??*/
     // usart1_tx_dma_init();
   /* USER CODE END 2 */
 

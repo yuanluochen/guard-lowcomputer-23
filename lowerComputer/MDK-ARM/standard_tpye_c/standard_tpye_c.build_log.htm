@@ -22,38 +22,11 @@ Dialog DLL:      TCM.DLL V1.56.1.0
  
 <h2>Project:</h2>
 C:\Users\discipline\developer_workspace\code\RobotMaster\guard\lowerComputer\MDK-ARM\standard_robot.uvprojx
-Project File Date:  02/21/2023
+Project File Date:  02/28/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\Ac506u7\Bin'
 Build target 'standard_robot'
-compiling chassis_power_control.c...
-compiling gimbal_behaviour.c...
-..\application\gimbal_behaviour.c(462): warning:  #177-D: variable "rc_add_z"  was declared but never referenced
-      fp32 rc_add_z = 0;
-..\application\gimbal_behaviour.c: 1 warning, 0 errors
-compiling shoot_task.c...
-../stm32/stm32.h(114): warning:  #1295-D: Deprecated declaration stm32_auto_pid_init - give arg types
-  extern void stm32_auto_pid_init();
-..\application\shoot_task.c(52): warning:  #177-D: function "trigger_motor_turn_back"  was declared but never referenced
-  static void trigger_motor_turn_back(void);
-..\application\shoot_task.c: 2 warnings, 0 errors
-compiling vision_usart.c...
-compiling chassis_behaviour.c...
-compiling freertos.c...
-compiling main.c...
-../stm32/stm32.h(114): warning:  #1295-D: Deprecated declaration stm32_auto_pid_init - give arg types
-  extern void stm32_auto_pid_init();
-../Src/main.c: 1 warning, 0 errors
-compiling gimbal_task.c...
-../stm32/stm32.h(114): warning:  #1295-D: Deprecated declaration stm32_auto_pid_init - give arg types
-  extern void stm32_auto_pid_init();
-..\application\gimbal_task.c(305): warning:  #223-D: function "stm32_pid_init" declared implicitly
-      stm32_pid_init();
-..\application\gimbal_task.c(742): warning:  #177-D: function "gimbal_PID_calc"  was declared but never referenced
-  static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
-..\application\gimbal_task.c: 3 warnings, 0 errors
-compiling calibrate_task.c...
 compiling chassis_task.c...
 ..\application\chassis_task.c(319): warning:  #177-D: variable "vx_channel"  was declared but never referenced
       int16_t vx_channel, vy_channel;
@@ -67,9 +40,9 @@ compiling chassis_task.c...
       fp32 relative_angle = 0.0f;
 ..\application\chassis_task.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=105376 RO-data=13712 RW-data=1304 ZI-data=59752  
+Program Size: Code=105696 RO-data=13712 RW-data=1304 ZI-data=59776  
 FromELF: creating hex file...
-"standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 12 Warning(s).
+"standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -92,7 +65,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.6.0
-Build Time Elapsed:  00:00:05
+Build Time Elapsed:  00:00:04
 </pre>
 </body>
 </html>

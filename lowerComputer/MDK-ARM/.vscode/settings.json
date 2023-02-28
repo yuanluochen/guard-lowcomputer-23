@@ -9,6 +9,7 @@
         "new": "c",
         "*.tcc": "c",
         "type_traits": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "stm32_private.h": "c"
     }
 }
