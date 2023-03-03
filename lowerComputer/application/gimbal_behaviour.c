@@ -137,17 +137,6 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
 static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set);
 #endif
 
-/**
- * @brief                     云台运行控制模式，此时云台处于绝对角度控制或相对角度控制
- *
- * @param yaw                 yaw轴角度增量
- * @param pitch               pitch轴角度增量
- * @param gimbal_control_set  云台数据指针
- * @author                    yuanluochen
- */
-static void gimbal_run_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set);
-
-
 /*----------------------------------结构体---------------------------*/
 //云台行为状态机
 static gimbal_behaviour_e gimbal_behaviour = GIMBAL_ZERO_FORCE;
@@ -264,7 +253,7 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
         break;
     case GIMBAL_RC: //相对角度控制和绝对角度控制都采用统一的控制方式，即pitch轴相对角度控制，yaw轴绝对角度控制
     case GIMBAL_RELATIVE_ANGLE:
-        gimbal_run_control(add_yaw, add_pitch, gimbal_control_set); 
+        gimbal_RC_control(add_yaw, add_pitch, gimbal_control_set);
         break;
 
     case GIMBAL_MOTIONLESS: //无信号下的控制,即无力
@@ -439,27 +428,14 @@ static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
     *pitch = 0.0f;
 }
 /**
- * @brief                     云台运行控制模式，此时云台受遥控器控制，pitch轴为绝对角度控制，yaw轴为绝对角度控制
- *
- * @param yaw                 yaw轴角度增量
- * @param pitch               pitch轴角度增量
- * @param gimbal_control_set  云台数据指针
- * @author                    yuanluochen
- */
-static void gimbal_run_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set)
-{
-    gimbal_RC_control(yaw, pitch, gimbal_control_set);
-}
-
-/**
-  * @brief          云台控制，电机是角度控制，
+  * @brief          云台控制，电机是角度控制，遥控器控制数据
   */
 
 static void gimbal_RC_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
 {
     static fp32 rc_add_yaw, rc_add_pit;
     static fp32 rc_add_yaw_RC, rc_add_pit_RC;
-    fp32 rc_add_z = 0;
+    volatile fp32 rc_add_z = 0;
     static int16_t yaw_channel = 0, pitch_channel = 0;
     static int16_t yaw_channel_RC;
     static int16_t pitch_channel_RC;
@@ -573,8 +549,11 @@ static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal
         KalmanFilter(&gimbal_control_set->gimbal_pitch_motor.gimbal_motor_kalman_filter, pitch_value);
 
         //赋值移动
-        *yaw = gimbal_control_set->gimbal_yaw_motor.gimbal_motor_kalman_filter.X_now * MOTOR_ECD_TO_RAD;
-        *pitch = gimbal_control_set->gimbal_pitch_motor.gimbal_motor_kalman_filter.X_now * MOTOR_ECD_TO_RAD;
+        *yaw = gimbal_control_set->gimbal_yaw_motor.gimbal_motor_kalman_filter.X_now * ANGLE_TO_RADIAN;
+        *pitch = gimbal_control_set->gimbal_pitch_motor.gimbal_motor_kalman_filter.X_now * ANGLE_TO_RADIAN;
+
+        //数据接收位置零，等待下一次数据的接收
+        gimbal_control_set->gimbal_vision_control->rx_flag = 0; 
     }
     else
     {

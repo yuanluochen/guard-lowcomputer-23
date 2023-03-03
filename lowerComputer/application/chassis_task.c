@@ -105,11 +105,11 @@ extern gimbal_control_t gimbal_control;
   */
 void chassis_task(void const *pvParameters)
 {
-		w_set=7.5;
-		speed_set_x=2.1f;
-		speed_set_y=1.82f;
+    w_set = 7.5;
+    speed_set_x = 2.1f;
+    speed_set_y = 1.82f;
     K=105.f;
-		chassis_move.power_control.POWER_MAX=60;
+    chassis_move.power_control.POWER_MAX = 60;
     //wait a time 
     //空闲一段时间
     vTaskDelay(CHASSIS_TASK_INIT_TIME);
@@ -316,8 +316,8 @@ static void chassis_feedback_update(chassis_move_t *chassis_move_update)
 
 void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_move_rc_to_vector)
 {
-    int16_t vx_channel, vy_channel;
-    fp32 vx_set_channel, vy_set_channel;
+    // int16_t vx_channel, vy_channel;
+    // fp32 vx_set_channel, vy_set_channel;
     fp32 vx_set_channel_RC, vy_set_channel_RC;
     int16_t vx_channel_RC, vy_channel_RC;
     // deadline, because some remote control need be calibrated,  the value of rocker is not zero in middle place,
@@ -417,7 +417,7 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
     }
 
     fp32 vx_set = 0.0f, vy_set = 0.0f, angle_set = 0.0f;
-    fp32 relative_angle = 0.0f;
+    volatile fp32 relative_angle = 0.0f;
     // get three control set-point, 获取三个控制设置值
     chassis_behaviour_control_set(&vx_set, &vy_set, &angle_set, chassis_move_control);
     // 跟随云台模式

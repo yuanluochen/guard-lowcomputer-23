@@ -27,22 +27,17 @@ Project File Date:  02/28/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\Ac506u7\Bin'
 Build target 'standard_robot'
+compiling gimbal_task.c...
+../stm32/stm32.h(114): warning:  #1295-D: Deprecated declaration stm32_auto_pid_init - give arg types
+  extern void stm32_auto_pid_init();
+..\application\gimbal_task.c(306): warning:  #223-D: function "stm32_pid_init" declared implicitly
+      stm32_pid_init();
+..\application\gimbal_task.c: 2 warnings, 0 errors
 compiling chassis_task.c...
-..\application\chassis_task.c(319): warning:  #177-D: variable "vx_channel"  was declared but never referenced
-      int16_t vx_channel, vy_channel;
-..\application\chassis_task.c(319): warning:  #177-D: variable "vy_channel"  was declared but never referenced
-      int16_t vx_channel, vy_channel;
-..\application\chassis_task.c(320): warning:  #177-D: variable "vx_set_channel"  was declared but never referenced
-      fp32 vx_set_channel, vy_set_channel;
-..\application\chassis_task.c(320): warning:  #177-D: variable "vy_set_channel"  was declared but never referenced
-      fp32 vx_set_channel, vy_set_channel;
-..\application\chassis_task.c(420): warning:  #177-D: variable "relative_angle"  was declared but never referenced
-      fp32 relative_angle = 0.0f;
-..\application\chassis_task.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=105696 RO-data=13712 RW-data=1304 ZI-data=59776  
+Program Size: Code=105568 RO-data=13712 RW-data=1296 ZI-data=59776  
 FromELF: creating hex file...
-"standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 5 Warning(s).
+"standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 

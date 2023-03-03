@@ -196,6 +196,9 @@
 //云台yaw轴陀螺仪误差
 #define INS_YAW_ERROR 0
 
+//角度制转化未弧度制
+#define ANGLE_TO_RADIAN ((2 * PI) / 360)
+
 
 
 typedef enum
@@ -274,7 +277,7 @@ typedef struct
     const RC_ctrl_t *gimbal_rc_ctrl;
 #if GIMBAL_AUTO_MODE
     //视觉上位机数据
-    const vision_rxfifo_t* gimbal_vision_control;
+    vision_rxfifo_t* gimbal_vision_control; //该变量不可置const，未来要对其进行处理
 #endif
     const fp32 *gimbal_INT_angle_point;
     const fp32 *gimbal_INT_gyro_point;

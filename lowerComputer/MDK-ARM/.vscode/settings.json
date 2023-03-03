@@ -10,6 +10,8 @@
         "*.tcc": "c",
         "type_traits": "c",
         "typeinfo": "c",
-        "stm32_private.h": "c"
+        "stm32_private.h": "c",
+        "stm32.h": "c",
+        "user_lib.h": "c"
     }
 }

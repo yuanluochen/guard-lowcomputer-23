@@ -182,14 +182,13 @@ static void gimbal_PID_clear(gimbal_PID_t *pid_clear);
   * @param[in]      error_delta: 角速度
   * @retval         pid 输出
   */
-static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
+// static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
 
 static void calc_gimbal_cali(const gimbal_step_cali_t *gimbal_cali, uint16_t *yaw_offset, uint16_t *pitch_offset, fp32 *max_yaw, fp32 *min_yaw, fp32 *max_pitch, fp32 *min_pitch);
 
 /*----------------------------------内部变量---------------------------*/
 fp32 fuzzy_pid_speed[3] = {50,1,5};
 fp32 fuzzy_pid_angle[3] = {1200,1,10};
-static int16_t yaw_can_set_current = 0, pitch_can_set_current = 0;
 /*----------------------------------结构体------------------------------*/
 gimbal_control_t gimbal_control;
 FuzzyPID fuzzy_pid_gimbal_speed;
@@ -210,6 +209,8 @@ extern void sm32_pid_init(void);
 
 void gimbal_task(void const *pvParameters)
 {
+    int16_t yaw_can_set_current = 0;
+    int16_t pitch_can_set_current = 0;
     //等待陀螺仪任务更新陀螺仪数据
     //wait a time
     vTaskDelay(GIMBAL_TASK_INIT_TIME);
@@ -520,13 +521,12 @@ static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add)
         //超过云台设置最大的角度范围，设置数据不在增长
         if (gimbal_motor->gimbal_motor_measure->ecd >= GIMBAL_PITCH_MAX_ENCODE)
         {
-            // gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch);
             // 但前为相对角度最大，实际pitch轴绝对角最小，在该情况下，允许绝对角增大，不允许减小
             gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + (add < 0 ? add : 0));
         }
         else if (gimbal_motor->gimbal_motor_measure->ecd <= GIMBAL_PITCH_MIN_ENCODE)
         {
-            // 当前为相对角度最小，实际pitch轴绝对角最大，在该情况下，允许绝对角减小，不允许增大
+            // 当前为相对角度最小，实际pitch轴绝对角最大，在该情况下，由于c板安装问题，绝对角也是反的，允许绝对角增大，不允许减小
             gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + (add > 0 ? add : 0));
         }
         //未超过最大值，设置值增长
@@ -739,26 +739,26 @@ static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 
     pid->max_out = maxout;
 }
 
-static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
-{
-    fp32 err;
-    if (pid == NULL)
-    {
-        return 0.0f;
-    }
-    pid->get = get;
-    pid->set = set;
+// static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
+// {
+//     fp32 err;
+//     if (pid == NULL)
+//     {
+//         return 0.0f;
+//     }
+//     pid->get = get;
+//     pid->set = set;
 
-    err = set - get;
-    pid->err = rad_format(err);
-    pid->Pout = pid->kp * pid->err;
-    pid->Iout += pid->ki * pid->err;
-    pid->Dout = pid->kd * error_delta;
-    abs_limit(&pid->Iout, pid->max_iout);
-    pid->out = pid->Pout + pid->Iout + pid->Dout;
-    abs_limit(&pid->out, pid->max_out);
-    return pid->out;
-}
+//     err = set - get;
+//     pid->err = rad_format(err);
+//     pid->Pout = pid->kp * pid->err;
+//     pid->Iout += pid->ki * pid->err;
+//     pid->Dout = pid->kd * error_delta;
+//     abs_limit(&pid->Iout, pid->max_iout);
+//     pid->out = pid->Pout + pid->Iout + pid->Dout;
+//     abs_limit(&pid->out, pid->max_out);
+//     return pid->out;
+// }
 
 /**
   * @brief          云台PID清除，清除pid的out,iout

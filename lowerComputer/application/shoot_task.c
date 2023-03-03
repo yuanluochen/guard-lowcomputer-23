@@ -170,7 +170,7 @@ static void Shoot_Feedback_Update(void)
 {
     uint8_t i;
     // 长按计时，更新标志位，控制单点单发
-    if (shoot_mode != SHOOT_STOP && (switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_TRIGGER_CHANNEL]) || fric_move.shoot_rc->mouse.press_l))
+    if (shoot_mode != SHOOT_STOP && (abs(fric_move.shoot_rc->rc.ch[4]) >=100 || fric_move.shoot_rc->mouse.press_l))
     {
         shoot_mode = SHOOT_BULLET;
         if (last_fric_mode != SHOOT_BULLET)
@@ -237,30 +237,7 @@ static void Shoot_Feedback_Update(void)
     speed_t = -1 * fric_move.motor_fric[0].fric_motor_measure->speed_rpm;
     speed_ = fric_move.motor_fric[1].fric_motor_measure->speed_rpm;
 }
-/**
- * @brief          射击准备，根据是否开启摩擦轮返回数据
- * @param[in]      void
- * @retval         返回无
- */
-static void shoot_ready(void)
-{
-    static int flag_shoot = 0;
-    //遥控器拨到下侧摩擦轮转
-    if (!flag_shoot && switch_is_down(fric_move.shoot_rc->rc.s[SHOOT_MODE_CHANNEL]))     
-    {
-        if (std_fric == 0)
-        {
-            Ready_Flag = 1;
-            std_fric = !std_fric;
-        }
-        else
-        {
-            std_fric = !std_fric;
-            Ready_Flag = 0;
-        }
-    }
-    flag_shoot = switch_is_down(fric_move.shoot_rc->rc.s[SHOOT_MODE_CHANNEL]);
-}
+
 /**
  * @brief          射击模式设置
  * @param[in]      void
@@ -268,9 +245,7 @@ static void shoot_ready(void)
  */
 static void Shoot_Set_Mode(void)
 {
-    shoot_ready();
-    // 是否允许拨弹
-    if (Ready_Flag == 1)
+    if(switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_MODE_CHANNEL]))
     {
         shoot_mode = SHOOT_READY;
     }

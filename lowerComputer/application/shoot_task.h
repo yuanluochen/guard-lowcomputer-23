@@ -8,7 +8,7 @@
 #include "user_lib.h"
 
 //射击遥控器控制摩擦轮通道
-#define SHOOT_MODE_CHANNEL 0
+#define SHOOT_MODE_CHANNEL 1
 //射击遥控器控制拨弹盘通道
 #define SHOOT_TRIGGER_CHANNEL 1
 
