@@ -46,10 +46,6 @@ static void Shoot_Feedback_Update(void);
  */
 static void fric_control_loop(fric_move_t *fric_move_control_loop);
 static void shoot_fric_off(fric_move_t *fric1_off);
-/**
- * @brief  堵转倒转处理
- */
-static void trigger_motor_turn_back(void);
 
 /**
  * @brief  射击控制，控制拨弹电机角度，完成一次发射
@@ -78,7 +74,6 @@ int flag = 0;
 int time_l = 0;
 int flag1 = 0;
 int Ready_Flag = 0;          // 确定是否在射击状态
-static uint8_t std_fric = 0; // 一键开关摩擦轮
 int trigger_flag = 0, trigger_flag1 = 0;
 int add_t = 0;
 /*----------------------------------结构体------------------------------*/
@@ -170,7 +165,7 @@ static void Shoot_Feedback_Update(void)
 {
     uint8_t i;
     // 长按计时，更新标志位，控制单点单发
-    if (shoot_mode != SHOOT_STOP && (abs(fric_move.shoot_rc->rc.ch[4]) >=100 || fric_move.shoot_rc->mouse.press_l))
+    if (shoot_mode != SHOOT_STOP && (abs(fric_move.shoot_rc->rc.ch[4]) >= 100 || fric_move.shoot_rc->mouse.press_l))
     {
         shoot_mode = SHOOT_BULLET;
         if (last_fric_mode != SHOOT_BULLET)
@@ -185,7 +180,7 @@ static void Shoot_Feedback_Update(void)
         flag = 0;
     }
 
-    if (time_l > 150)
+    if (time_l > 350)
     {
         flag = 0;
         flag1 = 0;

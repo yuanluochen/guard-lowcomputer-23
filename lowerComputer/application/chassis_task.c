@@ -135,8 +135,8 @@ void chassis_task(void const *pvParameters)
         chassis_control_loop(&chassis_move);
         // send control current
         //发送控制电流
-        CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
-                        chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+        // CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
+        //                 chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
         //os delay
         //系统延时
         vTaskDelay(CHASSIS_CONTROL_TIME_MS);
@@ -574,43 +574,40 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
     //计算pid
     for (i = 0; i < 4; i++)
     {
-      PID_calc(&chassis_move_control_loop->motor_speed_pid[i], chassis_move_control_loop->motor_chassis[i].speed, chassis_move_control_loop->motor_chassis[i].speed_set);
-			chassis_move_control_loop->power_control.speed[i]=chassis_move_control_loop->motor_chassis[i].speed;
-			if(abs(chassis_move_control_loop->power_control.speed[i])<chassis_move_control_loop->power_control.SPEED_MIN)
-			{
-			
-			chassis_move_control_loop->power_control.speed[i]=chassis_move_control_loop->power_control.SPEED_MIN;				
-			}
+        PID_calc(&chassis_move_control_loop->motor_speed_pid[i], chassis_move_control_loop->motor_chassis[i].speed, chassis_move_control_loop->motor_chassis[i].speed_set);
+        chassis_move_control_loop->power_control.speed[i] = chassis_move_control_loop->motor_chassis[i].speed;
+        if (abs(chassis_move_control_loop->power_control.speed[i]) < chassis_move_control_loop->power_control.SPEED_MIN)
+        {
+            chassis_move_control_loop->power_control.speed[i] = chassis_move_control_loop->power_control.SPEED_MIN;
+        }
     }
 
-		 for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++)
     {
-			chassis_move_control_loop->power_control.current[i]=chassis_move_control_loop->motor_chassis[i].give_current=(fp32)(chassis_move_control_loop->motor_speed_pid[i].out);
-			chassis_move_control_loop->power_control.totalCurrentTemp+=abs(chassis_move_control_loop->power_control.current[i]);
+        chassis_move_control_loop->power_control.current[i] = chassis_move_control_loop->motor_chassis[i].give_current = (fp32)(chassis_move_control_loop->motor_speed_pid[i].out);
+        chassis_move_control_loop->power_control.totalCurrentTemp += abs(chassis_move_control_loop->power_control.current[i]);
     }
 
-    //功率控制
-		for(i=0;i<4;i++)
-		{
-	   chassis_move_control_loop->power_control.MAX_current[i]=(K*chassis_move_control_loop->power_control.current[i]/chassis_move_control_loop->power_control.totalCurrentTemp)
-		*(chassis_move_control_loop->power_control.POWER_MAX)/abs(chassis_move_control_loop->motor_chassis[i].speed);	
-		}
-		chassis_move_control_loop->power_control.totalCurrentTemp=0;
+    // 功率控制
+    for (i = 0; i < 4; i++)
+    {
+        chassis_move_control_loop->power_control.MAX_current[i] = (K * chassis_move_control_loop->power_control.current[i] / chassis_move_control_loop->power_control.totalCurrentTemp) * (chassis_move_control_loop->power_control.POWER_MAX) / abs(chassis_move_control_loop->motor_chassis[i].speed);
+    }
+    chassis_move_control_loop->power_control.totalCurrentTemp = 0;
 
-		//赋值电流值	
-		for(i=0;i<4;i++)
-		{   
-			if(abs(chassis_move_control_loop->motor_chassis[i].give_current)>=abs(chassis_move_control_loop->power_control.MAX_current[i]))
-			{
-			
-			chassis_move_control_loop->motor_chassis[i].give_current=chassis_move_control_loop->power_control.MAX_current[i];
-			}
-			else
-			{ 
-	    chassis_move_control_loop->motor_chassis[i].give_current=(int16_t)(chassis_move_control_loop->motor_speed_pid[i].out);  		
-			}
-		}		
-		chassis_move_control_loop->mode_flag=0;
+    // 赋值电流值
+    for (i = 0; i < 4; i++)
+    {
+            if (abs(chassis_move_control_loop->motor_chassis[i].give_current) >= abs(chassis_move_control_loop->power_control.MAX_current[i]))
+            {
+                chassis_move_control_loop->motor_chassis[i].give_current = chassis_move_control_loop->power_control.MAX_current[i];
+            }
+            else
+            {
+                chassis_move_control_loop->motor_chassis[i].give_current = (int16_t)(chassis_move_control_loop->motor_speed_pid[i].out);
+            }
+    }
+    chassis_move_control_loop->mode_flag = 0;
 }
 
 

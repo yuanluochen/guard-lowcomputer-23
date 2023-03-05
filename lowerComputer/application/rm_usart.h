@@ -1,15 +1,22 @@
 #ifndef RM_USART_H
 #define RM_USART_H
 #include"main.h"
-typedef struct {
-	fp32 yaw_fifo;//YAW信息
-	fp32 pitch_fifo;//PITCH信息
-	fp32 yaw_speed_fifo;//YAW速度信息
-	fp32 yaw_disdance;//YAW速度信息
-	int32_t pitch_speed_fifo;//PITCH速度信息
-	int rx_change_flag;//识别目标切换
-	int rx_flag;//识别到目标	
-	int rx_update_flag;//视觉更新
+typedef struct
+{
+    fp32 yaw_fifo;         // YAW角度增量信息
+    fp32 pitch_fifo;       // PITCH角度增量信息
+
+    fp32 last_yaw_fifo;    // YAW角度增量信息
+    fp32 last_pitch_fifo;  // PITCH角度增量信息
+
+    fp32 yaw_speed_fifo;   // YAW速度信息
+    fp32 pitch_speed_fifo; // PITCH速度信息
+
+    fp32 yaw_disdance;     // YAW距离信息
+
+    int rx_change_flag;    // 识别目标切换
+    int rx_flag;           // 识别到目标
+    int rx_update_flag;    // 视觉更新
 } vision_rxfifo_t;
 
 #define VISION_RX_LEN_2 58u

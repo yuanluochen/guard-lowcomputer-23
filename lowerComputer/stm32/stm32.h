@@ -99,20 +99,21 @@ extern ExtU_stm32 stm32_U;
 extern ExtY_stm32 stm32_Y;
 
 /* Model entry point functions */
-extern void stm32_initialize(void);
-extern void stm32_step(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
-extern void sm32_pid_init(void);
+void stm32_initialize(void);
+void stm32_step(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
+void sm32_pid_init(void);
 
-extern void stm32_pid_init_pitch(void);
-extern void stm32_step_pitch(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
-extern void stm32_pid_init_pitch_gyro(void);
-extern void stm32_step_shoot_0(fp32 speedset,fp32 speedback);
-extern void stm32_step_shoot_1(fp32 speedset,fp32 speedback);
-extern void stm32_shoot_pid_init(void) ;
-extern void stm32_step_auto(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
-extern void stm32_step_pitch_auto(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
-extern void stm32_auto_pid_init();
-extern void stm32_pid_auto_init_pitch(void);
+void stm32_pid_init_pitch(void);
+void stm32_step_pitch(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
+void stm32_pid_init_pitch_gyro(void);
+void stm32_step_shoot_0(fp32 speedset,fp32 speedback);
+void stm32_step_shoot_1(fp32 speedset,fp32 speedback);
+void stm32_shoot_pid_init(void) ;
+void stm32_step_auto(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
+void stm32_step_pitch_auto(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
+void stm32_auto_pid_init(void);
+void stm32_pid_init(void);
+void stm32_pid_auto_init_pitch(void);
 /* Real-time Model object */
 extern RT_MODEL_stm32 *const stm32_M;
 void stm32_relative_pid_init_pitch(void);

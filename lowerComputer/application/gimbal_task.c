@@ -228,7 +228,7 @@ void gimbal_task(void const *pvParameters)
 
         yaw_can_set_current = gimbal_control.gimbal_yaw_motor.given_current;
         pitch_can_set_current = gimbal_control.gimbal_pitch_motor.given_current;
-        CAN_cmd_gimbal(yaw_can_set_current,pitch_can_set_current,0);
+        // CAN_cmd_gimbal(yaw_can_set_current,pitch_can_set_current,0);
         vTaskDelay(GIMBAL_CONTROL_TIME);
 
 #if INCLUDE_uxTaskGetStackHighWaterMark
@@ -521,7 +521,7 @@ static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add)
         //超过云台设置最大的角度范围，设置数据不在增长
         if (gimbal_motor->gimbal_motor_measure->ecd >= GIMBAL_PITCH_MAX_ENCODE)
         {
-            // 但前为相对角度最大，实际pitch轴绝对角最小，在该情况下，允许绝对角增大，不允许减小
+            // 当前为相对角度最大，实际pitch轴绝对角最小，在该情况下，允许绝对角增大，不允许减小
             gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + (add < 0 ? add : 0));
         }
         else if (gimbal_motor->gimbal_motor_measure->ecd <= GIMBAL_PITCH_MIN_ENCODE)

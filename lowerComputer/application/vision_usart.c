@@ -14,8 +14,8 @@ uint8_t vision_rx_buf[2][VISION_RX_LEN_2];
 
 vision_rxfifo_t vision_rxfifo = {0};
 
-uint16_t base=7;
-uint8_t i=0;
+uint16_t base = 7;
+uint8_t i = 0;
 
 void vision_init(void)
 {
@@ -77,11 +77,17 @@ void vision_rx_decode(uint8_t *test_code)
 			vision_rxfifo.rx_change_flag = test_code[CHANGE_FLAG_FIFO_BASE+3];
 			
 			vision_rxfifo.rx_update_flag = 1;
-			///
-			vision_rxfifo.yaw_fifo = (fp32)vision_rxfifo.yaw_fifo / 10000.0f;
-			vision_rxfifo.pitch_fifo = (fp32)vision_rxfifo.pitch_fifo / 10000.0f;
-			vision_rxfifo.yaw_disdance=(fp32)vision_rxfifo.yaw_disdance/10000.0f;
-		}
+
+            vision_rxfifo.yaw_fifo = (fp32)vision_rxfifo.yaw_fifo / 10000.0f;
+            vision_rxfifo.pitch_fifo = (fp32)vision_rxfifo.pitch_fifo / 10000.0f;
+            vision_rxfifo.yaw_disdance = (fp32)vision_rxfifo.yaw_disdance / 10000.0f;
+            //计算速度，做差分
+            vision_rxfifo.yaw_speed_fifo = vision_rxfifo.yaw_speed_fifo - vision_rxfifo.last_yaw_fifo;
+            vision_rxfifo.pitch_speed_fifo = vision_rxfifo.pitch_speed_fifo - vision_rxfifo.last_pitch_fifo;
+            //保存历史数据
+            vision_rxfifo.last_yaw_fifo = vision_rxfifo.yaw_fifo;
+            vision_rxfifo.last_pitch_fifo = vision_rxfifo.pitch_fifo;
+        }
 	}
 	else if((fp32)((test_code[HEAD0_BASE+0] << 8*3) | (test_code[HEAD0_BASE+1] << 8*2)
 					| (test_code[HEAD0_BASE+2] << 8*1) | (test_code[HEAD0_BASE+3] << 8*0)) == 0x66)
@@ -100,6 +106,11 @@ void vision_rx_decode(uint8_t *test_code)
 			vision_rxfifo.rx_update_flag = 1;
 		}
 	}
+
+    
+
+
+
 }
 
 vision_rxfifo_t * get_vision_rxfifo_point(void)
