@@ -66,6 +66,14 @@ typedef enum
   GIMBAL_MOTIONLESS,     
 } gimbal_behaviour_e;
 
+
+//云台摇摆方向
+typedef enum
+{
+    POSITIVE, //正向 
+    NEGATIVE, //反向
+}gimbal_swing_direction_e;
+
 /**
   * @brief          被gimbal_set_mode函数调用在gimbal_task.c,云台行为状态机以及电机状态机设置
   * @param[out]     gimbal_mode_set: 云台数据指针

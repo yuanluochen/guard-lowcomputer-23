@@ -220,15 +220,15 @@ void gimbal_task(void const *pvParameters)
     // 死循环
     while (1)
     {
-        gimbal_set_mode(&gimbal_control);                    //设置云台控制模式
-        gimbal_mode_change_control_transit(&gimbal_control); //控制模式切换 控制数据过渡
-        gimbal_feedback_update(&gimbal_control);             //云台数据反馈
-        gimbal_set_control(&gimbal_control);                 //设置云台控制量
-        gimbal_control_loop(&gimbal_control);                //云台控制计算
+        gimbal_set_mode(&gimbal_control);                     // 设置云台控制模式
+        gimbal_mode_change_control_transit(&gimbal_control); // 控制模式切换 控制数据过渡
+        gimbal_feedback_update(&gimbal_control);              // 云台数据反馈
+        gimbal_set_control(&gimbal_control);                  // 设置云台控制量
+        gimbal_control_loop(&gimbal_control);                 // 云台控制计算
 
         yaw_can_set_current = gimbal_control.gimbal_yaw_motor.given_current;
         pitch_can_set_current = gimbal_control.gimbal_pitch_motor.given_current;
-        // CAN_cmd_gimbal(yaw_can_set_current,pitch_can_set_current,0);
+        CAN_cmd_gimbal(yaw_can_set_current,pitch_can_set_current,0);
         vTaskDelay(GIMBAL_CONTROL_TIME);
 
 #if INCLUDE_uxTaskGetStackHighWaterMark
@@ -286,10 +286,8 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_INT_gyro_point = get_gyro_data_point();
     // 遥控器数据指针获取
     init->gimbal_rc_ctrl = get_remote_control_point();
-#if GIMBAL_AUTO_MODE
     // 视觉数据指针获取
     init->gimbal_vision_control = get_vision_rxfifo_point();
-#endif 
     // 初始化电机模式
     init->gimbal_yaw_motor.gimbal_motor_mode = init->gimbal_yaw_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_RAW;
     init->gimbal_pitch_motor.gimbal_motor_mode = init->gimbal_pitch_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_RAW;
@@ -322,12 +320,12 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_yaw_motor.offset_ecd = GIMBAL_YAW_OFFSET_ENCODE;
     init->gimbal_pitch_motor.offset_ecd = GIMBAL_PITCH_OFFSET_ENCODE;//pitch轴云台初始化相对角度
 
+    //获取yaw轴初始绝对角度,该角度用于云台yaw轴摇摆
+    init->first_yaw_absolution = *(init->gimbal_INT_angle_point + INS_YAW_ADDRESS_OFFSET);
 
-#if GIMBAL_AUTO_MODE
     //初始化一维kalman filter
     kalmanCreate(&init->gimbal_yaw_motor.gimbal_motor_kalman_filter, GIMBAL_YAW_KALMAN_FILTER_Q, GIMBAL_PITCH_KALMAN_FILTER_R); 
     kalmanCreate(&init->gimbal_pitch_motor.gimbal_motor_kalman_filter, GIMBAL_PITCH_KALMAN_FILTER_Q, GIMBAL_PITCH_KALMAN_FILTER_R); 
-#endif
 }
 
 /**
@@ -356,7 +354,7 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
         return;
     }
     //云台数据更新
-    feedback_update->gimbal_pitch_motor.absolute_angle = *(feedback_update->gimbal_INT_angle_point + INS_ROLL_ADDRESS_OFFSET);//由于哨兵C板安装位置问题，所以哨兵c板的roll轴实际为哨兵的yaw轴
+    feedback_update->gimbal_pitch_motor.absolute_angle = *(feedback_update->gimbal_INT_angle_point + INS_PITCH_ADDRESS_OFFSET);
     feedback_update->gimbal_pitch_motor.relative_angle = -motor_ecd_to_angle_change(feedback_update->gimbal_pitch_motor.gimbal_motor_measure->ecd,
                                                                                           feedback_update->gimbal_pitch_motor.offset_ecd);
     feedback_update->gimbal_pitch_motor.motor_gyro = *(feedback_update->gimbal_INT_gyro_point + INS_GYRO_Y_ADDRESS_OFFSET);
@@ -365,6 +363,7 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
     feedback_update->gimbal_yaw_motor.relative_angle = motor_ecd_to_angle_change(feedback_update->gimbal_yaw_motor.gimbal_motor_measure->ecd,feedback_update->gimbal_yaw_motor.frist_ecd);   
     feedback_update->gimbal_yaw_motor.motor_gyro = arm_cos_f32(feedback_update->gimbal_pitch_motor.relative_angle) * (*(feedback_update->gimbal_INT_gyro_point + INS_GYRO_Z_ADDRESS_OFFSET))     
                                                    - arm_sin_f32(feedback_update->gimbal_pitch_motor.relative_angle) * (*(feedback_update->gimbal_INT_gyro_point + INS_GYRO_X_ADDRESS_OFFSET));
+        
 
 }
 

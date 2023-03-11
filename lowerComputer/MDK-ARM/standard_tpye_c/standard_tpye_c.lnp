@@ -56,6 +56,7 @@
 "standard_tpye_c\shoot_task.o"
 "standard_tpye_c\vision_usart.o"
 "standard_tpye_c\connect_task.o"
+"standard_tpye_c\vision_task.o"
 "standard_tpye_c\oled.o"
 "standard_tpye_c\bmi088driver.o"
 "standard_tpye_c\bmi088middleware.o"

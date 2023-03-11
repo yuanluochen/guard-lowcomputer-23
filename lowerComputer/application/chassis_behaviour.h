@@ -103,6 +103,10 @@ typedef enum
 
 } chassis_behaviour_e;
 
+
+
+
+
 #define CHASSIS_OPEN_RC_SCALE 10 // in CHASSIS_OPEN mode, multiply the value. 在chassis_open 模型下，遥控器乘以该比例发送到can上
 
 

@@ -81,7 +81,7 @@
 
 
 //任务初始化 空闲一段时间
-#define GIMBAL_TASK_INIT_TIME 100
+#define GIMBAL_TASK_INIT_TIME 201
 //yaw,pitch控制通道以及状态开关通道
 #define YAW_CHANNEL   2
 #define PITCH_CHANNEL 3
@@ -126,7 +126,7 @@
 #define HALF_ECD_RANGE  4096
 #define ECD_RANGE       8191
 //云台初始化回中值，允许的误差,并且在误差范围内停止一段时间以及最大时间6s后解除初始化状态，
-#define GIMBAL_INIT_ANGLE_ERROR     0.1f
+#define GIMBAL_INIT_ANGLE_ERROR     0.01f
 #define GIMBAL_INIT_STOP_TIME       100
 #define GIMBAL_INIT_TIME            6000
 #define GIMBAL_CALI_REDUNDANT_ANGLE 0.1f
@@ -200,6 +200,21 @@
 #define ANGLE_TO_RADIAN ((2 * PI) / 360)
 
 
+/***用于摇摆运动***/
+//云台初始化计数最大值
+#define INIT_STOP_COUNT  200
+//云台摇摆yaw轴摇摆运动限幅,该数据为yaw轴中值到两边极限的角度范围,该角为绝对角
+#define GIMBAL_YAW_SWING_RANGE (PI / 2)
+//云台pitch轴摇摆运动向下最大编码值
+#define GIMBAL_PITCH_SWING_DOWN_ECD GIMBAL_PITCH_MAX_ENCODE
+//云台pitch轴摇摆运动向上最大编码值
+#define GIMBAL_PITCH_SWING_UO_ECD GIMBAL_PITCH_MIN_ENCODE
+//云台yaw轴运动步长(单位为rad)
+#define GIMBAL_YAW_SWING_STEP 0.01f;
+//云台pitch轴运动步长(单位为rad)
+#define GIMBAL_PITCH_SWING_STEP 0.01
+//云台yaw轴pitch轴设置最大时间
+#define GIMBAL_SWING_STOP_COUNT 1000
 
 typedef enum
 {
@@ -207,6 +222,7 @@ typedef enum
     GIMBAL_MOTOR_GYRO,    //电机陀螺仪角度控制
     GIMBAL_MOTOR_ENCONDE, //电机编码值角度控制
 } gimbal_motor_mode_e;
+
 
 typedef struct
 {
@@ -248,6 +264,7 @@ typedef struct
     fp32 relative_angle_set; //rad
     fp32 absolute_angle;     //rad
     fp32 absolute_angle_set; //rad
+
     fp32 motor_gyro;         //rad/s
     fp32 motor_gyro_set;
     fp32 motor_speed;
@@ -281,6 +298,9 @@ typedef struct
 #endif
     const fp32 *gimbal_INT_angle_point;
     const fp32 *gimbal_INT_gyro_point;
+
+    fp32 first_yaw_absolution;            //云台yaw轴初始角度
+
     gimbal_motor_t gimbal_yaw_motor;
     gimbal_motor_t gimbal_pitch_motor;
     gimbal_step_cali_t gimbal_cali;

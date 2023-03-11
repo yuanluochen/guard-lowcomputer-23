@@ -12,6 +12,10 @@
         "typeinfo": "c",
         "stm32_private.h": "c",
         "stm32.h": "c",
-        "user_lib.h": "c"
+        "user_lib.h": "c",
+        "chassis_behaviour.h": "c",
+        "gimbal_behaviour.h": "c",
+        "ins_task.h": "c",
+        "vision_task.h": "c"
     }
 }
