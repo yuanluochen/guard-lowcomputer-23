@@ -1,7 +1,7 @@
 Dependencies for Project 'standard_robot', Target 'standard_robot': (DO NOT MODIFY !)
 CompilerVersion: 5060960::V5.06 update 7 (build 960)::.\Ac506u7
 F (startup_stm32f407xx.s)(0x63FD9873)(--cpu Cortex-M4.fp.sp -g --apcs=interwork -I ..\\Inc -I ..\Inc-I.\RTE\_standard_robot-IC:\Users\discipline\AppData\Local\arm\packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\discipline\AppData\Local\arm\packs\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include--pd "__UVISION_VERSION SETA 537" --pd "_RTE_ SETA 1" --pd "STM32F407xx SETA 1" --pd "_RTE_ SETA 1"--list startup_stm32f407xx.lst --xref -o standard_tpye_c\startup_stm32f407xx.o --depend standard_tpye_c\startup_stm32f407xx.d)
-F (../Src/main.c)(0x6401CD71)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/devices -I ../components/algorithm -I ../components/algorithm/Include -I ../components/support -I ../application/protocol -I ../components/controller -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../stm32 -I ../../standard -I ../fuzzypid -I ../kalman -I "..\..\standard 2.9" -I ..\..\Wheat3.1-I.\RTE\_standard_robot-IC:\Users\discipline\AppData\Local\arm\packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\discipline\AppData\Local\arm\packs\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="537" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o standard_tpye_c\main.o --omf_browse standard_tpye_c\main.crf --depend standard_tpye_c\main.d)
+F (../Src/main.c)(0x6410597F)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/devices -I ../components/algorithm -I ../components/algorithm/Include -I ../components/support -I ../application/protocol -I ../components/controller -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../stm32 -I ../../standard -I ../fuzzypid -I ../kalman -I "..\..\standard 2.9" -I ..\..\Wheat3.1-I.\RTE\_standard_robot-IC:\Users\discipline\AppData\Local\arm\packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\discipline\AppData\Local\arm\packs\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="537" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o standard_tpye_c\main.o --omf_browse standard_tpye_c\main.crf --depend standard_tpye_c\main.d)
 I (../Inc/main.h)(0x63B3F92E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x62EE6C86)
 I (../Inc/stm32f4xx_hal_conf.h)(0x63FD986F)
@@ -86,7 +86,7 @@ I (../bsp/boards/bsp_rc.h)(0x63135A28)
 I (../application/calibrate_task.h)(0x63135A28)
 I (../application/chassis_task.h)(0x640CE18C)
 I (../application/CAN_receive.h)(0x63A0704A)
-I (../application/gimbal_task.h)(0x640CDEED)
+I (../application/gimbal_task.h)(0x641083BE)
 I (../components/controller/pid.h)(0x63A322A2)
 I (../components/algorithm/user_lib.h)(0x63135A28)
 I (../application/rm_usart.h)(0x640406FC)
@@ -216,7 +216,7 @@ I (../application/calibrate_task.h)(0x63135A28)
 I (../application/struct_typedef.h)(0x63135A28)
 I (../application/chassis_task.h)(0x640CE18C)
 I (../application/CAN_receive.h)(0x63A0704A)
-I (../application/gimbal_task.h)(0x640CDEED)
+I (../application/gimbal_task.h)(0x641083BE)
 I (../components/controller/pid.h)(0x63A322A2)
 I (../application/remote_control.h)(0x63135A28)
 I (../bsp/boards/bsp_rc.h)(0x63135A28)
@@ -1847,7 +1847,7 @@ I (..\application\can_receive.h)(0x63A0704A)
 I (..\application\remote_control.h)(0x63135A28)
 I (../bsp/boards/bsp_rc.h)(0x63135A28)
 I (..\application\INS_task.h)(0x63135A28)
-I (..\application\gimbal_task.h)(0x640CDEED)
+I (..\application\gimbal_task.h)(0x641083BE)
 I (../components/controller/pid.h)(0x63A322A2)
 I (../components/algorithm/user_lib.h)(0x63135A28)
 I (..\application\rm_usart.h)(0x640406FC)
@@ -1904,7 +1904,7 @@ I (..\application\chassis_behaviour.h)(0x6405E581)
 I (..\application\struct_typedef.h)(0x63135A28)
 I (..\application\chassis_task.h)(0x640CE18C)
 I (..\application\CAN_receive.h)(0x63A0704A)
-I (..\application\gimbal_task.h)(0x640CDEED)
+I (..\application\gimbal_task.h)(0x641083BE)
 I (../components/controller/pid.h)(0x63A322A2)
 I (..\application\remote_control.h)(0x63135A28)
 I (../bsp/boards/bsp_rc.h)(0x63135A28)
@@ -1981,7 +1981,7 @@ I (..\application\chassis_power_control.h)(0x63135A28)
 I (..\application\chassis_task.h)(0x640CE18C)
 I (..\application\struct_typedef.h)(0x63135A28)
 I (..\application\CAN_receive.h)(0x63A0704A)
-I (..\application\gimbal_task.h)(0x640CDEED)
+I (..\application\gimbal_task.h)(0x641083BE)
 I (../components/controller/pid.h)(0x63A322A2)
 I (..\application\remote_control.h)(0x63135A28)
 I (../bsp/boards/bsp_rc.h)(0x63135A28)
@@ -2045,7 +2045,7 @@ F (..\application\chassis_task.c)(0x640D7127)(--c99 -c --cpu Cortex-M4.fp.sp -g 
 I (..\application\chassis_task.h)(0x640CE18C)
 I (..\application\struct_typedef.h)(0x63135A28)
 I (..\application\CAN_receive.h)(0x63A0704A)
-I (..\application\gimbal_task.h)(0x640CDEED)
+I (..\application\gimbal_task.h)(0x641083BE)
 I (../components/controller/pid.h)(0x63A322A2)
 I (..\application\remote_control.h)(0x63135A28)
 I (../bsp/boards/bsp_rc.h)(0x63135A28)
@@ -2139,10 +2139,10 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h)(0x62EE6C5E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h)(0x62EE6C5E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h)(0x62EE6C5E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h)(0x62EE6C5E)
-F (..\application\gimbal_behaviour.c)(0x640CDE82)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/devices -I ../components/algorithm -I ../components/algorithm/Include -I ../components/support -I ../application/protocol -I ../components/controller -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../stm32 -I ../../standard -I ../fuzzypid -I ../kalman -I "..\..\standard 2.9" -I ..\..\Wheat3.1-I.\RTE\_standard_robot-IC:\Users\discipline\AppData\Local\arm\packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\discipline\AppData\Local\arm\packs\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="537" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o standard_tpye_c\gimbal_behaviour.o --omf_browse standard_tpye_c\gimbal_behaviour.crf --depend standard_tpye_c\gimbal_behaviour.d)
+F (..\application\gimbal_behaviour.c)(0x64114A01)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/devices -I ../components/algorithm -I ../components/algorithm/Include -I ../components/support -I ../application/protocol -I ../components/controller -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../stm32 -I ../../standard -I ../fuzzypid -I ../kalman -I "..\..\standard 2.9" -I ..\..\Wheat3.1-I.\RTE\_standard_robot-IC:\Users\discipline\AppData\Local\arm\packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\discipline\AppData\Local\arm\packs\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="537" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o standard_tpye_c\gimbal_behaviour.o --omf_browse standard_tpye_c\gimbal_behaviour.crf --depend standard_tpye_c\gimbal_behaviour.d)
 I (..\application\gimbal_behaviour.h)(0x6405E631)
 I (..\application\struct_typedef.h)(0x63135A28)
-I (..\application\gimbal_task.h)(0x640CDEED)
+I (..\application\gimbal_task.h)(0x641083BE)
 I (..\application\CAN_receive.h)(0x63A0704A)
 I (../components/controller/pid.h)(0x63A322A2)
 I (..\application\remote_control.h)(0x63135A28)
@@ -2204,8 +2204,8 @@ I (../bsp/boards/bsp_buzzer.h)(0x63135A28)
 I (..\application\detect_task.h)(0x63135A28)
 I (..\application\chassis_behaviour.h)(0x6405E581)
 I (..\application\chassis_task.h)(0x640CE18C)
-F (..\application\gimbal_task.c)(0x640D7766)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/devices -I ../components/algorithm -I ../components/algorithm/Include -I ../components/support -I ../application/protocol -I ../components/controller -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../stm32 -I ../../standard -I ../fuzzypid -I ../kalman -I "..\..\standard 2.9" -I ..\..\Wheat3.1-I.\RTE\_standard_robot-IC:\Users\discipline\AppData\Local\arm\packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\discipline\AppData\Local\arm\packs\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="537" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o standard_tpye_c\gimbal_task.o --omf_browse standard_tpye_c\gimbal_task.crf --depend standard_tpye_c\gimbal_task.d)
-I (..\application\gimbal_task.h)(0x640CDEED)
+F (..\application\gimbal_task.c)(0x64114779)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/devices -I ../components/algorithm -I ../components/algorithm/Include -I ../components/support -I ../application/protocol -I ../components/controller -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../stm32 -I ../../standard -I ../fuzzypid -I ../kalman -I "..\..\standard 2.9" -I ..\..\Wheat3.1-I.\RTE\_standard_robot-IC:\Users\discipline\AppData\Local\arm\packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\discipline\AppData\Local\arm\packs\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="537" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o standard_tpye_c\gimbal_task.o --omf_browse standard_tpye_c\gimbal_task.crf --depend standard_tpye_c\gimbal_task.d)
+I (..\application\gimbal_task.h)(0x641083BE)
 I (..\application\struct_typedef.h)(0x63135A28)
 I (..\application\CAN_receive.h)(0x63A0704A)
 I (../components/controller/pid.h)(0x63A322A2)
@@ -2921,11 +2921,11 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x62EE6C87)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h)(0x62EE6C87)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h)(0x62EE6C87)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h)(0x62EE6C87)
-F (..\application\shoot_task.c)(0x6404099D)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/devices -I ../components/algorithm -I ../components/algorithm/Include -I ../components/support -I ../application/protocol -I ../components/controller -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../stm32 -I ../../standard -I ../fuzzypid -I ../kalman -I "..\..\standard 2.9" -I ..\..\Wheat3.1-I.\RTE\_standard_robot-IC:\Users\discipline\AppData\Local\arm\packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\discipline\AppData\Local\arm\packs\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="537" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o standard_tpye_c\shoot_task.o --omf_browse standard_tpye_c\shoot_task.crf --depend standard_tpye_c\shoot_task.d)
+F (..\application\shoot_task.c)(0x64114A66)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../application -I ../bsp/boards -I ../components/devices -I ../components/algorithm -I ../components/algorithm/Include -I ../components/support -I ../application/protocol -I ../components/controller -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../stm32 -I ../../standard -I ../fuzzypid -I ../kalman -I "..\..\standard 2.9" -I ..\..\Wheat3.1-I.\RTE\_standard_robot-IC:\Users\discipline\AppData\Local\arm\packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\discipline\AppData\Local\arm\packs\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="537" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o standard_tpye_c\shoot_task.o --omf_browse standard_tpye_c\shoot_task.crf --depend standard_tpye_c\shoot_task.d)
 I (..\application\shoot_task.h)(0x64018244)
 I (..\application\struct_typedef.h)(0x63135A28)
 I (..\application\CAN_receive.h)(0x63A0704A)
-I (..\application\gimbal_task.h)(0x640CDEED)
+I (..\application\gimbal_task.h)(0x641083BE)
 I (../components/controller/pid.h)(0x63A322A2)
 I (..\application\remote_control.h)(0x63135A28)
 I (../bsp/boards/bsp_rc.h)(0x63135A28)
@@ -3057,7 +3057,7 @@ I (C:\Keil_v5\ARM\Ac506u7\include\math.h)(0x5E8E3CC2)
 I (C:\Keil_v5\ARM\Ac506u7\include\stdio.h)(0x5E8E3CC2)
 I (C:\Keil_v5\ARM\Ac506u7\include\string.h)(0x5E8E3CC2)
 I (..\application\rm_usart.h)(0x640406FC)
-I (..\application\gimbal_task.h)(0x640CDEED)
+I (..\application\gimbal_task.h)(0x641083BE)
 I (..\application\struct_typedef.h)(0x63135A28)
 I (..\application\CAN_receive.h)(0x63A0704A)
 I (../components/controller/pid.h)(0x63A322A2)
