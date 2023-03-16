@@ -86,3 +86,4 @@ standard_tpye_c\freertos.o: ../application/usb_task.h
 standard_tpye_c\freertos.o: ../application/voltage_task.h
 standard_tpye_c\freertos.o: ../application/vision_task.h
 standard_tpye_c\freertos.o: ../Inc/usart.h
+standard_tpye_c\freertos.o: ../kalman/kalman.h

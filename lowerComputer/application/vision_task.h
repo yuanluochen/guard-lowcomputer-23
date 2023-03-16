@@ -14,9 +14,14 @@
 #include "usart.h"
 #include "INS_task.h"
 #include "arm_math.h"
+#include "kalman.h"
+#include "rm_usart.h"
 
 //延时等待
 #define VISION_TASK_INIT_TIME 401
+//系统延时时间
+#define VISION_CONTROL_TIME_MS 2
+
 //串口发送数据大小
 #define SERIAL_SEND_MESSAGE_SIZE 28
 //加倍
@@ -27,6 +32,14 @@
 #define VISION_USART_TIME_OUT 1000
 //弧度制转角度制
 #define RADIAN_TO_ANGle (360 / (2 * PI))
+
+//一阶kalman filter参数
+#define GIMBAL_YAW_MOTOR_KALMAN_Q 400
+#define GIMBAL_YAW_MOTOR_KALMAN_R 400
+
+#define GIMBAL_PITCH_MOTOR_KALMAN_Q 200
+#define GIMBAL_PITCH_MOTOR_KALMAN_R 400
+
 
 #define HEAD1_DATA 0x34
 #define HEAD2_DATA 0X43
@@ -65,6 +78,28 @@ typedef struct
     fp32 roll;
 }eular_angle_t;
 
+//视觉kalman filter结构体
+typedef struct 
+{
+    //一维kalman
+    kalman gimbal_pitch_kalman;  //pitch轴电机kalman filter结构体    
+    kalman gimbal_yaw_kalman;    //云台yaw轴电机kalman filter结构体
+    kalman disdance_kalman;      //距离结构体    
+
+    //二阶kalman filter,主要处理云台电机数据
+    kalman_filter_init_t gimbal_pitch_second_order_kalman;
+    kalman_filter_init_t gimbal_yaw_second_order_kalman;
+}vision_kalman_filter_t;
+
+//哨兵云台电机运动命令,经滤波处理后的数值
+typedef struct 
+{
+    //本次云台yaw轴增量
+    fp32 gimbal_yaw_add;
+    //本次云台pitch轴增量
+    fp32 gimbal_pitch_add;
+}gimbal_motor_command_t;
+
 
 //视觉任务结构体
 typedef struct 
@@ -75,13 +110,23 @@ typedef struct
     eular_angle_t absolution_angle; 
     //配置串口发送数据
     uint8 send_message[SERIAL_SEND_MESSAGE_SIZE];
-}vision_t;
 
+    //上位机视觉指针
+    vision_rxfifo_t* vision_rxfifo;
+
+    //kalman filter 结构体，用于处理视觉上位机发来的数据
+    vision_kalman_filter_t vision_kalman_filter;
+    
+    //云台电机运动命令
+    gimbal_motor_command_t gimbal_motor_command;    
+    
+}vision_t;
 
 
 //视觉通信任务
 void vision_task(void const *pvParameters);
-
+//获取上位机命令
+vision_t* get_vision_point();
 
 
 #endif // !VISION_TASK_H

@@ -35,7 +35,7 @@
 /**
  * @brief   射击状态机
  */
-void Choose_Shoot_Mode(void);
+// void Choose_Shoot_Mode(void);
 static void Shoot_Set_Mode(void);
 static void shoot_level(void);
 /**
@@ -98,8 +98,10 @@ void shoot_task(void const *pvParameters)
     shoot_init();
     while (1)
     {
-        shoot_laser_on();
+        // shoot_laser_on();
+        //设置发射等级
         shoot_level();
+        //设置发射模式
         Shoot_Set_Mode();
         Shoot_Feedback_Update();
         shoot_control_loop();
@@ -229,8 +231,8 @@ static void Shoot_Feedback_Update(void)
         fric_move.motor_fric[i].speed = 0.000415809748903494517209f * fric_move.motor_fric[i].fric_motor_measure->speed_rpm;
         fric_move.motor_fric[i].accel = fric_move.motor_speed_pid[i].Dbuf[0] * 500.0f;
     }
-    speed_t = -1 * fric_move.motor_fric[0].fric_motor_measure->speed_rpm;
-    speed_ = fric_move.motor_fric[1].fric_motor_measure->speed_rpm;
+    // speed_t = -1 * fric_move.motor_fric[0].fric_motor_measure->speed_rpm;
+    // speed_ = fric_move.motor_fric[1].fric_motor_measure->speed_rpm;
 }
 
 /**
@@ -240,15 +242,27 @@ static void Shoot_Feedback_Update(void)
  */
 static void Shoot_Set_Mode(void)
 {
-    if(switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_MODE_CHANNEL]))
+    
+    //判断哨兵模式
+    if(switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_CONTROL_CHANNEL]))
     {
-        shoot_mode = SHOOT_READY;
+        //此时哨兵为自动模式，射击自动
+        shoot_mode = SHOOT_AUTO;
     }
     else
     {
-        shoot_mode = SHOOT_STOP;
-        last_fric_mode = SHOOT_STOP;
+        //此时哨兵为遥控器控制模式，射击手动
+        if (switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_MODE_CHANNEL]))
+        {
+            shoot_mode = SHOOT_READY;
+        }
+        else
+        {
+            shoot_mode = SHOOT_STOP;
+            last_fric_mode = SHOOT_STOP;
+        }
     }
+
 }
 /**
  * @brief          拨弹轮循环

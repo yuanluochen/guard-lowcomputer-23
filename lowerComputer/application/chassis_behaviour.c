@@ -137,34 +137,10 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
 
     //remote control  set chassis behaviour mode
     //遥控器设置模式
-#if 0 //历史版本
-    if (switch_is_mid(chassis_move_mode->chassis_RC->rc.s[1]))
-    {
-        if (chassis_move_mode->chassis_RC->key.v & KEY_PRESSED_OFFSET_SHIFT)
-        {
-            chassis_behaviour_mode = CHASSIS_SPIN; }
-        if (chassis_move_mode->chassis_RC->key.v & KEY_PRESSED_OFFSET_X)
-        {
-            chassis_behaviour_mode = CHASSIS_NO_MOVE;
-        }
-        if (chassis_move_mode->chassis_RC->key.v & KEY_PRESSED_OFFSET_R)
-        {
-            chassis_behaviour_mode = CHASSIS_FOLLOW_GIMBAL_YAW;
-        }
-    }
-    else if ((switch_is_down(chassis_move_mode->chassis_RC->rc.s[1]))||(chassis_move_mode->chassis_RC->key.v &KEY_PRESSED_OFFSET_X))
-    {
-        chassis_behaviour_mode = CHASSIS_NO_MOVE;
-    }
-    else if ((switch_is_up(chassis_move_mode->chassis_RC->rc.s[1]))||(chassis_move_mode->chassis_RC->key.v &KEY_PRESSED_OFFSET_R))
-    {
-        chassis_behaviour_mode = CHASSIS_FOLLOW_GIMBAL_YAW;
-		}
-#else
     if (switch_is_down(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
-        // 遥控器拨到下侧挡位为遥控器控制模式
-        chassis_behaviour_mode = CHASSIS_FOLLOW_GIMBAL_YAW;
+        // 遥控器拨到下侧挡位为底盘无力模式
+        chassis_behaviour_mode = CHASSIS_ZERO_FORCE;
     }
     else if (switch_is_mid(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
@@ -176,7 +152,6 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
         //上档为自动模式
         chassis_behaviour_mode = CHASSIS_SPIN;
     }
-#endif
     //when gimbal in some mode, such as init mode, chassis must's move
     //当云台在某些模式下，像初始化， 底盘不动
     if (gimbal_cmd_to_chassis_stop())

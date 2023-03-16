@@ -135,8 +135,8 @@ void chassis_task(void const *pvParameters)
         chassis_control_loop(&chassis_move);
         // send control current
         //发送控制电流
-        // CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
-        //                 chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+        CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
+                        chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
         //os delay
         //系统延时
         vTaskDelay(CHASSIS_CONTROL_TIME_MS);
@@ -322,8 +322,8 @@ void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *ch
     int16_t vx_channel_RC, vy_channel_RC;
     // deadline, because some remote control need be calibrated,  the value of rocker is not zero in middle place,
     // 死区限制，因为遥控器可能存在差异 摇杆在中间，其值不为0
-    rc_deadband_limit(chassis_move_rc_to_vector->chassis_RC->rc.ch[CHASSIS_X_CHANNEL], vx_channel_RC, 15);
-    rc_deadband_limit(chassis_move_rc_to_vector->chassis_RC->rc.ch[CHASSIS_Y_CHANNEL], vy_channel_RC, 15);
+    rc_deadband_limit(chassis_move_rc_to_vector->chassis_RC->rc.ch[CHASSIS_X_CHANNEL], vx_channel_RC, CHASSIS_RC_DEADLINE);
+    rc_deadband_limit(chassis_move_rc_to_vector->chassis_RC->rc.ch[CHASSIS_Y_CHANNEL], vy_channel_RC, CHASSIS_RC_DEADLINE);
 
     vx_set_channel_RC = vx_channel_RC * CHASSIS_VX_RC_SEN;
     vy_set_channel_RC = vy_channel_RC * CHASSIS_VY_RC_SEN;
@@ -431,7 +431,7 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
         if (chassis_move_control->mode_flag == 1)
         {
 
-            Angle_Error_Compare(((gimbal_control.gimbal_yaw_motor.relative_angle / Motor_Ecd_to_rad) + chassis_move_control->chassis_yaw_motor->frist_ecd), gimbal_control.gimbal_yaw_motor.frist_ecd, gimbal_control.gimbal_yaw_motor.LAST_ZERO_ECD);
+            Angle_Error_Compare(((gimbal_control.gimbal_yaw_motor.relative_angle / MOTOR_ECD_TO_RAD) + chassis_move_control->chassis_yaw_motor->frist_ecd), gimbal_control.gimbal_yaw_motor.frist_ecd, gimbal_control.gimbal_yaw_motor.LAST_ZERO_ECD);
         }
         relative_angle = (chassis_move_control->chassis_yaw_motor->relative_angle);
         //			relative_angle=chassis_move_control->chassis_yaw_motor->relative_angle-(chassis_move_control->chassis_yaw_motor->frist_ecd*Motor_Ecd_to_rad);
@@ -512,7 +512,7 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
 static void chassis_vector_to_mecanum_wheel_speed(const fp32 vx_set, const fp32 vy_set, const fp32 wz_set, fp32 wheel_speed[4])
 {
     //because the gimbal is in front of chassis, when chassis rotates, wheel 0 and wheel 1 should be slower and wheel 2 and wheel 3 should be faster
-    //旋转的时候， 由于云台靠前，所以是前面两轮 0 ，1 旋转的速度变慢， 后面两轮 2,3 旋转的速度变快
+    // 旋转的时候， 由于云台靠前，所以是前面两轮 0 ，1 旋转的速度变慢， 后面两轮 2,3 旋转的速度变快
     wheel_speed[0] = -vx_set - vy_set + (CHASSIS_WZ_SET_SCALE - 1.0f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
     wheel_speed[1] = vx_set - vy_set + (CHASSIS_WZ_SET_SCALE - 1.0f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
     wheel_speed[2] = vx_set + vy_set + (-CHASSIS_WZ_SET_SCALE - 1.0f) * MOTOR_DISTANCE_TO_CENTER * wz_set;

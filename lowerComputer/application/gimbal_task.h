@@ -29,6 +29,7 @@
 #include "user_lib.h"
 #include "rm_usart.h"
 #include "kalman.h"
+
 //pitch speed close-loop PID params, max out and max iout
 //pitch 速度环 PID参数以及 PID最大输出，积分输出
 #define PITCH_SPEED_PID_KP         2000.0f
@@ -186,13 +187,13 @@
 
 
 //云台pitch轴最大值相对角度
-#define GIMBAL_PITCH_MAX_ENCODE 7400
+#define GIMBAL_PITCH_MAX_ENCODE 7200
 //云台pitch轴最小相对角
-#define GIMBAL_PITCH_MIN_ENCODE 6100
+#define GIMBAL_PITCH_MIN_ENCODE 6400
 //云台pitch轴中值
 #define GIMBAL_PITCH_OFFSET_ENCODE 6800
 //云台yaw轴中值
-#define GIMBAL_YAW_OFFSET_ENCODE 6170
+#define GIMBAL_YAW_OFFSET_ENCODE 3379
 //云台yaw轴陀螺仪误差
 #define INS_YAW_ERROR 0
 
@@ -250,10 +251,7 @@ typedef struct
     gimbal_PID_t gimbal_motor_absolute_angle_pid;
     gimbal_PID_t gimbal_motor_relative_angle_pid;
     pid_type_def gimbal_motor_gyro_pid;
-#if GIMBAL_AUTO_MODE
-    // 电机卡尔曼滤波
-    kalman gimbal_motor_kalman_filter;
-#endif
+ 
     gimbal_motor_mode_e gimbal_motor_mode;
     gimbal_motor_mode_e last_gimbal_motor_mode;
     uint16_t offset_ecd;
@@ -292,14 +290,14 @@ typedef struct
 typedef struct
 {
     const RC_ctrl_t *gimbal_rc_ctrl;
-#if GIMBAL_AUTO_MODE
+
     //视觉上位机数据
     vision_rxfifo_t* gimbal_vision_control; //该变量不可置const，未来要对其进行处理
-#endif
+
     const fp32 *gimbal_INT_angle_point;
     const fp32 *gimbal_INT_gyro_point;
 
-    fp32 first_yaw_absolution;            //云台yaw轴初始角度
+    fp32 gimbal_yaw_absolute_offset_angle;            //云台yaw轴初始角度
 
     gimbal_motor_t gimbal_yaw_motor;
     gimbal_motor_t gimbal_pitch_motor;

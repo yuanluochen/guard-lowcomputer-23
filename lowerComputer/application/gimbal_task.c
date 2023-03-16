@@ -50,7 +50,6 @@
             (ecd) += ECD_RANGE; \
     }
 
-#define Motor_Ecd_to_rad 0.00076708402f
 #define gimbal_total_pid_clear(gimbal_clear)                                                   \
     {                                                                                          \
         gimbal_PID_clear(&(gimbal_clear)->gimbal_yaw_motor.gimbal_motor_absolute_angle_pid);   \
@@ -187,8 +186,8 @@ static void gimbal_PID_clear(gimbal_PID_t *pid_clear);
 static void calc_gimbal_cali(const gimbal_step_cali_t *gimbal_cali, uint16_t *yaw_offset, uint16_t *pitch_offset, fp32 *max_yaw, fp32 *min_yaw, fp32 *max_pitch, fp32 *min_pitch);
 
 /*----------------------------------内部变量---------------------------*/
-fp32 fuzzy_pid_speed[3] = {50,1,5};
-fp32 fuzzy_pid_angle[3] = {1200,1,10};
+fp32 fuzzy_pid_speed[3] = {50, 1, 5};
+fp32 fuzzy_pid_angle[3] = {1200, 1, 10};
 /*----------------------------------结构体------------------------------*/
 gimbal_control_t gimbal_control;
 FuzzyPID fuzzy_pid_gimbal_speed;
@@ -196,10 +195,6 @@ FuzzyPID fuzzy_pid_gimbal_angle;
 /*----------------------------------外部变量---------------------------*/
 extern ExtY_stm32 stm32_Y; 
 extern ExtY_stm32 stm32_Y_pitch;
-/*----------------------------------外部函数---------------------------*/
-extern void stm32_pid_init_pitch(void);
-extern void stm32_relative_pid_init_pitch(void);
-extern void sm32_pid_init(void);
 
 /**
   * @brief          云台任务，间隔 GIMBAL_CONTROL_TIME 1ms
@@ -228,9 +223,8 @@ void gimbal_task(void const *pvParameters)
 
         yaw_can_set_current = gimbal_control.gimbal_yaw_motor.given_current;
         pitch_can_set_current = gimbal_control.gimbal_pitch_motor.given_current;
-        CAN_cmd_gimbal(yaw_can_set_current,pitch_can_set_current,0);
+        CAN_cmd_gimbal(yaw_can_set_current, pitch_can_set_current, 0);
         vTaskDelay(GIMBAL_CONTROL_TIME);
-
 #if INCLUDE_uxTaskGetStackHighWaterMark
         gimbal_high_water = uxTaskGetStackHighWaterMark(NULL);
 #endif
@@ -300,14 +294,17 @@ static void gimbal_init(gimbal_control_t *init)
     first_order_filter_init(&init->gimbal_cmd_slow_set_vz, GIMBAL_CONTROL_TIME, gimbal_z_order_filter);
     first_order_filter_init(&init->gimbal_cmd_slow_set_vx_auto, GIMBAL_CONTROL_TIME, gimbal_x_order_filter_auto);
     first_order_filter_init(&init->gimbal_cmd_slow_set_vy_auto, GIMBAL_CONTROL_TIME, gimbal_y_order_filter_auto);
-    // 初始化pitch电机pid
+    // 初始化yaw电机pid
     stm32_pid_init();
-    stm32_relative_pid_init_pitch();
+    // 初始化pitch轴电机pid
+    stm32_pid_init_pitch();
+
     gimbal_PID_init(&init->gimbal_pitch_motor.gimbal_motor_absolute_angle_pid, PITCH_GYRO_ABSOLUTE_PID_MAX_OUT, PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT, PITCH_GYRO_ABSOLUTE_PID_KP, PITCH_GYRO_ABSOLUTE_PID_KI, PITCH_GYRO_ABSOLUTE_PID_KD);
     gimbal_PID_init(&init->gimbal_pitch_motor.gimbal_motor_relative_angle_pid, PITCH_ENCODE_RELATIVE_PID_MAX_OUT, PITCH_ENCODE_RELATIVE_PID_MAX_IOUT, PITCH_ENCODE_RELATIVE_PID_KP, PITCH_ENCODE_RELATIVE_PID_KI, PITCH_ENCODE_RELATIVE_PID_KD);
     PID_init(&init->gimbal_pitch_motor.gimbal_motor_gyro_pid, PID_POSITION, Pitch_speed_pid, PITCH_SPEED_PID_MAX_OUT, PITCH_SPEED_PID_MAX_IOUT);
     // 清除所有PID
     gimbal_total_pid_clear(init);
+    //云台数据更新
     gimbal_feedback_update(init);
     // yaw轴电机初始化
     init->gimbal_yaw_motor.absolute_angle_set = init->gimbal_yaw_motor.absolute_angle;
@@ -317,15 +314,16 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_pitch_motor.absolute_angle_set = init->gimbal_pitch_motor.absolute_angle;
     init->gimbal_pitch_motor.relative_angle_set = init->gimbal_pitch_motor.relative_angle;
     init->gimbal_pitch_motor.motor_gyro_set = init->gimbal_pitch_motor.motor_gyro;
+
     init->gimbal_yaw_motor.offset_ecd = GIMBAL_YAW_OFFSET_ENCODE;
     init->gimbal_pitch_motor.offset_ecd = GIMBAL_PITCH_OFFSET_ENCODE;//pitch轴云台初始化相对角度
-
-    //获取yaw轴初始绝对角度,该角度用于云台yaw轴摇摆
-    init->first_yaw_absolution = *(init->gimbal_INT_angle_point + INS_YAW_ADDRESS_OFFSET);
-
-    //初始化一维kalman filter
-    kalmanCreate(&init->gimbal_yaw_motor.gimbal_motor_kalman_filter, GIMBAL_YAW_KALMAN_FILTER_Q, GIMBAL_PITCH_KALMAN_FILTER_R); 
-    kalmanCreate(&init->gimbal_pitch_motor.gimbal_motor_kalman_filter, GIMBAL_PITCH_KALMAN_FILTER_Q, GIMBAL_PITCH_KALMAN_FILTER_R); 
+    
+    //获取初始数据
+    init->gimbal_yaw_absolute_offset_angle = init->gimbal_yaw_motor.absolute_angle;
+    
+    //设置pitch轴相对角最大值
+    init->gimbal_pitch_motor.max_relative_angle = GIMBAL_PITCH_MAX_ENCODE * MOTOR_ECD_TO_RAD;
+    init->gimbal_pitch_motor.min_relative_angle = GIMBAL_PITCH_MIN_ENCODE * MOTOR_ECD_TO_RAD;
 }
 
 /**
@@ -382,12 +380,12 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
 static fp32 motor_ecd_to_angle_change(uint16_t ecd, uint16_t offset_ecd)
 {
 	fp32 relative_ecd = ecd - offset_ecd;
-	
-    if (relative_ecd > gimbal_control.gimbal_yaw_motor.frist_ecd+4096)
+
+    if (relative_ecd > gimbal_control.gimbal_yaw_motor.frist_ecd + 4096)
     {
        // relative_ecd -= 8191;
     }
-    return relative_ecd * Motor_Ecd_to_rad;
+    return relative_ecd * MOTOR_ECD_TO_RAD;
 }
 
 /**
@@ -504,9 +502,13 @@ static void gimbal_set_control(gimbal_control_t *set_control)
   */
 static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add)
 {
-	 static fp32 angle_set_yaw;  static fp32 angle_set_pitch;
-   if (gimbal_motor == NULL)
-   {
+    static fp32 angle_set_yaw = 0;
+    // 历史值与当前值之间的误差
+    // fp32 gimbal_pitch_angle_error = 0;
+
+    static fp32 angle_set_pitch = 0;
+    if (gimbal_motor == NULL)
+    {
         return;
    }
    if (gimbal_motor == &gimbal_control.gimbal_yaw_motor)
@@ -522,7 +524,7 @@ static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add)
         {
             // 当前为相对角度最大，实际pitch轴绝对角最小，在该情况下，允许绝对角增大，不允许减小
             gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + (add < 0 ? add : 0));
-        }
+        } 
         else if (gimbal_motor->gimbal_motor_measure->ecd <= GIMBAL_PITCH_MIN_ENCODE)
         {
             // 当前为相对角度最小，实际pitch轴绝对角最大，在该情况下，由于c板安装问题，绝对角也是反的，允许绝对角增大，不允许减小
@@ -533,6 +535,8 @@ static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add)
         {
             gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + add);
         }
+
+
     }
 }
 /**
@@ -638,7 +642,6 @@ static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
 	}
 	else if(gimbal_motor==&gimbal_control.gimbal_pitch_motor)
 	{
-		stm32_pid_init_pitch();
 		stm32_step_pitch(gimbal_motor->absolute_angle_set,gimbal_motor->absolute_angle, 0);
 		gimbal_motor->current_set=stm32_Y_pitch.Out1;
         gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
