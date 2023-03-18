@@ -62,6 +62,10 @@ standard_tpye_c\chassis_behaviour.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\strin
 standard_tpye_c\chassis_behaviour.o: ../components/algorithm/Include/arm_math.h
 standard_tpye_c\chassis_behaviour.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\chassis_behaviour.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
+standard_tpye_c\chassis_behaviour.o: ..\application\vision_task.h
+standard_tpye_c\chassis_behaviour.o: ../Inc/usart.h
+standard_tpye_c\chassis_behaviour.o: ..\application\INS_task.h
+standard_tpye_c\chassis_behaviour.o: ../kalman/kalman.h
 standard_tpye_c\chassis_behaviour.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 standard_tpye_c\chassis_behaviour.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 standard_tpye_c\chassis_behaviour.o: ../Inc/FreeRTOSConfig.h

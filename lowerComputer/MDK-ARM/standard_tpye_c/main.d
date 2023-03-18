@@ -93,8 +93,10 @@ standard_tpye_c\main.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdbool.h
 standard_tpye_c\main.o: ../components/algorithm/Include/arm_math.h
 standard_tpye_c\main.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\main.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
-standard_tpye_c\main.o: ../application/detect_task.h
+standard_tpye_c\main.o: ../application/vision_task.h
 standard_tpye_c\main.o: ../application/INS_task.h
+standard_tpye_c\main.o: ../kalman/kalman.h
+standard_tpye_c\main.o: ../application/detect_task.h
 standard_tpye_c\main.o: ../application/led_flow_task.h
 standard_tpye_c\main.o: ../application/oled_task.h
 standard_tpye_c\main.o: ../application/referee_usart_task.h

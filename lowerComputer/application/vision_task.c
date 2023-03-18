@@ -15,6 +15,7 @@
 #include "task.h"
 
 
+
 //视觉任务结构体初始化
 static void vision_task_init(vision_t* init);
 //视觉任务数据更新
@@ -34,19 +35,22 @@ void vision_task(void const *pvParameters)
     vision_task_init(&vision);
     while(1)
     {
+
         //数据更新
         vision_task_feedback_update(&vision);
+
+        // 配置yaw轴pitch轴增量
+        vision_set_add_value(&vision);
+
+        //数据发送
         //配置串口发送数据,编码
         vision_tx_encode(vision.send_message, vision.absolution_angle.yaw * RADIAN_TO_ANGle, 
                                               vision.absolution_angle.pitch * RADIAN_TO_ANGle, 
                                               vision.absolution_angle.roll * RADIAN_TO_ANGle, 
                                               1);
-        //配置yaw轴pitch轴增量
-        vision_set_add_value(&vision);
-
-
         //串口发送
         HAL_UART_Transmit(&huart1, vision.send_message, SERIAL_SEND_MESSAGE_SIZE, VISION_USART_TIME_OUT);
+
         //系统延时
         vTaskDelay(VISION_CONTROL_TIME_MS);
     }
@@ -125,17 +129,23 @@ static void vision_set_add_value(vision_t* vision_set)
     if (vision_set->vision_rxfifo->rx_flag)
     {
         //接收到上位机数据
+
         //接收位置零
         vision_set->vision_rxfifo->rx_flag = 0;
+
         //获取上位机视觉数据
         vision_gimbal_pitch_add = vision_set->vision_rxfifo->pitch_fifo;
         vision_gimbal_yaw_add = vision_set->vision_rxfifo->yaw_fifo;
+
         //处理上位机视觉数据,对视觉数据进行kalman filter
         KalmanFilter(&vision_set->vision_kalman_filter.gimbal_yaw_kalman, vision_gimbal_yaw_add);
         KalmanFilter(&vision_set->vision_kalman_filter.gimbal_pitch_kalman, vision_gimbal_pitch_add);
+
         //读取上位机kalamn filter处理后的数值
         vision_set->gimbal_motor_command.gimbal_yaw_add = vision_set->vision_kalman_filter.gimbal_yaw_kalman.X_now;
         vision_set->gimbal_motor_command.gimbal_pitch_add = vision_set->vision_kalman_filter.gimbal_pitch_kalman.X_now;
+
+
     }
     else
     {

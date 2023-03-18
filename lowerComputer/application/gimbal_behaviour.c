@@ -467,6 +467,7 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
 static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set)
 {
     
+
 #if 0
     //yaw轴， pitch轴上位机原始数值
     fp32 yaw_value = 0;
@@ -582,6 +583,11 @@ static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal
         }
 #endif
     }
+#else
+
+    *yaw = gimbal_control_set->gimbal_vision_point->gimbal_motor_command.gimbal_yaw_add * MOTOR_ECD_TO_RAD;
+    *pitch = -gimbal_control_set->gimbal_vision_point->gimbal_motor_command.gimbal_pitch_add * MOTOR_ECD_TO_RAD;
+
 #endif
 } 
 /**

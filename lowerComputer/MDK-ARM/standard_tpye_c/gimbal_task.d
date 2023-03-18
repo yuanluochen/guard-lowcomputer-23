@@ -60,6 +60,10 @@ standard_tpye_c\gimbal_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\string.h
 standard_tpye_c\gimbal_task.o: ../components/algorithm/Include/arm_math.h
 standard_tpye_c\gimbal_task.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\gimbal_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
+standard_tpye_c\gimbal_task.o: ..\application\vision_task.h
+standard_tpye_c\gimbal_task.o: ../Inc/usart.h
+standard_tpye_c\gimbal_task.o: ..\application\INS_task.h
+standard_tpye_c\gimbal_task.o: ../kalman/kalman.h
 standard_tpye_c\gimbal_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 standard_tpye_c\gimbal_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 standard_tpye_c\gimbal_task.o: ../Inc/FreeRTOSConfig.h
@@ -76,7 +80,6 @@ standard_tpye_c\gimbal_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/includ
 standard_tpye_c\gimbal_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 standard_tpye_c\gimbal_task.o: ..\application\detect_task.h
 standard_tpye_c\gimbal_task.o: ..\application\gimbal_behaviour.h
-standard_tpye_c\gimbal_task.o: ..\application\INS_task.h
 standard_tpye_c\gimbal_task.o: ..\application\shoot_task.h
 standard_tpye_c\gimbal_task.o: ../stm32/stm32.h
 standard_tpye_c\gimbal_task.o: ../stm32/STM32_Config.h

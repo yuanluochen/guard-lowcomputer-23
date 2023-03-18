@@ -121,22 +121,28 @@ void chassis_task(void const *pvParameters)
         //set chassis control mode
         //设置底盘控制模式
         chassis_set_mode(&chassis_move);
+
         //whenmode changes, some data save
         //模式切换数据保存
         chassis_mode_change_control_transit(&chassis_move);
+
         //chassis data update
         //底盘数据更新
         chassis_feedback_update(&chassis_move);
+
         //set chassis control set-point 
         //底盘控制量设置
         chassis_set_contorl(&chassis_move);
+
         //chassis control pid calculate
         //底盘控制PID计算
         chassis_control_loop(&chassis_move);
+        
         // send control current
         //发送控制电流
-        CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
-                        chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+        //CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
+        //                chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+
         //os delay
         //系统延时
         vTaskDelay(CHASSIS_CONTROL_TIME_MS);

@@ -61,6 +61,10 @@ standard_tpye_c\chassis_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\string.h
 standard_tpye_c\chassis_task.o: ../components/algorithm/Include/arm_math.h
 standard_tpye_c\chassis_task.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\chassis_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
+standard_tpye_c\chassis_task.o: ..\application\vision_task.h
+standard_tpye_c\chassis_task.o: ../Inc/usart.h
+standard_tpye_c\chassis_task.o: ..\application\INS_task.h
+standard_tpye_c\chassis_task.o: ../kalman/kalman.h
 standard_tpye_c\chassis_task.o: ..\application\chassis_behaviour.h
 standard_tpye_c\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 standard_tpye_c\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
@@ -77,5 +81,4 @@ standard_tpye_c\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/inclu
 standard_tpye_c\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 standard_tpye_c\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 standard_tpye_c\chassis_task.o: ..\application\detect_task.h
-standard_tpye_c\chassis_task.o: ..\application\INS_task.h
 standard_tpye_c\chassis_task.o: ..\application\chassis_power_control.h

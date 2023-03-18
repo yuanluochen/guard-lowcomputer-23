@@ -243,14 +243,14 @@ static void Shoot_Feedback_Update(void)
 static void Shoot_Set_Mode(void)
 {
     
-    //判断哨兵模式
-    if(switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_CONTROL_CHANNEL]))
-    {
-        //此时哨兵为自动模式，射击自动
-        shoot_mode = SHOOT_AUTO;
-    }
-    else
-    {
+    // //判断哨兵模式
+    // if(switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_CONTROL_CHANNEL]))
+    // {
+    //     //此时哨兵为自动模式，射击自动
+    //     shoot_mode = SHOOT_AUTO;
+    // }
+    // else
+    // {
         //此时哨兵为遥控器控制模式，射击手动
         if (switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_MODE_CHANNEL]))
         {
@@ -261,7 +261,7 @@ static void Shoot_Set_Mode(void)
             shoot_mode = SHOOT_STOP;
             last_fric_mode = SHOOT_STOP;
         }
-    }
+    // }
 
 }
 /**

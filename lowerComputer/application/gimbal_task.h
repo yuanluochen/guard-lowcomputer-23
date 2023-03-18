@@ -29,6 +29,7 @@
 #include "user_lib.h"
 #include "rm_usart.h"
 #include "kalman.h"
+#include "vision_task.h"
 
 //pitch speed close-loop PID params, max out and max iout
 //pitch 速度环 PID参数以及 PID最大输出，积分输出
@@ -291,8 +292,8 @@ typedef struct
 {
     const RC_ctrl_t *gimbal_rc_ctrl;
 
-    //视觉上位机数据
-    vision_rxfifo_t* gimbal_vision_control; //该变量不可置const，未来要对其进行处理
+    //获取视觉上位机数据
+    const vision_t* gimbal_vision_point;
 
     const fp32 *gimbal_INT_angle_point;
     const fp32 *gimbal_INT_gyro_point;

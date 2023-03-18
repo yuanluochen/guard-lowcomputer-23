@@ -10,9 +10,13 @@
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
+//视觉代码误差
+#define VISION_ERROR 180
+
 uint8_t vision_rx_buf[2][VISION_RX_LEN_2];
 
 vision_rxfifo_t vision_rxfifo = {0};
+#
 
 uint16_t base = 7;
 uint8_t i = 0;
@@ -78,9 +82,9 @@ void vision_rx_decode(uint8_t *test_code)
 			
 			vision_rxfifo.rx_update_flag = 1;
 
-            vision_rxfifo.yaw_fifo = (fp32)vision_rxfifo.yaw_fifo / 10000.0f;
-            vision_rxfifo.pitch_fifo = (fp32)vision_rxfifo.pitch_fifo / 10000.0f;
-            vision_rxfifo.yaw_disdance = (fp32)vision_rxfifo.yaw_disdance / 10000.0f;
+            vision_rxfifo.yaw_fifo = (fp32)vision_rxfifo.yaw_fifo / 10000.0f - VISION_ERROR;
+            vision_rxfifo.pitch_fifo = (fp32)vision_rxfifo.pitch_fifo / 10000.0f - VISION_ERROR;
+            vision_rxfifo.yaw_disdance = (fp32)vision_rxfifo.yaw_disdance / 10000.0f - VISION_ERROR;
             //计算速度，做差分
             vision_rxfifo.yaw_speed_fifo = vision_rxfifo.yaw_speed_fifo - vision_rxfifo.last_yaw_fifo;
             vision_rxfifo.pitch_speed_fifo = vision_rxfifo.pitch_speed_fifo - vision_rxfifo.last_pitch_fifo;

@@ -16,6 +16,7 @@
 #include "arm_math.h"
 #include "kalman.h"
 #include "rm_usart.h"
+#include "pid.h"
 
 //延时等待
 #define VISION_TASK_INIT_TIME 401
@@ -100,6 +101,15 @@ typedef struct
     fp32 gimbal_pitch_add;
 }gimbal_motor_command_t;
 
+//哨兵云台pid结构体
+typedef struct 
+{
+    //云台pitch轴pid
+    pid_type_def gimbal_pitch_pid;
+    //云台yaw轴pid
+    pid_type_def gimbal_yaw_pid;
+}vision_pid_t;
+
 
 //视觉任务结构体
 typedef struct 
@@ -116,6 +126,9 @@ typedef struct
 
     //kalman filter 结构体，用于处理视觉上位机发来的数据
     vision_kalman_filter_t vision_kalman_filter;
+
+    //pid 结构体，用于提高上位机视觉响应
+    vision_pid_t vision_pid;
     
     //云台电机运动命令
     gimbal_motor_command_t gimbal_motor_command;    
@@ -126,7 +139,7 @@ typedef struct
 //视觉通信任务
 void vision_task(void const *pvParameters);
 //获取上位机命令
-vision_t* get_vision_point();
+vision_t* get_vision_point(void);
 
 
 #endif // !VISION_TASK_H
