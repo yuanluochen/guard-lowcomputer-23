@@ -45,10 +45,9 @@ float KalmanFilter(kalman* p,float dat)
     return p->X_now;
 }
 
-
-/**    
-  * ¶ş½×¿¨¶ûÂüÂË²¨Æ÷                                                                       
-  */
+/**
+ * ¶ş½×¿¨¶ûÂüÂË²¨Æ÷
+ */
 
 float matrix_value1;
 float matrix_value2;

@@ -16,7 +16,7 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 uint8_t vision_rx_buf[2][VISION_RX_LEN_2];
 
 vision_rxfifo_t vision_rxfifo = {0};
-#
+
 
 uint16_t base = 7;
 uint8_t i = 0;
@@ -62,6 +62,14 @@ void vision_init(void)
 
 void vision_rx_decode(uint8_t *test_code)
 {
+
+    //上位机接收的原始数据，未处理
+    fp32 yaw_fifo_temp = 0;
+    fp32 pitch_fifo_temp =0;
+    fp32 yaw_disdance_temp = 0;
+    volatile fp32 pitch_speed_fifo_temp = 0;
+
+
 	if((fp32)((test_code[HEAD0_BASE+0] << 8*3) | (test_code[HEAD0_BASE+1] << 8*2)
 					| (test_code[HEAD0_BASE+2] << 8*1) | (test_code[HEAD0_BASE+3] << 8*0)) == 0x34)
 	{
@@ -70,24 +78,25 @@ void vision_rx_decode(uint8_t *test_code)
 		{
 			vision_rxfifo.rx_flag = 1;
 			
-			vision_rxfifo.yaw_fifo 	 = (test_code[YAW_FIFO_BASE+0] << 8*3) | (test_code[YAW_FIFO_BASE+1] << 8*2)
+			yaw_fifo_temp = (test_code[YAW_FIFO_BASE+0] << 8*3) | (test_code[YAW_FIFO_BASE+1] << 8*2)
 															 | (test_code[YAW_FIFO_BASE+2] << 8*1) | (test_code[YAW_FIFO_BASE+3] << 8*0);
-			vision_rxfifo.pitch_fifo = (test_code[PITCH_FIFO_BASE+0] << 8*3) | (test_code[PITCH_FIFO_BASE+1] << 8*2)
+			pitch_fifo_temp = (test_code[PITCH_FIFO_BASE+0] << 8*3) | (test_code[PITCH_FIFO_BASE+1] << 8*2)
 															 | (test_code[PITCH_FIFO_BASE+2] << 8*1) | (test_code[PITCH_FIFO_BASE+3] << 8*0);
-			vision_rxfifo.yaw_disdance  = (test_code[YAW_SPEED_FIFO_BASE+0] << 8*3) | (test_code[YAW_SPEED_FIFO_BASE+1] << 8*2)
+			yaw_disdance_temp  = (test_code[YAW_SPEED_FIFO_BASE+0] << 8*3) | (test_code[YAW_SPEED_FIFO_BASE+1] << 8*2)
 																		| (test_code[YAW_SPEED_FIFO_BASE+2] << 8*1) | (test_code[YAW_SPEED_FIFO_BASE+3] << 8*0);
-			vision_rxfifo.pitch_speed_fifo  = (test_code[PITCH_SPEED_FIFO_BASE+0] << 8*3) | (test_code[PITCH_SPEED_FIFO_BASE+1] << 8*2)
+			pitch_speed_fifo_temp  = (test_code[PITCH_SPEED_FIFO_BASE+0] << 8*3) | (test_code[PITCH_SPEED_FIFO_BASE+1] << 8*2)
 																			| (test_code[PITCH_SPEED_FIFO_BASE+2] << 8*1) | (test_code[PITCH_SPEED_FIFO_BASE+3] << 8*0);
 			vision_rxfifo.rx_change_flag = test_code[CHANGE_FLAG_FIFO_BASE+3];
 			
 			vision_rxfifo.rx_update_flag = 1;
 
-            vision_rxfifo.yaw_fifo = (fp32)vision_rxfifo.yaw_fifo / 10000.0f - VISION_ERROR;
-            vision_rxfifo.pitch_fifo = (fp32)vision_rxfifo.pitch_fifo / 10000.0f - VISION_ERROR;
-            vision_rxfifo.yaw_disdance = (fp32)vision_rxfifo.yaw_disdance / 10000.0f - VISION_ERROR;
+            //为处理负号问题，上位机视觉发送角度 增加 180 下位机减少 180
+            vision_rxfifo.yaw_fifo = yaw_fifo_temp / 10000.0f - VISION_ERROR;
+            vision_rxfifo.pitch_fifo = pitch_fifo_temp / 10000.0f - VISION_ERROR;
+            vision_rxfifo.yaw_disdance = yaw_disdance_temp / 10000.0f - VISION_ERROR;
             //计算速度，做差分
-            vision_rxfifo.yaw_speed_fifo = vision_rxfifo.yaw_speed_fifo - vision_rxfifo.last_yaw_fifo;
-            vision_rxfifo.pitch_speed_fifo = vision_rxfifo.pitch_speed_fifo - vision_rxfifo.last_pitch_fifo;
+            vision_rxfifo.yaw_speed_fifo = vision_rxfifo.yaw_fifo - vision_rxfifo.last_yaw_fifo;
+            vision_rxfifo.pitch_speed_fifo = vision_rxfifo.pitch_fifo - vision_rxfifo.last_pitch_fifo;
             //保存历史数据
             vision_rxfifo.last_yaw_fifo = vision_rxfifo.yaw_fifo;
             vision_rxfifo.last_pitch_fifo = vision_rxfifo.pitch_fifo;

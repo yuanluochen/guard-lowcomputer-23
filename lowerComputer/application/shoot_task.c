@@ -57,23 +57,13 @@ static void shoot_bullet_control(void);
 void shoot_init(void);
 
 /*----------------------------------内部变量---------------------------*/
-fp32 limit_V;
-fp32 Max_SPEED;
 fp32 fric;
 int jam_flag = 0;
-int F_flag = 0;
-int laster_time = 0;
-fp32 angle = 0;
-int16_t shoot_Current[2];
-int laster_flag;
-uint16_t ShootSpeed;
+// uint16_t ShootSpeed;
 fp32 KH = 0;
-fp32 speed_;
-fp32 speed_t;
 int flag = 0;
 int time_l = 0;
 int flag1 = 0;
-int Ready_Flag = 0;          // 确定是否在射击状态
 int trigger_flag = 0, trigger_flag1 = 0;
 int add_t = 0;
 /*----------------------------------结构体------------------------------*/
@@ -153,7 +143,7 @@ void shoot_init(void)
 void shoot_level(void)
 {
     KH = 1.0;
-    ShootSpeed = 30;
+    // ShootSpeed = 30;
     fric = 2.9f;
     trigger_motor.speed_set = 8.3;
 }

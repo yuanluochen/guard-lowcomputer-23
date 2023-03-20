@@ -118,7 +118,7 @@ static void gimbal_cali_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
 /**
   * @brief          云台控制，电机是角度控制，
   * @param[out]     yaw: yaw轴角度控制，为角度的增量 单位 rad
-  * @param[out]     pitch:pitch轴角度控制，为角度的增量 单位 rad
+           * @param[out]     pitch:pitch轴角度控制，为角度的增量 单位 rad
   * @param[in]      gimbal_control_set:云台数据指针
   */
 static void gimbal_RC_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
@@ -468,127 +468,9 @@ static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal
 {
     
 
-#if 0
-    //yaw轴， pitch轴上位机原始数值
-    fp32 yaw_value = 0;
-    fp32 pitch_value = 0;
+    *yaw = -gimbal_control_set->gimbal_vision_point->gimbal_vision_control.gimbal_yaw_add * MOTOR_ECD_TO_RAD;
+    *pitch = gimbal_control_set->gimbal_vision_point->gimbal_vision_control.gimbal_pitch_add * MOTOR_ECD_TO_RAD;
 
-
-    //yaw轴数据保存标志位
-    static int save_yaw_offset_flag = 0;
-    if(save_yaw_offset_flag == 0)
-    {
-        //保存yaw轴数据
-        gimbal_control_set->gimbal_yaw_absolute_offset_angle = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
-        save_yaw_offset_flag = 1;
-    }
-
-    //判断是否接收到上位机发送的数据
-    if (gimbal_control_set->gimbal_vision_control->rx_flag)
-    { 
-        //接收到上位机数据
-
-        // 数据接收位置零，等待下一次数据的接收
-        gimbal_control_set->gimbal_vision_control->rx_flag = 0;
-
-    }
-    else
-    {
-#if 1
-        //未接收到上位机数据,不移动
-        *yaw = 0;
-        *pitch = 0;
-#else
-
-        static int init_count = 0; // 云台初始化时间,初始化一次计数一次，为了防止初始化时间过长
-        // 未接收到上位机数据，云台自主运动
-        // 判断云台是否到达中值
-        if (fabs(gimbal_control_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) <  GIMBAL_INIT_ANGLE_ERROR
-            && fabs(gimbal_control_set->gimbal_yaw_motor.absolute_angle - gimbal_control_set->gimbal_yaw_absolute_offset_angle) < GIMBAL_INIT_ANGLE_ERROR)
-        {
-            if ( init_count <= INIT_STOP_COUNT)
-            {
-                //计数小于100次继续初始化
-                gimbal_init_control(yaw, pitch, gimbal_control_set);  //云台初始化
-                //初始化计数
-                init_count++;
-            }
-            else
-            {
-                //计数大于INIT_STOP_COUNT次,停止计数，停止初始化
-                init_count = 0;
-                return;
-
-            }
-            
-        } 
-        else
-        {
-            init_count = 0; // 计数归零
-
-            //  云台pitch轴yaw轴在一定范围内摇摆
-            // 同时设置yaw轴pitch轴转动角度,以中点为中心进行,yaw轴中心为初始角度，pitch轴中心为绝对角零度
-            // yaw轴首先角度提升，提升到最大值后，角度减少，减少到最大值
-            static fp32 yaw_set_angle = 0;                      // yaw设置角度，该角度为相对于yaw轴gimbal_yaw_absolute_offset_angle_angle 的角度
-            static fp32 yaw_relative_to_first_yaw = 0;                     // 云台yaw轴相对于初始角度的相对角度
-            yaw_relative_to_first_yaw = gimbal_control_set->gimbal_yaw_motor.absolute_angle - gimbal_control_set->gimbal_yaw_absolute_offset_angle;
-            static gimbal_swing_direction_e yaw_swing_direction = POSITIVE;//摇摆yaw轴运动方向
-            static int yaw_set_count = 0;                                      //yaw轴设定角度计数
-            // 判断当前是否为正向最大角度
-            if (yaw_swing_direction == POSITIVE && yaw_set_angle >= GIMBAL_YAW_SWING_RANGE && fabs(yaw_relative_to_first_yaw) >= GIMBAL_YAW_SWING_RANGE)
-            {
-                // 角度设置转化为反向角度
-                yaw_swing_direction = NEGATIVE;//此时为减法
-            }
-            //判断当前是否为反向最大角度
-            else if (yaw_swing_direction == NEGATIVE && yaw_set_angle <= -GIMBAL_YAW_SWING_RANGE && fabs(yaw_relative_to_first_yaw) >= GIMBAL_YAW_SWING_RANGE)
-            {
-                //角度设置转化为正向角度
-                yaw_swing_direction = POSITIVE;//此时为加法
-            }
-            else
-            {
-                //判断当前是否到达设定角度
-                if (fabs(yaw_relative_to_first_yaw - yaw_set_angle)  <= GIMBAL_INIT_ANGLE_ERROR)
-                {
-                    //到达，设置数值
-                    //计数值置零
-                    yaw_set_count = 0;
-                    // 根据yaw_swing_direction 设置yaw轴运动的加法减法
-                    switch (yaw_swing_direction)
-                    {
-                    case POSITIVE:
-                        yaw_set_angle += GIMBAL_YAW_SWING_STEP;
-                        break;
-                    case NEGATIVE:
-                        yaw_set_angle -= GIMBAL_YAW_SWING_STEP;
-                        break;
-                    }
-                }
-                else
-                {
-                    //未到达目标数值，等待
-                    //判断计数时间是否过长
-                    if (yaw_set_count >= GIMBAL_SWING_STOP_COUNT)
-                    {
-                        //等待时间过长返回
-                        return;
-                    }
-                    yaw_set_count++;
-
-                }
-           }
-           //赋值yaw轴pitch轴转动数值,数值为角度增量
-           *yaw = (yaw_set_angle + gimbal_control_set->gimbal_yaw_absolute_offset_angle) - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
-        }
-#endif
-    }
-#else
-
-    *yaw = gimbal_control_set->gimbal_vision_point->gimbal_motor_command.gimbal_yaw_add * MOTOR_ECD_TO_RAD;
-    *pitch = -gimbal_control_set->gimbal_vision_point->gimbal_motor_command.gimbal_pitch_add * MOTOR_ECD_TO_RAD;
-
-#endif
 } 
 /**
   * @brief          云台初始化控制，电机是陀螺仪角度控制，云台先抬起pitch轴，后旋转yaw轴

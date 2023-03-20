@@ -66,76 +66,75 @@ typedef enum
     SHOOT_STOP = 0,
     SHOOT_READY,
     SHOOT_BULLET,
-	SHOOT_BULLET_ONE,
-	SHOOT_DONE,
-	SHOOT_AUTO,
+    SHOOT_BULLET_ONE,
+    SHOOT_DONE,
 } shoot_mode_e;
 
 typedef struct
 {
-	const motor_measure_t *shoot_motor_measure;
-	fp32 speed;
-	fp32 speed_set;
-	fp32 angle;
-	int8_t ecd_count;
-	fp32 set_angle;
-  int16_t given_current;
-	
-	bool_t press_l;
-	bool_t press_r;
-	bool_t last_press_l;
-	bool_t last_press_r;
-	uint16_t press_l_time;
-	uint16_t press_r_time;
-	uint16_t rc_s_time;
-	
-	uint32_t run_time;
-	uint32_t cmd_time;
-	int16_t move_flag;
-	int16_t move_flag_ONE;
-	bool_t key;
-	int16_t BulletShootCnt;
-	int16_t last_butter_count;
-  fp32 shoot_CAN_Set_Current;
-    fp32  blocking_angle_set;
-	fp32  blocking_angle_current;
-	int8_t blocking_ecd_count;
+    const motor_measure_t *shoot_motor_measure;
+    fp32 speed;
+    fp32 speed_set;
+    fp32 angle;
+    int8_t ecd_count;
+    fp32 set_angle;
+    int16_t given_current;
+
+    bool_t press_l;
+    bool_t press_r;
+    bool_t last_press_l;
+    bool_t last_press_r;
+    uint16_t press_l_time;
+    uint16_t press_r_time;
+    uint16_t rc_s_time;
+
+    uint32_t run_time;
+    uint32_t cmd_time;
+    int16_t move_flag;
+    int16_t move_flag_ONE;
+    bool_t key;
+    int16_t BulletShootCnt;
+    int16_t last_butter_count;
+    fp32 shoot_CAN_Set_Current;
+    fp32 blocking_angle_set;
+    fp32 blocking_angle_current;
+    int8_t blocking_ecd_count;
 } Shoot_Motor_t;
 
 typedef struct
 {
-  const motor_measure_t *fric_motor_measure;
-	fp32 accel;
-  fp32 speed;
-  fp32 speed_set;
-  int16_t give_current;
-	uint16_t rc_key_time;
+    const motor_measure_t *fric_motor_measure;
+    fp32 accel;
+    fp32 speed;
+    fp32 speed_set;
+    int16_t give_current;
+    uint16_t rc_key_time;
 } fric_Motor_t;
 
 typedef struct
 {
-	const RC_ctrl_t *shoot_rc;                   //遥控器指�?
-  shoot_mode_e fric_mode;               //射击控制状态机
-	shoot_mode_e last_fric_mode;          //射击上�?�控制状态机
-	fric_Motor_t motor_fric[2];          //射击电机数据
-	fp32 fric_CAN_Set_Current[2];
-	PidTypeDef motor_speed_pid[4];             //射击电机速度pid
-	
-  first_order_filter_type_t fric1_cmd_slow_set_speed;  // 滤波数据
-  first_order_filter_type_t fric2_cmd_slow_set_speed;  // 滤波数据
-	fp32 angle[2];
-	int16_t ecd_count[2];
-  int16_t given_current[2];
-  fp32 set_angle[2];
-	fp32 speed[2];
-	fp32 speed_set[2];	
-	fp32 current_set[2];	
-	bool_t move_flag;
+    const RC_ctrl_t *shoot_rc;   // ң����
+    shoot_mode_e fric_mode;      // ����ģʽ
+    shoot_mode_e last_fric_mode; // ��һ�εķ���ģʽ
+    fric_Motor_t motor_fric[2];  // 
+    fp32 fric_CAN_Set_Current[2];
+    PidTypeDef motor_speed_pid[4]; // 射击电机速度pid
 
-	fp32 min_speed;
-	fp32 max_speed;
-	int flag[2];
-	int laster_add;
+    first_order_filter_type_t fric1_cmd_slow_set_speed; // 滤波数据
+    first_order_filter_type_t fric2_cmd_slow_set_speed; // 滤波数据
+    fp32 angle[2];
+    int16_t ecd_count[2];
+    int16_t given_current[2];
+    fp32 set_angle[2];
+    fp32 speed[2];
+    fp32 speed_set[2];
+    fp32 current_set[2];
+    bool_t move_flag;
+
+    fp32 min_speed;
+    fp32 max_speed;
+    int flag[2];
+    int laster_add;
 } fric_move_t;
 
 extern void shoot_init(void);

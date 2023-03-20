@@ -173,7 +173,7 @@
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>vision_rxfifo</ItemText>
+          <ItemText>vision_rxfifo,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
@@ -193,7 +193,7 @@
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal_behaviour</ItemText>
+          <ItemText>gimbal_behaviour,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
@@ -831,7 +831,7 @@
       <GroupNumber>5</GroupNumber>
       <FileNumber>40</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\application\chassis_power_control.c</PathWithFileName>
