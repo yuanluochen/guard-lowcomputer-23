@@ -79,9 +79,8 @@ void kalman_filter_init(kalman_filter_t *F, kalman_filter_init_t *I)
 /**
   *@param 卡尔曼参数结构体
   *@param 角度
-  *@param 速度
 */
-float *kalman_filter_calc(kalman_filter_t *F, float signal1, float signal2)
+float *kalman_filter_calc(kalman_filter_t *F, float angle)
 {
   float TEMP_data[4] = {0, 0, 0, 0};
   float TEMP_data21[2] = {0, 0};
@@ -90,8 +89,7 @@ float *kalman_filter_calc(kalman_filter_t *F, float signal1, float signal2)
   mat_init(&TEMP, 2, 2, (float *)TEMP_data);     //
   mat_init(&TEMP21, 2, 1, (float *)TEMP_data21); //
 
-  F->z.pData[0] = signal1; //z(k)
-  F->z.pData[1] = signal2; //z(k)
+  F->z.pData[0] = angle; //z(k)
 
   //1. xhat'(k)= A xhat(k-1)
   mat_mult(&F->A, &F->xhat, &F->xhatminus); //  x(k|k-1) = A*X(k-1|k-1)+B*U(k)+W(K)

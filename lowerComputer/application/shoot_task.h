@@ -1,11 +1,14 @@
 #ifndef SHOOT_TASK_H
 #define SHOOT_TASK_H
+
+
 #include "struct_typedef.h"
 
 #include "CAN_receive.h"
 #include "gimbal_task.h"
 #include "remote_control.h"
 #include "user_lib.h"
+#include "vision_task.h"
 
 //射击遥控器控制摩擦轮通道
 #define SHOOT_MODE_CHANNEL 1
@@ -68,6 +71,8 @@ typedef enum
     SHOOT_BULLET,
     SHOOT_BULLET_ONE,
     SHOOT_DONE,
+    SHOOT_INIT,      //射击任务初始化
+    SHOOT_AUTO,      //根据上位机自动射击
 } shoot_mode_e;
 
 typedef struct
@@ -114,14 +119,15 @@ typedef struct
 typedef struct
 {
     const RC_ctrl_t *shoot_rc;   // 遥控器
+    const vision_t* shoot_vision_control;// 视觉控制指针
     shoot_mode_e fric_mode;      // 发射模式
     shoot_mode_e last_fric_mode; // 上一次的发射模式
-    fric_Motor_t motor_fric[2];  // 
-    fp32 fric_CAN_Set_Current[2];
-    PidTypeDef motor_speed_pid[4]; // 灏勫嚮鐢垫満閫熷害pid
+    fric_Motor_t motor_fric[2];  // 左右摩擦轮
+    fp32 fric_CAN_Set_Current[2];  //can发射电流
+    PidTypeDef motor_speed_pid[4]; //电机速度pid
 
-    first_order_filter_type_t fric1_cmd_slow_set_speed; // 婊ゆ尝鏁版嵁
-    first_order_filter_type_t fric2_cmd_slow_set_speed; // 婊ゆ尝鏁版嵁
+    first_order_filter_type_t fric1_cmd_slow_set_speed; //摩擦轮一阶低通
+    first_order_filter_type_t fric2_cmd_slow_set_speed; //摩擦轮一阶低通
     fp32 angle[2];
     int16_t ecd_count[2];
     int16_t given_current[2];
@@ -139,6 +145,15 @@ typedef struct
 
 extern void shoot_init(void);
 extern void shoot_control_loop(void);
+
+
+
+/**
+ * @brief 射击任务函数
+ * 
+ * @param pvParameters 
+ */
 void shoot_task(void const *pvParameters);
+
 
 #endif

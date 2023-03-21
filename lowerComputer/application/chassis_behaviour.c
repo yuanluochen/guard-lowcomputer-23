@@ -149,8 +149,8 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     }
     else if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
-        //上档为自动模式
-        chassis_behaviour_mode = CHASSIS_SPIN;
+        //上档为自动模式,底盘不动
+        chassis_behaviour_mode = CHASSIS_NO_MOVE;
     }
     //when gimbal in some mode, such as init mode, chassis must's move
     //当云台在某些模式下，像初始化， 底盘不动

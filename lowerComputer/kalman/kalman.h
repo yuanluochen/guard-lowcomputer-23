@@ -85,7 +85,7 @@ typedef struct
 } Kalman_Data_t;
 
 void kalman_filter_init(kalman_filter_t *F, kalman_filter_init_t *I);
-float *kalman_filter_calc(kalman_filter_t *F, float signal1, float signal2);
+float *kalman_filter_calc(kalman_filter_t *F, float angle);
 /*************¶þ½×¿¨¶ûÂü END**************/
 
 #endif

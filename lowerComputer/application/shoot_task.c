@@ -60,7 +60,7 @@ void shoot_init(void);
 fp32 fric;
 int jam_flag = 0;
 // uint16_t ShootSpeed;
-fp32 KH = 0;
+// fp32 KH = 0;
 int flag = 0;
 int time_l = 0;
 int flag1 = 0;
@@ -93,6 +93,7 @@ void shoot_task(void const *pvParameters)
         shoot_level();
         //设置发射模式
         Shoot_Set_Mode();
+        //发射数据更新
         Shoot_Feedback_Update();
         shoot_control_loop();
         CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
@@ -120,6 +121,8 @@ void shoot_init(void)
     fric_move.motor_speed_pid[1].mode_again = KI_SEPRATE;
     // 数据指针获取
     fric_move.shoot_rc = get_remote_control_point();
+    // 获取视觉控制指针
+    fric_move.shoot_vision_control = get_vision_point();
     trigger_motor.shoot_motor_measure = get_trigger_motor_measure_point();
     trigger_motor.blocking_angle_set = 0;
     fric_move.motor_fric[0].fric_motor_measure = get_shoot_motor_measure_point(0); // 右摩擦轮
@@ -142,7 +145,7 @@ void shoot_init(void)
  */
 void shoot_level(void)
 {
-    KH = 1.0;
+    // KH = 1.0;
     // ShootSpeed = 30;
     fric = 2.9f;
     trigger_motor.speed_set = 8.3;
@@ -156,37 +159,37 @@ void shoot_level(void)
 static void Shoot_Feedback_Update(void)
 {
     uint8_t i;
-    // 长按计时，更新标志位，控制单点单发
-    if (shoot_mode != SHOOT_STOP && (abs(fric_move.shoot_rc->rc.ch[4]) >= 100 || fric_move.shoot_rc->mouse.press_l))
-    {
-        shoot_mode = SHOOT_BULLET;
-        if (last_fric_mode != SHOOT_BULLET)
-        {
-            last_fric_mode = SHOOT_BULLET;
-        }
-        time_l++;
-    }
-    else
-    {
-        time_l = 0, flag1 = 0;
-        flag = 0;
-    }
+    // // 长按计时，更新标志位，控制单点单发
+    // if (shoot_mode != SHOOT_STOP && (abs(fric_move.shoot_rc->rc.ch[4]) >= 100 || fric_move.shoot_rc->mouse.press_l))
+    // {
+    //     shoot_mode = SHOOT_BULLET;
+    //     if (last_fric_mode != SHOOT_BULLET)
+    //     {
+    //         last_fric_mode = SHOOT_BULLET;
+    //     }
+    //     time_l++;
+    // }
+    // else
+    // {
+    //     time_l = 0, flag1 = 0;
+    //     flag = 0;
+    // }
 
-    if (time_l > 350)
-    {
-        flag = 0;
-        flag1 = 0;
-    }
-    else if (shoot_mode == SHOOT_BULLET)
-    {
-        flag = 1;
-    }
+    // if (time_l > 350)
+    // {
+    //     flag = 0;
+    //     flag1 = 0;
+    // }
+    // else if (shoot_mode == SHOOT_BULLET)
+    // {
+    //     flag = 1;
+    // }
 
-    if (flag == 1 && flag1 == 0)
-    {
-        trigger_motor.set_angle = rad_format(trigger_motor.set_angle + PI_Four);
-        flag1 = 1;
-    }
+    // if (flag == 1 && flag1 == 0)
+    // {
+    //     trigger_motor.set_angle = rad_format(trigger_motor.set_angle + PI_Four);
+    //     flag1 = 1;
+    // }
     // 滤波————>拨弹轮
     static fp32 speed_fliter_1 = 0.0f;
     static fp32 speed_fliter_2 = 0.0f;
@@ -232,16 +235,26 @@ static void Shoot_Feedback_Update(void)
  */
 static void Shoot_Set_Mode(void)
 {
-    
-    // //判断哨兵模式
-    // if(switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_CONTROL_CHANNEL]))
-    // {
-    //     //此时哨兵为自动模式，射击自动
-    //     shoot_mode = SHOOT_AUTO;
-    // }
-    // else
-    // {
-        //此时哨兵为遥控器控制模式，射击手动
+
+    //判断是否为自动模式
+    if (switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_CONTROL_CHANNEL]))
+    {
+        //判断视觉任务发射指令
+        if (fric_move.shoot_vision_control->shoot_vision_control.shoot_command == SHOOT_ATTACK)
+        {
+            //袭击模式，发射模式为准备
+            shoot_mode = SHOOT_STOP;
+        }
+        else if (fric_move.shoot_vision_control->shoot_vision_control.shoot_command == SHOOT_STOP_ATTACK)
+        {
+            //停止袭击模式，发射模式为停止
+            shoot_mode = SHOOT_STOP;
+        }
+
+    }
+    else
+    {
+        // 此时哨兵为遥控器控制模式，射击手动
         if (switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_MODE_CHANNEL]))
         {
             shoot_mode = SHOOT_READY;
@@ -251,7 +264,9 @@ static void Shoot_Set_Mode(void)
             shoot_mode = SHOOT_STOP;
             last_fric_mode = SHOOT_STOP;
         }
-    // }
+    }
+
+    
 
 }
 /**
@@ -373,3 +388,4 @@ static void fric_control_loop(fric_move_t *fric_move_control_loop)
     fric_move.fric_CAN_Set_Current[0] = stm32_Y.out_shoot;
     fric_move.fric_CAN_Set_Current[1] = stm32_Y.out_shoot1;
 }
+
