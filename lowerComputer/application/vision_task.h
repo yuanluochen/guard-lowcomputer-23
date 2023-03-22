@@ -160,8 +160,9 @@ typedef struct
 //哨兵发射命令
 typedef enum
 {
-    SHOOT_ATTACK,      // 袭击
-    SHOOT_STOP_ATTACK, // 停止袭击
+    SHOOT_ATTACK,       // 袭击
+    SHOOT_READY_ATTACK, // 准备袭击
+    SHOOT_STOP_ATTACK,  // 停止袭击
 } shoot_command_e;
 
 //哨兵发射电机运动控制命令

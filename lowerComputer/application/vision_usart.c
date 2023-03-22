@@ -120,10 +120,6 @@ void vision_rx_decode(uint8_t *test_code)
 		}
 	}
 
-    
-
-
-
 }
 
 vision_rxfifo_t * get_vision_rxfifo_point(void)

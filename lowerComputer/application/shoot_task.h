@@ -71,9 +71,15 @@ typedef enum
     SHOOT_BULLET,
     SHOOT_BULLET_ONE,
     SHOOT_DONE,
-    SHOOT_INIT,      //射击任务初始化
-    SHOOT_AUTO,      //根据上位机自动射击
 } shoot_mode_e;
+
+typedef enum
+{
+    SHOOT_AUTO_CONTROL,    //自动控制模式
+    SHOOT_RC_CONTROL,      //遥控器控制模式
+    SHOOT_INIT_CONTROL,    //初始化控制模式
+    SHOOT_STOP_CONTROL,    //停止控制模式
+}shoot_control_mode_e;
 
 typedef struct
 {
@@ -118,16 +124,18 @@ typedef struct
 
 typedef struct
 {
-    const RC_ctrl_t *shoot_rc;   // 遥控器
-    const vision_t* shoot_vision_control;// 视觉控制指针
-    shoot_mode_e fric_mode;      // 发射模式
-    shoot_mode_e last_fric_mode; // 上一次的发射模式
-    fric_Motor_t motor_fric[2];  // 左右摩擦轮
-    fp32 fric_CAN_Set_Current[2];  //can发射电流
-    PidTypeDef motor_speed_pid[4]; //电机速度pid
+    const RC_ctrl_t *shoot_rc;            // 遥控器
+    const vision_t *shoot_vision_control; // 视觉控制指针
+    shoot_mode_e fric_mode;               // 发射模式
+    shoot_mode_e last_fric_mode;          // 上一次的发射模式
+    fric_Motor_t motor_fric[2];           // 左右摩擦轮
+    fp32 fric_CAN_Set_Current[2];         // can发射电流
+    PidTypeDef motor_speed_pid[4];        // 电机速度pid
 
-    first_order_filter_type_t fric1_cmd_slow_set_speed; //摩擦轮一阶低通
-    first_order_filter_type_t fric2_cmd_slow_set_speed; //摩擦轮一阶低通
+
+    first_order_filter_type_t fric1_cmd_slow_set_speed; // 摩擦轮一阶低通
+    first_order_filter_type_t fric2_cmd_slow_set_speed; // 摩擦轮一阶低通
+
     fp32 angle[2];
     int16_t ecd_count[2];
     int16_t given_current[2];
@@ -141,6 +149,7 @@ typedef struct
     fp32 max_speed;
     int flag[2];
     int laster_add;
+    
 } fric_move_t;
 
 extern void shoot_init(void);

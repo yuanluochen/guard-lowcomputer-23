@@ -223,7 +223,7 @@ void gimbal_task(void const *pvParameters)
 
         yaw_can_set_current = gimbal_control.gimbal_yaw_motor.given_current;
         pitch_can_set_current = gimbal_control.gimbal_pitch_motor.given_current;
-        CAN_cmd_gimbal(yaw_can_set_current, pitch_can_set_current, 0);
+        // CAN_cmd_gimbal(yaw_can_set_current, pitch_can_set_current, 0);
         vTaskDelay(GIMBAL_CONTROL_TIME);
 #if INCLUDE_uxTaskGetStackHighWaterMark
         gimbal_high_water = uxTaskGetStackHighWaterMark(NULL);

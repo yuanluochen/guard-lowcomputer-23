@@ -51,10 +51,39 @@ static void shoot_fric_off(fric_move_t *fric1_off);
  * @brief  射击控制，控制拨弹电机角度，完成一次发射
  */
 static void shoot_bullet_control(void);
+
+/**
+ * @brief 射击设置电机控制
+ * 
+ */
+static void shoot_set_control(void);
+
+/**
+ * @brief 设置发射控制模式
+ * 
+ */
+static void shoot_set_control_mode(fric_move_t* fric_set_control);
+
+/**
+ * @brief 发射遥控器控制
+ * 
+ */
+static void shoot_rc_control(void);
+
+/**
+ * @brief 发射自动控制
+ * 
+ */
+static void shoot_auto_control(void);
+
+
+
 /**
  * @brief  射击初始化
  */
 void shoot_init(void);
+
+
 
 /*----------------------------------内部变量---------------------------*/
 fp32 fric;
@@ -68,10 +97,11 @@ int trigger_flag = 0, trigger_flag1 = 0;
 int add_t = 0;
 /*----------------------------------结构体------------------------------*/
 static PidTypeDef trigger_motor_pid;
-Shoot_Motor_t trigger_motor;              // 拨弹轮数据
-fric_move_t fric_move;                    // 摩擦轮数据
-shoot_mode_e shoot_mode = SHOOT_STOP;     // 此次射击模式
-shoot_mode_e last_fric_mode = SHOOT_STOP; // 上次射击模式
+Shoot_Motor_t trigger_motor;                                  // 拨弹轮数据
+fric_move_t fric_move;                                        // 发射控制
+shoot_mode_e shoot_mode = SHOOT_STOP;                         // 此次射击模式
+shoot_mode_e last_shoot_mode = SHOOT_STOP;                     // 上次射击模式
+shoot_control_mode_e shoot_control_mode = SHOOT_STOP_CONTROL; // 射击控制模式
 /*----------------------------------外部变量---------------------------*/
 extern ExtY_stm32 stm32_Y;
 extern ExtU_stm32 stm32_U;
@@ -95,8 +125,13 @@ void shoot_task(void const *pvParameters)
         Shoot_Set_Mode();
         //发射数据更新
         Shoot_Feedback_Update();
+        //设置发射控制
+        shoot_set_control();
+        //射击控制循环
         shoot_control_loop();
+        //发送控制指令
         CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
+
         vTaskDelay(1);
     }
 }
@@ -109,7 +144,6 @@ void shoot_init(void)
 {
     fric_move.laster_add = 0;
     trigger_motor.move_flag = 1;
-    trigger_motor.move_flag_ONE = 1;
     // 初始化PID
     stm32_shoot_pid_init();
     static const fp32 Trigger_speed_pid[3] = {900, 0, 100};
@@ -151,6 +185,9 @@ void shoot_level(void)
     trigger_motor.speed_set = 8.3;
 }
 
+
+
+
 /**
  * @brief          射击数据更新
  * @param[in]      void
@@ -159,37 +196,6 @@ void shoot_level(void)
 static void Shoot_Feedback_Update(void)
 {
     uint8_t i;
-    // // 长按计时，更新标志位，控制单点单发
-    // if (shoot_mode != SHOOT_STOP && (abs(fric_move.shoot_rc->rc.ch[4]) >= 100 || fric_move.shoot_rc->mouse.press_l))
-    // {
-    //     shoot_mode = SHOOT_BULLET;
-    //     if (last_fric_mode != SHOOT_BULLET)
-    //     {
-    //         last_fric_mode = SHOOT_BULLET;
-    //     }
-    //     time_l++;
-    // }
-    // else
-    // {
-    //     time_l = 0, flag1 = 0;
-    //     flag = 0;
-    // }
-
-    // if (time_l > 350)
-    // {
-    //     flag = 0;
-    //     flag1 = 0;
-    // }
-    // else if (shoot_mode == SHOOT_BULLET)
-    // {
-    //     flag = 1;
-    // }
-
-    // if (flag == 1 && flag1 == 0)
-    // {
-    //     trigger_motor.set_angle = rad_format(trigger_motor.set_angle + PI_Four);
-    //     flag1 = 1;
-    // }
     // 滤波————>拨弹轮
     static fp32 speed_fliter_1 = 0.0f;
     static fp32 speed_fliter_2 = 0.0f;
@@ -228,6 +234,95 @@ static void Shoot_Feedback_Update(void)
     // speed_ = fric_move.motor_fric[1].fric_motor_measure->speed_rpm;
 }
 
+static void shoot_set_control_mode(fric_move_t* fric_set_control)
+{
+    //判断初始化是否完成
+    if (shoot_control_mode == SHOOT_INIT_CONTROL)
+    {
+        ;
+    }
+
+    //根据遥控器开关设置发射控制模式
+    if (switch_is_up(fric_set_control->shoot_rc->rc.s[SHOOT_CONTROL_CHANNEL]))
+    {
+        shoot_control_mode = SHOOT_AUTO_CONTROL;
+    }     
+    else if (switch_is_mid(fric_set_control->shoot_rc->rc.s[SHOOT_CONTROL_CHANNEL]))
+    {
+        shoot_control_mode = SHOOT_RC_CONTROL;
+    }
+    else
+    {
+        shoot_control_mode = SHOOT_STOP_CONTROL;
+    }
+
+    // 判断进入初始化模式
+    static shoot_control_mode_e last_shoot_control_mode = SHOOT_STOP_CONTROL;
+    if (shoot_control_mode != SHOOT_STOP_CONTROL && last_shoot_control_mode == SHOOT_STOP_CONTROL)
+    {
+        //进入初始化模式
+        shoot_control_mode = SHOOT_INIT_CONTROL;
+    }
+    last_shoot_control_mode = shoot_control_mode;
+
+}
+
+static void shoot_set_control(void)
+{
+    switch(shoot_control_mode)
+    {
+    case SHOOT_RC_CONTROL:
+        shoot_rc_control();
+        break;
+    
+    case SHOOT_AUTO_CONTROL:
+        shoot_auto_control();
+        break;
+    }
+
+}
+
+static void shoot_auto_control(void)
+{
+    ;
+}
+
+static void shoot_rc_control()
+{
+    // 长按计时，更新标志位，控制单点单发
+    if (shoot_mode != SHOOT_STOP && (abs(fric_move.shoot_rc->rc.ch[4]) >= 100 || fric_move.shoot_rc->mouse.press_l))
+    {
+        shoot_mode = SHOOT_BULLET;
+        if (last_shoot_mode != SHOOT_BULLET)
+        {
+            last_shoot_mode = SHOOT_BULLET;
+        }
+        time_l++;
+    }
+    else
+    {
+        time_l = 0, flag1 = 0;
+        flag = 0;
+    }
+
+    if (time_l > 350)
+    {
+        flag = 0;
+        flag1 = 0;
+    }
+    else if (shoot_mode == SHOOT_BULLET)
+    {
+        flag = 1;
+    }
+    if (flag == 1 && flag1 == 0)
+    {
+        trigger_motor.set_angle = rad_format(trigger_motor.set_angle + PI_Four);
+        flag1 = 1;
+    }   
+}
+
+
+
 /**
  * @brief          射击模式设置
  * @param[in]      void
@@ -236,23 +331,22 @@ static void Shoot_Feedback_Update(void)
 static void Shoot_Set_Mode(void)
 {
 
-    //判断是否为自动模式
-    if (switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_CONTROL_CHANNEL]))
+    //设置发射控制模式
+    shoot_set_control_mode(&fric_move);
+
+    //根据控制模式设置发射模式
+    if (shoot_control_mode == SHOOT_AUTO_CONTROL)
     {
-        //判断视觉任务发射指令
-        if (fric_move.shoot_vision_control->shoot_vision_control.shoot_command == SHOOT_ATTACK)
+        if(fric_move.shoot_vision_control->shoot_vision_control.shoot_command == SHOOT_ATTACK)
         {
-            //袭击模式，发射模式为准备
-            shoot_mode = SHOOT_STOP;
-        }
+            shoot_mode = SHOOT_BULLET;
+        } 
         else if (fric_move.shoot_vision_control->shoot_vision_control.shoot_command == SHOOT_STOP_ATTACK)
         {
-            //停止袭击模式，发射模式为停止
             shoot_mode = SHOOT_STOP;
         }
-
     }
-    else
+    else if (shoot_control_mode == SHOOT_RC_CONTROL)
     {
         // 此时哨兵为遥控器控制模式，射击手动
         if (switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_MODE_CHANNEL]))
@@ -262,12 +356,13 @@ static void Shoot_Set_Mode(void)
         else
         {
             shoot_mode = SHOOT_STOP;
-            last_fric_mode = SHOOT_STOP;
+            last_shoot_mode = SHOOT_STOP;
         }
     }
-
-    
-
+    else
+    {
+        shoot_mode = SHOOT_STOP;
+    }
 }
 /**
  * @brief          拨弹轮循环
@@ -306,7 +401,6 @@ void shoot_control_loop(void)
         trigger_motor.speed_set = 0;
         fric_control_loop(&fric_move);
         trigger_motor.move_flag = 1;
-        trigger_motor.move_flag_ONE = 1;
     }
     else if (shoot_mode == SHOOT_STOP)
     {
@@ -344,6 +438,7 @@ static void shoot_bullet_control(void)
         trigger_motor.cmd_time = xTaskGetTickCount();
         trigger_motor.move_flag = 0;
     }
+
     if (rad_format(trigger_motor.set_angle - trigger_motor.angle) > 0.05f)
     {
     }
