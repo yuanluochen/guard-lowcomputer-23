@@ -156,7 +156,7 @@ void shoot_init(void)
     // 数据指针获取
     fric_move.shoot_rc = get_remote_control_point();
     // 获取视觉控制指针
-    fric_move.shoot_vision_control = get_vision_point();
+    fric_move.shoot_vision_control = get_vision_shoot_point();
     trigger_motor.shoot_motor_measure = get_trigger_motor_measure_point();
     trigger_motor.blocking_angle_set = 0;
     fric_move.motor_fric[0].fric_motor_measure = get_shoot_motor_measure_point(0); // 右摩擦轮
@@ -337,11 +337,11 @@ static void Shoot_Set_Mode(void)
     //根据控制模式设置发射模式
     if (shoot_control_mode == SHOOT_AUTO_CONTROL)
     {
-        if(fric_move.shoot_vision_control->shoot_vision_control.shoot_command == SHOOT_ATTACK)
+        if(fric_move.shoot_vision_control->shoot_command == SHOOT_ATTACK)
         {
             shoot_mode = SHOOT_BULLET;
         } 
-        else if (fric_move.shoot_vision_control->shoot_vision_control.shoot_command == SHOOT_STOP_ATTACK)
+        else if (fric_move.shoot_vision_control->shoot_command == SHOOT_STOP_ATTACK)
         {
             shoot_mode = SHOOT_STOP;
         }

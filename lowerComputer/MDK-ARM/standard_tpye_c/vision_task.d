@@ -46,6 +46,7 @@ standard_tpye_c\vision_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal
 standard_tpye_c\vision_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 standard_tpye_c\vision_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 standard_tpye_c\vision_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
+standard_tpye_c\vision_task.o: ../Inc/dma.h
 standard_tpye_c\vision_task.o: ..\application\INS_task.h
 standard_tpye_c\vision_task.o: ..\application\struct_typedef.h
 standard_tpye_c\vision_task.o: ../components/algorithm/Include/arm_math.h

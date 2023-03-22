@@ -62,6 +62,7 @@ standard_tpye_c\vision_usart.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdbool.h
 standard_tpye_c\vision_usart.o: ../components/algorithm/Include/arm_math.h
 standard_tpye_c\vision_usart.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\vision_usart.o: ..\application\vision_task.h
+standard_tpye_c\vision_usart.o: ../Inc/dma.h
 standard_tpye_c\vision_usart.o: ..\application\INS_task.h
 standard_tpye_c\vision_usart.o: ../kalman/kalman.h
 standard_tpye_c\vision_usart.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h

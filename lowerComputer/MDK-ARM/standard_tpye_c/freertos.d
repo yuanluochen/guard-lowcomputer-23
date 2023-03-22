@@ -78,6 +78,7 @@ standard_tpye_c\freertos.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\freertos.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
 standard_tpye_c\freertos.o: ../application/vision_task.h
 standard_tpye_c\freertos.o: ../Inc/usart.h
+standard_tpye_c\freertos.o: ../Inc/dma.h
 standard_tpye_c\freertos.o: ../application/INS_task.h
 standard_tpye_c\freertos.o: ../kalman/kalman.h
 standard_tpye_c\freertos.o: ../application/detect_task.h

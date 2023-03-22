@@ -54,6 +54,7 @@ osThreadId referee_usart_task_handle;
 osThreadId usb_task_handle;
 osThreadId battery_voltage_handle;
 osThreadId shoot_task_handle;
+osThreadId vision_send_task_handle;
 osThreadId vision_task_handle;
 /* USER CODE END PTD */
 
@@ -184,8 +185,12 @@ void MX_FREERTOS_Init(void) {
     osThreadDef(SHOOT, shoot_task, osPriorityNormal, 0, 512);
     shoot_task_handle = osThreadCreate(osThread(SHOOT), NULL);
 
+    osThreadDef(VISION_SEND, vision_send_task, osPriorityNormal, 0, 512);
+    vision_send_task_handle = osThreadCreate(osThread(VISION_SEND), NULL);
+
     osThreadDef(VISION, vision_task, osPriorityNormal, 0, 512);
     vision_task_handle = osThreadCreate(osThread(VISION), NULL);
+
 
 
   /* USER CODE END RTOS_THREADS */

@@ -281,7 +281,7 @@ static void gimbal_init(gimbal_control_t *init)
     // 遥控器数据指针获取
     init->gimbal_rc_ctrl = get_remote_control_point();
     //获取上位机视觉数据指针
-    init->gimbal_vision_point = get_vision_point();
+    init->gimbal_vision_point = get_vision_gimbal_point();
     // 初始化电机模式
     init->gimbal_yaw_motor.gimbal_motor_mode = init->gimbal_yaw_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_RAW;
     init->gimbal_pitch_motor.gimbal_motor_mode = init->gimbal_pitch_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_RAW;

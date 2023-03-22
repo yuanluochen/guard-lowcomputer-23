@@ -64,6 +64,7 @@ standard_tpye_c\chassis_power_control.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\chassis_power_control.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
 standard_tpye_c\chassis_power_control.o: ..\application\vision_task.h
 standard_tpye_c\chassis_power_control.o: ../Inc/usart.h
+standard_tpye_c\chassis_power_control.o: ../Inc/dma.h
 standard_tpye_c\chassis_power_control.o: ..\application\INS_task.h
 standard_tpye_c\chassis_power_control.o: ../kalman/kalman.h
 standard_tpye_c\chassis_power_control.o: ..\application\referee.h

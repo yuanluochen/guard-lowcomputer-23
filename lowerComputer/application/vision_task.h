@@ -1,7 +1,8 @@
 /**
  * @file vision_task.h
  * @author yuanluochen
- * @brief 视觉任务
+ * @brief 发送自身yaw轴pitch轴roll轴绝对角度给上位机视觉，并解算视觉接收数据，由于hal库自身原因对全双工串口通信支持不是特别好，
+ *        为处理这个问题将串口数据分析，与串口发送分离，并延长串口发送时间
  * @version 0.1
  * @date 2023-03-11
  * 
@@ -12,11 +13,15 @@
 #define VISION_TASK_H
 
 #include "usart.h"
+#include "dma.h"
 #include "INS_task.h"
 #include "arm_math.h"
 #include "kalman.h"
 #include "rm_usart.h"
 #include "pid.h"
+
+//外部变量
+extern DMA_HandleTypeDef hdma_usart1_tx;
 
 /**
  * @brief kalman filter 类型
@@ -66,7 +71,12 @@
 #define JUDGE_STOP_ATTACK_COUNT 20
 
 //延时等待
-#define VISION_TASK_INIT_TIME 401
+#define VISION_SEND_TASK_INIT_TIME 401
+//系统延时时间
+#define VISION_SEND_CONTROL_TIME_MS 10
+
+//延时等待
+#define VISION_TASK_INIT_TIME 450
 //系统延时时间
 #define VISION_CONTROL_TIME_MS 2
 
@@ -76,6 +86,8 @@
 #define DOUBLE_ 10000
 //上位机串口结构体
 #define VISION_USART huart1
+//上位机串口dma结构体
+#define VISION_TX_DMA hdma_usart1_tx
 //串口阻塞时间
 #define VISION_USART_TIME_OUT 1000
 //弧度制转角度制
@@ -182,42 +194,58 @@ typedef struct
 }vision_pid_t;
 
 //视觉任务结构体
-typedef struct 
+typedef struct
 {
-    //自身绝对角指针
+    // 上位机视觉指针
+    vision_rxfifo_t *vision_rxfifo;
+    
+    // 自身绝对角指针
     const fp32* vision_angle_point;
-    //绝对角
-    eular_angle_t absolution_angle; 
-    //发送的绝对角数据，为消除负号对原始数据做加pi处理
-    eular_angle_t send_absolution_angle;
-    //配置串口发送数据
-    uint8 send_message[SERIAL_SEND_MESSAGE_SIZE];
-    //配置串口名称(该为地址)
-    UART_HandleTypeDef* send_message_usart;
+    
+    // 绝对角
+    eular_angle_t absolution_angle;
 
-    //上位机视觉指针
-    vision_rxfifo_t* vision_rxfifo;
-
-    //kalman filter 结构体，用于处理视觉上位机发来的数据
+    // kalman filter 结构体，用于处理视觉上位机发来的数据
     vision_kalman_filter_t vision_kalman_filter;
 
-    //pid 结构体，用于提高上位机视觉响应
-    vision_pid_t vision_pid;
-    
-    //云台电机运动命令
+    // 云台电机运动命令
     gimbal_vision_control_t gimbal_vision_control;    
 
     //发射机构发射命令
     shoot_vision_control_t shoot_vision_control;
-    
-}vision_t;
 
+} vision_control_t;
+
+//视觉发送任务结构体
+typedef struct
+{
+    
+    // 自身绝对角指针
+    const fp32 *vision_angle_point;
+    // 绝对角
+    eular_angle_t absolution_angle;
+    // 发送的绝对角数据，为消除负号对原始数据做加pi处理
+    eular_angle_t send_absolution_angle;
+    // 配置串口发送数据
+    uint8 send_message[SERIAL_SEND_MESSAGE_SIZE];
+    // 配置串口名称(该为地址)
+    UART_HandleTypeDef *send_message_usart;
+    // 配置串口发送dma
+    DMA_HandleTypeDef *send_message_dma;
+
+}vision_send_t;
 
 
 //视觉通信任务
-void vision_task(void const *pvParameters);
-//获取上位机命令
-vision_t* get_vision_point(void);
+void vision_send_task(void const *pvParameters);
 
+//视觉数据处理任务
+void vision_task(void const* pvParameters);
+
+// 获取上位机云台命令
+gimbal_vision_control_t* get_vision_gimbal_point(void);
+
+// 获取上位机发射命令
+shoot_vision_control_t* get_vision_shoot_point(void);
 
 #endif // !VISION_TASK_H

@@ -293,7 +293,8 @@ typedef struct
     const RC_ctrl_t *gimbal_rc_ctrl;
 
     //获取视觉上位机数据
-    const vision_t* gimbal_vision_point;
+    const gimbal_vision_control_t* gimbal_vision_point;
+    
 
     const fp32 *gimbal_INT_angle_point;
     const fp32 *gimbal_INT_gyro_point;

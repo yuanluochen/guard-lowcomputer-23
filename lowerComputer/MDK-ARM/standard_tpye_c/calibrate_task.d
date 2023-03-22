@@ -81,4 +81,5 @@ standard_tpye_c\calibrate_task.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\calibrate_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
 standard_tpye_c\calibrate_task.o: ..\application\vision_task.h
 standard_tpye_c\calibrate_task.o: ../Inc/usart.h
+standard_tpye_c\calibrate_task.o: ../Inc/dma.h
 standard_tpye_c\calibrate_task.o: ../kalman/kalman.h

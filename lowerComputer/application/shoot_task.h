@@ -125,7 +125,8 @@ typedef struct
 typedef struct
 {
     const RC_ctrl_t *shoot_rc;            // 遥控器
-    const vision_t *shoot_vision_control; // 视觉控制指针
+    const shoot_vision_control_t *shoot_vision_control; // 视觉控制指针
+
     shoot_mode_e fric_mode;               // 发射模式
     shoot_mode_e last_fric_mode;          // 上一次的发射模式
     fric_Motor_t motor_fric[2];           // 左右摩擦轮
