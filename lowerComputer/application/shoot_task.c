@@ -337,12 +337,19 @@ static void Shoot_Set_Mode(void)
     //根据控制模式设置发射模式
     if (shoot_control_mode == SHOOT_AUTO_CONTROL)
     {
-        if(fric_move.shoot_vision_control->shoot_command == SHOOT_ATTACK)
+        if (fric_move.shoot_vision_control->shoot_command == SHOOT_ATTACK)
         {
+            // 设置发射模式，开摩擦轮，拨弹盘
             shoot_mode = SHOOT_BULLET;
-        } 
+        }
+        else if (fric_move.shoot_vision_control->shoot_command == SHOOT_READY_ATTACK)
+        {
+            // 设置准备发射模式，开摩擦轮
+            shoot_mode = SHOOT_READY;
+        }
         else if (fric_move.shoot_vision_control->shoot_command == SHOOT_STOP_ATTACK)
         {
+            // 设置停止，停止一切
             shoot_mode = SHOOT_STOP;
         }
     }

@@ -1,0 +1,13 @@
+standard_tpye_c\commontablesf16.o: C:/Users/discipline/AppData/Local/arm/packs/ARM/CMSIS/5.9.0/CMSIS/DSP/Source/CommonTables/CommonTablesF16.c
+standard_tpye_c\commontablesf16.o: C:/Users/discipline/AppData/Local/arm/packs/ARM/CMSIS/5.9.0/CMSIS/DSP/Source/CommonTables/arm_common_tables_f16.c
+standard_tpye_c\commontablesf16.o: C:\Users\discipline\AppData\Local\arm\packs\ARM\CMSIS\5.9.0\CMSIS\DSP\Include\arm_math_types_f16.h
+standard_tpye_c\commontablesf16.o: C:\Users\discipline\AppData\Local\arm\packs\ARM\CMSIS\5.9.0\CMSIS\DSP\Include\arm_math_types.h
+standard_tpye_c\commontablesf16.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+standard_tpye_c\commontablesf16.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdint.h
+standard_tpye_c\commontablesf16.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+standard_tpye_c\commontablesf16.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\string.h
+standard_tpye_c\commontablesf16.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
+standard_tpye_c\commontablesf16.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\float.h
+standard_tpye_c\commontablesf16.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\limits.h
+standard_tpye_c\commontablesf16.o: C:/Users/discipline/AppData/Local/arm/packs/ARM/CMSIS/5.9.0/CMSIS/DSP/Source/CommonTables/arm_const_structs_f16.c
+standard_tpye_c\commontablesf16.o: C:/Users/discipline/AppData/Local/arm/packs/ARM/CMSIS/5.9.0/CMSIS/DSP/Source/CommonTables/arm_mve_tables_f16.c

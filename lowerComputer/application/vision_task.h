@@ -35,6 +35,10 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 #define DT 2
 //矩阵大小
 #define MATRIX_SIZE 4
+//状态矩阵大小
+#define STATUS_MATRIX_SIZE 2
+//H矩阵
+#define H_MATRIX_SIZE 2
 
 //pitch轴位移方差
 #define PITCH_DP 1

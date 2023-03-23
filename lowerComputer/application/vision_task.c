@@ -132,10 +132,6 @@ static void send_message_to_vision(UART_HandleTypeDef* send_message_usart, DMA_H
 
     //发送数据
     HAL_UART_Transmit_DMA(send_message_usart, send_message, send_message_size);
-
-    // send_message_usart->RxState = HAL_UART_STATE_READY;
-    // //串口解锁，防止无法实现串口全双工
-    // __HAL_UNLOCK(send_message_usart);
 }
 
 static void vision_send_task_init(vision_send_t* init)
@@ -241,8 +237,11 @@ static void vision_tx_encode(uint8_t* buf, float yaw, float pitch, float roll, u
 static void vision_set_add_value(vision_control_t* vision_set)
 {
     // 上位机视觉原始数据
-    static fp32 vision_gimbal_yaw = 0;   // yaw轴增量
-    static fp32 vision_gimbal_pitch = 0; // pitch轴增量
+    static fp32 vision_gimbal_yaw = 0;   // yaw轴绝对角
+    static fp32 vision_gimbal_pitch = 0; // pitch轴绝对角
+
+    // kalman filter 迭代开始标志位、
+    static bool_t kalman_filter_start_flag = false;
 
     // 上位机
     //  判断是否接收到上位机数据
@@ -256,18 +255,27 @@ static void vision_set_add_value(vision_control_t* vision_set)
         vision_gimbal_pitch = vision_set->vision_rxfifo->pitch_fifo;
         vision_gimbal_yaw = vision_set->vision_rxfifo->yaw_fifo;
 
-        // 发射判断
-        // vision_shoot_judge(vision_set, );
-        // }
-        // else
-        // {
-        //     //未接收到上位机数据
-        //     //设置yaw轴pitch轴增量为0
-        //     vision_gimbal_pitch = 0;
-        //     vision_gimbal_yaw = 0;
-        // }
+        // 判断发射
+        vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
 
-        // 数据优化
+        if (kalman_filter_start_flag == false)
+        {
+            // 命令 kalman filter 迭代开始
+            kalman_filter_start_flag = true;
+        }
+        
+    }
+    else
+    {
+        //设置发射命令为停止发射
+        vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
+    }
+    
+    // 等待上位机第一次发送数据，判断开始迭代
+    if (kalman_filter_start_flag == true)
+    {
+
+        // kalman filter 
 #if KALMAN_FILTER_TYPE
         // 处理上位机视觉数据,对视觉数据进行kalman filter
         KalmanFilter(&vision_set->vision_kalman_filter.gimbal_yaw_kalman, vision_gimbal_yaw);
@@ -285,13 +293,8 @@ static void vision_set_add_value(vision_control_t* vision_set)
         vision_set->gimbal_vision_control.gimbal_pitch_add = vision_set->vision_kalman_filter.gimbal_pitch_second_order_kalman.filtered_value[GIMBAL_ANGLE_ADDRESS_OFFSET] - vision_set->absolution_angle.pitch;
         vision_set->gimbal_vision_control.gimbal_yaw_add = vision_set->vision_kalman_filter.gimbal_yaw_second_order_kalman.filtered_value[GIMBAL_ANGLE_ADDRESS_OFFSET] - vision_set->absolution_angle.yaw;
 #endif
-
-        // 判断发射
-        vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
-
     }
-    
-    
+
 }
 
 /**
@@ -308,35 +311,51 @@ static void second_order_kalman_filter_init(kalman_filter_t* kalman_filter_struc
                                             kalman_filter_init_t* kalman_filter_init_struct, 
                                             float Dp, float Dv, float Da, float Dt)
 {
+    //状态矩阵
+    float X[STATUS_MATRIX_SIZE] = {
+        1,
+        1
+    };
+
+    //状态转移矩阵
+    float H[H_MATRIX_SIZE] = {
+        1,
+        1
+    };
+
     //状态转移矩阵
     float A[MATRIX_SIZE] = {
-        1, Dt,
-        0, 1
-    }; 
+        1.0f, Dt * 6.0f,
+        0.0f, 1.0f
+    };
 
     //状态协方差矩阵,数值不需要太精准,但绝对不可以太小，如果太小会使响应过慢
     float P[MATRIX_SIZE] = {
-        20, 0,
-        0, 20
+        20.0f, 0.0f,
+        0.0f, 20.0f
     };
 
     //过程噪声协方差矩阵
     float Q[MATRIX_SIZE] = {
-        0.25 * pow((double)Dt, 4) * Da, 0.5 * pow((double)Dt, 3) * Da,
-        0.5  * pow((double)Dt, 3) * Da,       pow((double)Dt, 2) * Da
+        0.25f * pow((double)Dt, 4) * Da, 0.5f * pow((double)Dt, 3) * Da,
+        0.5f  * pow((double)Dt, 3) * Da,        pow((double)Dt, 2) * Da
     };
 
     //观测噪声协方差矩阵
     float R[MATRIX_SIZE] = {
-        Dp, 0,
-        0, Dv
+        Dp, 0.0f,
+        0.0f, Dv
     };
     
     //赋值数组
-    memcpy(kalman_filter_init_struct->A_data, A, 4 * sizeof(float));
-    memcpy(kalman_filter_init_struct->P_data, P, 4 * sizeof(float));
-    memcpy(kalman_filter_init_struct->Q_data, Q, 4 * sizeof(float));
-    memcpy(kalman_filter_init_struct->R_data, R, 4 * sizeof(float));
+    memcpy(kalman_filter_init_struct->xhat_data, X, STATUS_MATRIX_SIZE * sizeof(float));
+    memcpy(kalman_filter_init_struct->H_data, H, H_MATRIX_SIZE * sizeof(float));
+    memcpy(kalman_filter_init_struct->A_data, A, MATRIX_SIZE * sizeof(float));
+    memcpy(kalman_filter_init_struct->P_data, P, MATRIX_SIZE * sizeof(float));
+    memcpy(kalman_filter_init_struct->Q_data, Q, MATRIX_SIZE * sizeof(float));
+    memcpy(kalman_filter_init_struct->R_data, R, MATRIX_SIZE * sizeof(float));
+    
+
 
     //初始化kalman filter结构体
     kalman_filter_init(kalman_filter_struct, kalman_filter_init_struct);
@@ -386,8 +405,8 @@ static void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_
         if (stop_attack_count >= JUDGE_STOP_ATTACK_COUNT)
         {
             //达到停止击打的计数
-            //设置停止击打
-            shoot_judge->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
+            //设置准备击打
+            shoot_judge->shoot_vision_control.shoot_command = SHOOT_READY_ATTACK;
         }
         else
         {
