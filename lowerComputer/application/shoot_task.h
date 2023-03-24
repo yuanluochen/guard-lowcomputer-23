@@ -17,9 +17,28 @@
 //射击遥控器控制射击控制方式的通道
 #define SHOOT_CONTROL_CHANNEL 0
 
+//发射任务延时时间 1ms
+#define SHOOT_TASK_DELAY_TIME 1
+
+// 发射任务时间转化 秒转毫秒
+#define SHOOT_TASK_S_TO_MS(x) ((int32_t)((x * 1000.0f) / (SHOOT_TASK_DELAY_TIME)))
+
+//发射任务最大时间，以秒为单位 20 s
+#define SHOOT_TASK_MAX_INIT_TIME 20
+
+//摩擦轮电机转速
+#define FRIC_MOTOR_RUN_SPEED 2.9
+//摩擦轮电机停止转速
+#define FRIC_MOTOR_STOP_SPEED 0
+
+//拨弹盘电机转速
+#define TRIGGER_MOTOR_RUN_SPEED -4.0
+//拨弹盘电机停转
+#define TRIGGER_MOTOR_STOP_SPEED 0
+
 #define GIMBAL_ModeChannel  1
 
-#define SHOOT_CONTROL_TIME  0.002
+#define SHOOT_CONTROL_TIME  0.02
 
 #define RC_S_LONG_TIME 2000
 
@@ -71,7 +90,16 @@ typedef enum
     SHOOT_BULLET,
     SHOOT_BULLET_ONE,
     SHOOT_DONE,
+    SHOOT_INIT, //初始化模式
 } shoot_mode_e;
+
+//电机控制模式
+typedef enum
+{
+    SHOOT_MOTOR_RUN,  // 电机运行
+    SHOOT_MOTOR_STOP, // 电机停止
+} shoot_motor_control_mode_e;
+
 
 typedef enum
 {
@@ -83,6 +111,10 @@ typedef enum
 
 typedef struct
 {
+    //PID结构体
+
+    PidTypeDef motor_pid;
+
     const motor_measure_t *shoot_motor_measure;
     fp32 speed;
     fp32 speed_set;
@@ -121,6 +153,20 @@ typedef struct
     int16_t give_current;
     uint16_t rc_key_time;
 } fric_Motor_t;
+
+//微动开关状态
+typedef enum
+{
+    PRESS = GPIO_PIN_RESET,   // 按下
+    RELEASE = GPIO_PIN_SET, // 松开
+} micro_switch_state_e;
+
+//初始化状态
+typedef enum
+{
+    SHOOT_INIT_FINISH,   // 初始化完成
+    SHOOT_INIT_UNFINISH, // 初始化未完成
+} shoot_init_state_e;
 
 typedef struct
 {

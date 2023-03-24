@@ -140,9 +140,9 @@ void PID_Init(PidTypeDef *pid, uint8_t mode, const fp32 PID[8], fp32 max_out, fp
     pid->Kp = PID[0];
     pid->Ki = PID[1];
     pid->Kd = PID[2];
-		pid->Kf = PID[3];
-		pid->F_divider=PID[6];
-		pid->F_out_limit=PID[7];
+    pid->Kf = PID[3];
+    pid->F_divider = PID[6];
+    pid->F_out_limit = PID[7];
     pid->max_out = max_out;
     pid->max_iout = max_iout;
 	
@@ -153,93 +153,87 @@ void PID_Init(PidTypeDef *pid, uint8_t mode, const fp32 PID[8], fp32 max_out, fp
 
 fp32 PID_Calc(PidTypeDef *pid, fp32 ref, fp32 set)
 {
-  if (pid == NULL)
+    if (pid == NULL)
     {
         return 0.0f;
     }
-    static fp32 M=0.10;
-		static fp32 a=0.8;
-		pid->last_out=pid->out;
-		pid->Last_Dout=pid->Dout;
+    static fp32 M = 0.10;
+    static fp32 a = 0.8;
+    pid->last_out = pid->out;
+    pid->Last_Dout = pid->Dout;
     pid->error[2] = pid->error[1];
     pid->error[1] = pid->error[0];
     pid->set = set;
     pid->fdb = ref;
     pid->error[0] = set - ref;
     if (pid->mode == PID_POSITION)
-    {   if(int_abs(set) > int_abs(pid->F_divider))
-		{
-					pid->Fout = pid->Kf * set;	
-					ABSLimit(&(pid->Fout),pid->F_out_limit);
-			
-		}
-		else if(pid->F_divider!=0)
-       { 
-	   pid->Fout =int_abs(set)/(int_abs(pid->F_divider)+1)*pid->Kf * set;
-	   }
-       
+    {
+        if (int_abs(set) > int_abs(pid->F_divider))
+        {
+            pid->Fout = pid->Kf * set;
+            ABSLimit(&(pid->Fout), pid->F_out_limit);
+        }
+        else if (pid->F_divider != 0)
+        {
+            pid->Fout = int_abs(set) / (int_abs(pid->F_divider) + 1) * pid->Kf * set;
+        }
 
-		pid->Pout = pid->Kp * pid->error[0];
+        pid->Pout = pid->Kp * pid->error[0];
         pid->Iout += pid->Ki * pid->error[0];
-//		if(pid->mode_again==KI_SEPRATE)      //积分分离
-//		{
-//			if( int_abs(pid->error[0])>M)
-//			{
-//				pid->Iout=0.0f;
-//			}
-//			
-//		}
+        //		if(pid->mode_again==KI_SEPRATE)      //积分分离
+        //		{
+        //			if( int_abs(pid->error[0])>M)
+        //			{
+        //				pid->Iout=0.0f;
+        //			}
+        //
+        //		}
         pid->Dbuf[2] = pid->Dbuf[1];
         pid->Dbuf[1] = pid->Dbuf[0];
         pid->Dbuf[0] = (pid->error[0] - pid->error[1]);
         pid->Dout = pid->Kd * pid->Dbuf[0];
         LimitMax(pid->Iout, pid->max_iout);
-		
-		if(pid->mode_again==KD_NO_FULL)    //不完全微分
-		{
-		   pid->Dout=pid->Kd*(1-a)*pid->Dbuf[0]+a* pid->Last_Dout-pid->Kd*(1-a)*pid->Dbuf[1];
-		}
-		else
-		{
-		  pid->Dout = pid->Kd * pid->Dbuf[0];	
-		}
-		
-		
-        pid->out = pid->Pout + pid->Iout + pid->Dout+pid->Fout;
+
+        if (pid->mode_again == KD_NO_FULL) // 不完全微分
+        {
+            pid->Dout = pid->Kd * (1 - a) * pid->Dbuf[0] + a * pid->Last_Dout - pid->Kd * (1 - a) * pid->Dbuf[1];
+        }
+        else
+        {
+            pid->Dout = pid->Kd * pid->Dbuf[0];
+        }
+
+        pid->out = pid->Pout + pid->Iout + pid->Dout + pid->Fout;
         LimitMax(pid->out, pid->max_out);
-		
     }
     else if (pid->mode == PID_DELTA)
     {
         pid->Pout = pid->Kp * (pid->error[0] - pid->error[1]);
         pid->Iout = pid->Ki * pid->error[0];
-		if(pid->mode_again==KI_SEPRATE)      //积分分离
-		{
-			if( int_abs(pid->error[0])>M)
-			{
-				pid->Iout=0.0f;
-			}
-			
-		}
+        if (pid->mode_again == KI_SEPRATE) // 积分分离
+        {
+            if (int_abs(pid->error[0]) > M)
+            {
+                pid->Iout = 0.0f;
+            }
+        }
         pid->Dbuf[2] = pid->Dbuf[1];
         pid->Dbuf[1] = pid->Dbuf[0];
         pid->Dbuf[0] = (pid->error[0] - 2.0f * pid->error[1] + pid->error[2]);
 
-		if(pid->mode_again==KD_NO_FULL||pid->flag==1)    //不完全微分
-		{
-		   pid->Dout=pid->Kd*(1-a)*pid->Dbuf[0]+a* pid->Last_Dout-pid->Kd*(1-a)*pid->Dbuf[1];
-		}
-		else
-		{
-		  pid->Dout = pid->Kd * pid->Dbuf[0];	
-		}
-		 pid->out += pid->Pout + pid->Iout - pid->Dout;
+        if (pid->mode_again == KD_NO_FULL || pid->flag == 1) // 不完全微分
+        {
+            pid->Dout = pid->Kd * (1 - a) * pid->Dbuf[0] + a * pid->Last_Dout - pid->Kd * (1 - a) * pid->Dbuf[1];
+        }
+        else
+        {
+            pid->Dout = pid->Kd * pid->Dbuf[0];
+        }
+        pid->out += pid->Pout + pid->Iout - pid->Dout;
         LimitMax(pid->out, pid->max_out);
-		
-}      
-       
-       
-     return pid->out;
+    }
+
+    return pid->out;
 }
 
 /**********************************************************************************************************

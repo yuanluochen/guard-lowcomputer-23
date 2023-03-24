@@ -76,7 +76,6 @@ void vision_send_task(void const *pvParameters)
         vision_send_msg(&vision_send);
         //系统延时
         vTaskDelay(VISION_SEND_CONTROL_TIME_MS);
-        
     }
 }
 
@@ -96,7 +95,6 @@ void vision_task(void const* pvParameters)
         //系统延时
         vTaskDelay(VISION_CONTROL_TIME_MS);
     }
-    
 }
 
 static void vision_send_msg(vision_send_t* vision_send)
@@ -125,7 +123,6 @@ static void send_message_to_vision(UART_HandleTypeDef* send_message_usart, DMA_H
         {
             break;
         }
-        
     }
     //关闭DMA
     __HAL_DMA_DISABLE(send_message_dma);
@@ -149,7 +146,9 @@ static void vision_send_task_init(vision_send_t* init)
 
 static void vision_task_init(vision_control_t* init)
 {
-
+		//获取陀螺仪绝对角指针                                                                                                                                                                                                                                                                                                                                                           init->vision_angle_point = get_INS_angle_point();
+    init->vision_angle_point = get_INS_angle_point();
+	
     // 获取上位机视觉指针
     init->vision_rxfifo = get_vision_rxfifo_point();
 #if KALMAN_FILTER_TYPE

@@ -17,6 +17,8 @@
         "gimbal_behaviour.h": "c",
         "ins_task.h": "c",
         "vision_task.h": "c",
-        "usart.h": "c"
+        "usart.h": "c",
+        "gpio.h": "c",
+        "limits": "c"
     }
 }

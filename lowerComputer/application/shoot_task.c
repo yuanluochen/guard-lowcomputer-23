@@ -37,7 +37,7 @@
  */
 // void Choose_Shoot_Mode(void);
 static void Shoot_Set_Mode(void);
-static void shoot_level(void);
+// static void shoot_level(void);
 /**
  * @brief   射击数据更新
  */
@@ -45,38 +45,23 @@ static void Shoot_Feedback_Update(void);
 /** @brief   摩擦轮控制循环
  */
 static void fric_control_loop(fric_move_t *fric_move_control_loop);
-static void shoot_fric_off(fric_move_t *fric1_off);
-
 /**
- * @brief  射击控制，控制拨弹电机角度，完成一次发射
- */
-static void shoot_bullet_control(void);
-
-/**
- * @brief 射击设置电机控制
+ * @brief 拨弹盘控制循环
  * 
  */
-static void shoot_set_control(void);
+static void trigger_control_loop(Shoot_Motor_t* trigger_move_control_loop);
+// static void shoot_fric_off(fric_move_t *fric1_off);
+
+// /**
+//  * @brief  射击控制，控制拨弹电机角度，完成一次发射
+//  */
+// static void shoot_bullet_control(void);
 
 /**
  * @brief 设置发射控制模式
  * 
  */
 static void shoot_set_control_mode(fric_move_t* fric_set_control);
-
-/**
- * @brief 发射遥控器控制
- * 
- */
-static void shoot_rc_control(void);
-
-/**
- * @brief 发射自动控制
- * 
- */
-static void shoot_auto_control(void);
-
-
 
 /**
  * @brief  射击初始化
@@ -96,17 +81,19 @@ int flag1 = 0;
 int trigger_flag = 0, trigger_flag1 = 0;
 int add_t = 0;
 /*----------------------------------结构体------------------------------*/
-static PidTypeDef trigger_motor_pid;
 Shoot_Motor_t trigger_motor;                                  // 拨弹轮数据
 fric_move_t fric_move;                                        // 发射控制
-shoot_mode_e shoot_mode = SHOOT_STOP;                         // 此次射击模式
-shoot_mode_e last_shoot_mode = SHOOT_STOP;                     // 上次射击模式
-shoot_control_mode_e shoot_control_mode = SHOOT_STOP_CONTROL; // 射击控制模式
 /*----------------------------------外部变量---------------------------*/
 extern ExtY_stm32 stm32_Y;
 extern ExtU_stm32 stm32_U;
 /*---------------------------------------------------------------------*/
-
+// 控制模式
+shoot_mode_e shoot_mode = SHOOT_STOP;                             // 此次射击模式
+// shoot_mode_e last_shoot_mode = SHOOT_STOP;                        // 上次射击模式
+shoot_control_mode_e shoot_control_mode = SHOOT_STOP_CONTROL;     // 射击控制模式
+shoot_init_state_e shoot_init_state = SHOOT_INIT_UNFINISH;        // 射击初始化枚举体
+shoot_motor_control_mode_e fric_motor_mode = SHOOT_MOTOR_STOP;    // 摩擦轮电机
+shoot_motor_control_mode_e trigger_motor_mode = SHOOT_MOTOR_STOP; // 拨弹盘电机
 /**
  * @brief          射击任务，间隔 GIMBAL_CONTROL_TIME 1ms
  * @param[in]      pvParameters: 空
@@ -118,21 +105,17 @@ void shoot_task(void const *pvParameters)
     shoot_init();
     while (1)
     {
-        // shoot_laser_on();
-        //设置发射等级
-        shoot_level();
+        // //设置发射等级
+        // shoot_level();
         //设置发射模式
         Shoot_Set_Mode();
         //发射数据更新
         Shoot_Feedback_Update();
-        //设置发射控制
-        shoot_set_control();
         //射击控制循环
         shoot_control_loop();
         //发送控制指令
         CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
-
-        vTaskDelay(1);
+        vTaskDelay(SHOOT_TASK_DELAY_TIME);
     }
 }
 /**
@@ -147,7 +130,7 @@ void shoot_init(void)
     // 初始化PID
     stm32_shoot_pid_init();
     static const fp32 Trigger_speed_pid[3] = {900, 0, 100};
-    PID_Init(&trigger_motor_pid, PID_POSITION, Trigger_speed_pid, TRIGGER_READY_PID_MAX_OUT, TRIGGER_READY_PID_MAX_IOUT);
+    PID_Init(&trigger_motor.motor_pid, PID_POSITION, Trigger_speed_pid, TRIGGER_READY_PID_MAX_OUT, TRIGGER_READY_PID_MAX_IOUT);
     const static fp32 motor_speed_pid[3] = {S3505_MOTOR_SPEED_PID_KP, S3505_MOTOR_SPEED_PID_KI, S3505_MOTOR_SPEED_PID_KD};
     PID_Init(&fric_move.motor_speed_pid[0], PID_POSITION, motor_speed_pid, S3505_MOTOR_SPEED_PID_MAX_OUT, S3505_MOTOR_SPEED_PID_MAX_IOUT);
     PID_Init(&fric_move.motor_speed_pid[1], PID_POSITION, motor_speed_pid, S3505_MOTOR_SPEED_PID_MAX_OUT, S3505_MOTOR_SPEED_PID_MAX_IOUT);
@@ -172,18 +155,16 @@ void shoot_init(void)
     Shoot_Feedback_Update();
     trigger_motor.set_angle = trigger_motor.angle;
 }
-/**
- * @brief          射击等级设置
- * @param[in]      void
- * @retval         返回空
- */
-void shoot_level(void)
-{
-    // KH = 1.0;
-    // ShootSpeed = 30;
-    fric = 2.9f;
-    trigger_motor.speed_set = 8.3;
-}
+// /**
+//  * @brief          射击等级设置
+//  * @param[in]      void
+//  * @retval         返回空
+//  */
+// void shoot_level(void)
+// {
+//     fric = 2.9f;
+//     // trigger_motor.speed_set = 8.3;
+// }
 
 
 
@@ -230,8 +211,6 @@ static void Shoot_Feedback_Update(void)
         fric_move.motor_fric[i].speed = 0.000415809748903494517209f * fric_move.motor_fric[i].fric_motor_measure->speed_rpm;
         fric_move.motor_fric[i].accel = fric_move.motor_speed_pid[i].Dbuf[0] * 500.0f;
     }
-    // speed_t = -1 * fric_move.motor_fric[0].fric_motor_measure->speed_rpm;
-    // speed_ = fric_move.motor_fric[1].fric_motor_measure->speed_rpm;
 }
 
 static void shoot_set_control_mode(fric_move_t* fric_set_control)
@@ -239,7 +218,43 @@ static void shoot_set_control_mode(fric_move_t* fric_set_control)
     //判断初始化是否完成
     if (shoot_control_mode == SHOOT_INIT_CONTROL)
     {
-        ;
+        static uint32_t init_time = 0;
+        //判断是否初始化完成
+        if (shoot_init_state == SHOOT_INIT_UNFINISH)
+        {
+            //初始化未完成
+            
+            //判断初始化时间是否过长
+            if (init_time >= SHOOT_TASK_S_TO_MS(SHOOT_TASK_MAX_INIT_TIME))
+            {
+                // 初始化时间过长不进行初始化，进入其他模式
+                init_time = 0;
+            }
+            else
+            {
+
+                // 判断微动开关是否打开
+                if (BUTTEN_TRIG_PIN == PRESS)
+                {
+                    // 按下
+                    // 设置初始化完成
+                    shoot_init_state = SHOOT_INIT_FINISH;
+                    init_time = 0;
+                    // 进入其他模式
+                }
+                else
+                {
+                    // 初始化模式保持原状，初始化时间增加
+                    init_time++;
+                    return;
+                }
+            }
+       }
+       else
+       {
+            //初始化完成，进入其他模式
+            init_time = 0;
+       }
     }
 
     //根据遥控器开关设置发射控制模式
@@ -266,61 +281,6 @@ static void shoot_set_control_mode(fric_move_t* fric_set_control)
     last_shoot_control_mode = shoot_control_mode;
 
 }
-
-static void shoot_set_control(void)
-{
-    switch(shoot_control_mode)
-    {
-    case SHOOT_RC_CONTROL:
-        shoot_rc_control();
-        break;
-    
-    case SHOOT_AUTO_CONTROL:
-        shoot_auto_control();
-        break;
-    }
-
-}
-
-static void shoot_auto_control(void)
-{
-    ;
-}
-
-static void shoot_rc_control()
-{
-    // 长按计时，更新标志位，控制单点单发
-    if (shoot_mode != SHOOT_STOP && (abs(fric_move.shoot_rc->rc.ch[4]) >= 100 || fric_move.shoot_rc->mouse.press_l))
-    {
-        shoot_mode = SHOOT_BULLET;
-        if (last_shoot_mode != SHOOT_BULLET)
-        {
-            last_shoot_mode = SHOOT_BULLET;
-        }
-        time_l++;
-    }
-    else
-    {
-        time_l = 0, flag1 = 0;
-        flag = 0;
-    }
-
-    if (time_l > 350)
-    {
-        flag = 0;
-        flag1 = 0;
-    }
-    else if (shoot_mode == SHOOT_BULLET)
-    {
-        flag = 1;
-    }
-    if (flag == 1 && flag1 == 0)
-    {
-        trigger_motor.set_angle = rad_format(trigger_motor.set_angle + PI_Four);
-        flag1 = 1;
-    }   
-}
-
 
 
 /**
@@ -359,12 +319,26 @@ static void Shoot_Set_Mode(void)
         if (switch_is_up(fric_move.shoot_rc->rc.s[SHOOT_MODE_CHANNEL]))
         {
             shoot_mode = SHOOT_READY;
+            // 控制发射
+            if (abs(fric_move.shoot_rc->rc.ch[4]) >= 100)
+            {
+                shoot_mode = SHOOT_BULLET;
+                // if (last_shoot_mode != SHOOT_BULLET)
+                // {
+                //     last_shoot_mode = SHOOT_BULLET;
+                // }
+            }
         }
         else
         {
             shoot_mode = SHOOT_STOP;
-            last_shoot_mode = SHOOT_STOP;
+            // last_shoot_mode = SHOOT_STOP;
         }
+    }
+    else if (shoot_control_mode == SHOOT_INIT_CONTROL)
+    {
+        //此时哨兵初始化控制模式
+        shoot_mode = SHOOT_INIT;
     }
     else
     {
@@ -380,91 +354,163 @@ void shoot_control_loop(void)
 {
     if (shoot_mode == SHOOT_BULLET)
     {
-        trigger_motor_pid.max_out = TRIGGER_BULLET_PID_MAX_OUT;
-        trigger_motor_pid.max_iout = TRIGGER_BULLET_PID_MAX_IOUT;
-        if (trigger_flag1 == 0)
-        {
-            shoot_bullet_control();
-        }
-        fric_control_loop(&fric_move);
-        if (trigger_motor.speed > 2)
-        {
-            trigger_flag = 1;
-            jam_flag = 0;
-        }
-        if (trigger_motor.speed < 0.1f && trigger_flag == 1)
-        {
-            jam_flag++;
-            if (jam_flag > 20)
-            {
-                trigger_flag1 = 1;
-                trigger_flag = 0;
-                jam_flag = 0;
-            }
-        }
+        // trigger_motor_pid.max_out = TRIGGER_BULLET_PID_MAX_OUT;
+        // trigger_motor_pid.max_iout = TRIGGER_BULLET_PID_MAX_IOUT;
+        // if (trigger_flag1 == 0)
+        // {
+        //     shoot_bullet_control();
+        // }
+        // fric_control_loop(&fric_move);
+        // if (trigger_motor.speed > 2)
+        // {
+        //     trigger_flag = 1;
+        //     jam_flag = 0;
+        // }
+        // if (trigger_motor.speed < 0.1f && trigger_flag == 1)
+        // {
+        //     jam_flag++;
+        //     if (jam_flag > 20)
+        //     {
+        //         trigger_flag1 = 1;
+        //         trigger_flag = 0;
+        //         jam_flag = 0;
+        //     }
+        // }
+
+        //配置摩擦轮电机和拨弹盘电机转动
+        fric_motor_mode = SHOOT_MOTOR_RUN;
+        trigger_motor_mode = SHOOT_MOTOR_RUN;
+        
     }
     else if (shoot_mode == SHOOT_READY)
     {
-        trigger_motor.speed_set = 0;
-        fric_control_loop(&fric_move);
-        trigger_motor.move_flag = 1;
+        // trigger_motor.speed_set = 0;
+        // fric_control_loop(&fric_move);
+        // trigger_motor.move_flag = 1;
+        // 配置摩擦轮电机转动，拨弹盘电机不转
+        fric_motor_mode = SHOOT_MOTOR_RUN;
+        trigger_motor_mode = SHOOT_MOTOR_STOP;
     }
     else if (shoot_mode == SHOOT_STOP)
     {
-        shoot_fric_off(&fric_move);
-        trigger_motor.speed_set = 0;
-        fric = 0.0f;
-        fric_control_loop(&fric_move);
-    }
+        // shoot_fric_off(&fric_move);
+        // trigger_motor.speed_set = 0;
+        // fric = 0.0f;
+        // fric_control_loop(&fric_move);
 
-    if (trigger_flag1 == 0)
-    {
-        PID_Calc(&trigger_motor_pid, trigger_motor.speed, trigger_motor.speed_set);
+        //配置摩擦轮电机和拨弹盘电机停转
+        fric_motor_mode = SHOOT_MOTOR_STOP;
+        trigger_motor_mode = SHOOT_MOTOR_STOP;
     }
-    else if (trigger_flag1 == 1)
+    else if (shoot_mode == SHOOT_INIT)
     {
-        PID_Calc(&trigger_motor_pid, trigger_motor.speed, -4.0);
-        add_t++;
-        if (add_t > 190)
+        // //配置摩擦轮停止转动
+        // shoot_fric_off(&fric_move);
+        //判断是否初始化完成
+        if(shoot_init_state == SHOOT_INIT_UNFINISH)
         {
-            add_t = 0;
-            trigger_flag1 = 0;
+            //初始化未完成
+            //微动开关是否命中
+            if (BUTTEN_TRIG_PIN == RELEASE)
+            {
+                shoot_init_state = SHOOT_INIT_UNFINISH;
+                //未按下,配置拨弹盘转动,摩擦轮停转
+                fric_motor_mode = SHOOT_MOTOR_STOP;
+                trigger_motor_mode = SHOOT_MOTOR_RUN;
+            }
+            else
+            {
+                //按下
+                shoot_init_state = SHOOT_INIT_FINISH;
+                //电机停转
+                fric_motor_mode = SHOOT_MOTOR_STOP;
+                trigger_motor_mode = SHOOT_MOTOR_STOP;
+            }
         }
-        trigger_motor.set_angle = trigger_motor.angle;
-    }
-    trigger_motor.given_current = (int16_t)(trigger_motor_pid.out);
-}
-/**
- * @brief   射击控制，控制拨弹电机角度，完成一次发射
- */
-static void shoot_bullet_control(void)
-{
-    if (shoot_mode == SHOOT_BULLET && trigger_motor.move_flag == 1 && flag == 0)
-    {
-        trigger_motor.set_angle = rad_format(trigger_motor.set_angle + PI_Four);
-        trigger_motor.cmd_time = xTaskGetTickCount();
-        trigger_motor.move_flag = 0;
-    }
-
-    if (rad_format(trigger_motor.set_angle - trigger_motor.angle) > 0.05f)
-    {
-    }
-    else
-    {
-        if (shoot_mode == SHOOT_BULLET)
+        else
         {
-            trigger_motor.move_flag = 1;
+            shoot_init_state = SHOOT_INIT_FINISH;
+            // 电机停转
+            fric_motor_mode = SHOOT_MOTOR_STOP;
+            trigger_motor_mode = SHOOT_MOTOR_STOP;
         }
     }
+
+    // if (trigger_flag1 == 0)
+    // {
+    //     PID_Calc(&trigger_motor_pid, trigger_motor.speed, trigger_motor.speed_set);
+    // }
+    // else if (trigger_flag1 == 1)
+    // {
+    //     PID_Calc(&trigger_motor_pid, trigger_motor.speed, -4.0);
+    //     add_t++;
+    //     if (add_t > 190)
+    //     {
+    //         add_t = 0;
+    //         trigger_flag1 = 0;
+    //     }
+    //     trigger_motor.set_angle = trigger_motor.angle;
+    // }
+    // trigger_motor.given_current = (int16_t)(trigger_motor_pid.out);
+
+    //根据电机模式配置电机转动速度
+    switch (fric_motor_mode)
+    {
+    case SHOOT_MOTOR_RUN:
+        //配置电机转动
+        fric = FRIC_MOTOR_RUN_SPEED;
+        break;
+    case SHOOT_MOTOR_STOP:
+        //配置电机停转
+        fric = FRIC_MOTOR_STOP_SPEED;
+        break;
+    }
+    
+    switch (trigger_motor_mode)
+    {
+    case SHOOT_MOTOR_RUN:
+        trigger_motor.speed_set = TRIGGER_MOTOR_RUN_SPEED;
+        break;
+    case SHOOT_MOTOR_STOP:
+        trigger_motor.speed_set = TRIGGER_MOTOR_STOP_SPEED;
+        break;
+    }
+
+    // pid计算
+    fric_control_loop(&fric_move);        // 摩擦轮控制
+    trigger_control_loop(&trigger_motor); // 拨弹盘控制
 }
-/**
- * @brief  摩擦轮关闭
- */
-static void shoot_fric_off(fric_move_t *fric_off)
-{
-    fric_off->speed_set[0] = 0.0f;
-    fric_off->speed_set[1] = 0.0f;
-}
+// /**
+//  * @brief   射击控制，控制拨弹电机角度，完成一次发射
+//  */
+// static void shoot_bullet_control(void)
+// {
+//     if (shoot_mode == SHOOT_BULLET && trigger_motor.move_flag == 1 && flag == 0)
+//     {
+//         trigger_motor.set_angle = rad_format(trigger_motor.set_angle + PI_Four);
+//         trigger_motor.cmd_time = xTaskGetTickCount();
+//         trigger_motor.move_flag = 0;
+//     }
+
+//     if (rad_format(trigger_motor.set_angle - trigger_motor.angle) > 0.05f)
+//     {
+//     }
+//     else
+//     {
+//         if (shoot_mode == SHOOT_BULLET)
+//         {
+//             trigger_motor.move_flag = 1;
+//         }
+//     }
+// }
+// /**
+//  * @brief  摩擦轮关闭
+//  */
+// static void shoot_fric_off(fric_move_t *fric_off)
+// {
+//     fric_off->speed_set[0] = 0.0f;
+//     fric_off->speed_set[1] = 0.0f;
+// }
 /**
  * @brief  摩擦轮控制循环
  */
@@ -491,3 +537,11 @@ static void fric_control_loop(fric_move_t *fric_move_control_loop)
     fric_move.fric_CAN_Set_Current[1] = stm32_Y.out_shoot1;
 }
 
+
+static void trigger_control_loop(Shoot_Motor_t* trigger_move_control_loop)
+{
+    trigger_move_control_loop->motor_pid.max_out = TRIGGER_BULLET_PID_MAX_OUT;
+    trigger_move_control_loop->motor_pid.max_iout = TRIGGER_BULLET_PID_MAX_IOUT;
+    PID_Calc(&trigger_move_control_loop->motor_pid, trigger_move_control_loop->speed, trigger_move_control_loop->speed_set); // 拨弹盘
+    trigger_move_control_loop->given_current = (int16_t)(trigger_move_control_loop->motor_pid.out);
+}
