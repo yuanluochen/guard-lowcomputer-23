@@ -13,6 +13,7 @@
 #include "vision_task.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "shoot_task.h"
 
 
 //视觉发送任务结构体初始化
@@ -26,7 +27,7 @@ static void vision_task_feedback_update(vision_control_t* update);
 //数据编码
 static void vision_tx_encode(uint8_t* buf, float yaw, float pitch, float roll, uint8_t mode_switch);
 //设置yaw轴pitch轴增量
-static void vision_set_add_value(vision_control_t* vision_set);
+static void vision_analysis_date(vision_control_t* vision_set);
 //发送数据
 static void send_message_to_vision(UART_HandleTypeDef* send_message_usart, DMA_HandleTypeDef* send_message_dma, uint8_t* send_message, uint16_t send_message_size);
 /**
@@ -82,17 +83,35 @@ void vision_send_task(void const *pvParameters)
 
 void vision_task(void const* pvParameters)
 {
-    //延时等待，等待上位机发送数据成功
+    // 延时等待，等待上位机发送数据成功
     vTaskDelay(VISION_TASK_INIT_TIME);
-    //视觉任务初始化
+    // 视觉任务初始化
     vision_task_init(&vision_control);
-    while(1)
+    while (1)
     {
-        // 更新数据
-        vision_task_feedback_update(&vision_control);
-        // 解析上位机数据,配置yaw轴pitch轴增量
-        vision_set_add_value(&vision_control);
-        //系统延时
+        // 判断任务是否进行
+        if (shoot_control_vision_task())
+        {
+            // 更新数据
+            vision_task_feedback_update(&vision_control);
+            // 解析上位机数据,配置yaw轴pitch轴增量,以及判断是否发射
+            vision_analysis_date(&vision_control);
+        }
+        else
+        {
+            // 任务不进行
+            static int i = 0;
+            if (i > 100)
+            {
+                i = 0;
+            }
+            else
+            {
+                i ++;
+            }
+            kalman_filter_calc(&vision_control.vision_kalman_filter.gimbal_yaw_second_order_kalman, i);
+        }
+        // 系统延时
         vTaskDelay(VISION_CONTROL_TIME_MS);
     }
 }
@@ -146,7 +165,7 @@ static void vision_send_task_init(vision_send_t* init)
 
 static void vision_task_init(vision_control_t* init)
 {
-		//获取陀螺仪绝对角指针                                                                                                                                                                                                                                                                                                                                                           init->vision_angle_point = get_INS_angle_point();
+    // 获取陀螺仪绝对角指针                                                                                                                                                                                                                                                                                                                                                           init->vision_angle_point = get_INS_angle_point();
     init->vision_angle_point = get_INS_angle_point();
 	
     // 获取上位机视觉指针
@@ -233,14 +252,13 @@ static void vision_tx_encode(uint8_t* buf, float yaw, float pitch, float roll, u
     }
 }
 
-static void vision_set_add_value(vision_control_t* vision_set)
+static void vision_analysis_date(vision_control_t* vision_set)
 {
+    // 上位机视觉版本
+#if 1
     // 上位机视觉原始数据
     static fp32 vision_gimbal_yaw = 0;   // yaw轴绝对角
     static fp32 vision_gimbal_pitch = 0; // pitch轴绝对角
-
-    // kalman filter 迭代开始标志位、
-    static bool_t kalman_filter_start_flag = false;
 
     // 上位机
     //  判断是否接收到上位机数据
@@ -257,24 +275,7 @@ static void vision_set_add_value(vision_control_t* vision_set)
         // 判断发射
         vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
 
-        if (kalman_filter_start_flag == false)
-        {
-            // 命令 kalman filter 迭代开始
-            kalman_filter_start_flag = true;
-        }
-        
-    }
-    else
-    {
-        //设置发射命令为停止发射
-        vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
-    }
-    
-    // 等待上位机第一次发送数据，判断开始迭代
-    if (kalman_filter_start_flag == true)
-    {
-
-        // kalman filter 
+        // kalman filter
 #if KALMAN_FILTER_TYPE
         // 处理上位机视觉数据,对视觉数据进行kalman filter
         KalmanFilter(&vision_set->vision_kalman_filter.gimbal_yaw_kalman, vision_gimbal_yaw);
@@ -292,8 +293,72 @@ static void vision_set_add_value(vision_control_t* vision_set)
         vision_set->gimbal_vision_control.gimbal_pitch_add = vision_set->vision_kalman_filter.gimbal_pitch_second_order_kalman.filtered_value[GIMBAL_ANGLE_ADDRESS_OFFSET] - vision_set->absolution_angle.pitch;
         vision_set->gimbal_vision_control.gimbal_yaw_add = vision_set->vision_kalman_filter.gimbal_yaw_second_order_kalman.filtered_value[GIMBAL_ANGLE_ADDRESS_OFFSET] - vision_set->absolution_angle.yaw;
 #endif
+        
+    }
+    else
+    {
+        //设置发射命令为停止发射
+        vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
+    }
+    
+#else
+    // 上位机视觉原始数据
+    static fp32 vision_gimbal_yaw = 0;   // yaw轴绝对角
+    static fp32 vision_gimbal_pitch = 0; // pitch轴绝对角
+
+    // kalman filter 迭代开始标志位
+    static bool_t kalman_filter_start_flag = false;
+
+    // 上位机
+    //  判断是否接收到上位机数据
+    if (vision_set->vision_rxfifo->rx_flag)//识别到目标
+    {
+        // 接收到上位机数据
+        // 接收位置零
+        vision_set->vision_rxfifo->rx_flag = 0;
+
+        // 获取上位机视觉数据
+        vision_gimbal_pitch = vision_set->vision_rxfifo->pitch_fifo; 
+        vision_gimbal_yaw = vision_set->vision_rxfifo->yaw_fifo;
+
+        // 判断发射
+        vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
+
+        if (kalman_filter_start_flag == false)
+        {
+            // 命令 kalman filter 迭代开始
+            kalman_filter_start_flag = true;
+        }
+            // 等待上位机第一次发送数据，判断开始迭代
+        if (kalman_filter_start_flag == true)
+        {
+            // kalman filter
+#if KALMAN_FILTER_TYPE
+            // 处理上位机视觉数据,对视觉数据进行kalman filter
+            KalmanFilter(&vision_set->vision_kalman_filter.gimbal_yaw_kalman, vision_gimbal_yaw);
+            KalmanFilter(&vision_set->vision_kalman_filter.gimbal_pitch_kalman, vision_gimbal_pitch);
+
+            // 读取上位机kalman filter处理数据
+            vision_set->gimbal_vision_control.gimbal_pitch_add = vision_set->vision_kalman_filter.gimbal_pitch_kalman.X_now - vision_set->absolution_angle.pitch;
+            vision_set->gimbal_vision_control.gimbal_yaw_add = vision_set->vision_kalman_filter.gimbal_yaw_kalman.X_now - vision_set->absolution_angle.yaw;
+#else
+            // 计算二阶kalamn filer,速度自我迭代
+            kalman_filter_calc(&vision_set->vision_kalman_filter.gimbal_pitch_second_order_kalman, vision_gimbal_pitch);
+            kalman_filter_calc(&vision_set->vision_kalman_filter.gimbal_yaw_second_order_kalman, vision_gimbal_yaw);
+
+            // 读取上位机kalamn filter处理后的数值
+            vision_set->gimbal_vision_control.gimbal_pitch_add = vision_set->vision_kalman_filter.gimbal_pitch_second_order_kalman.filtered_value[GIMBAL_ANGLE_ADDRESS_OFFSET] - vision_set->absolution_angle.pitch;
+            vision_set->gimbal_vision_control.gimbal_yaw_add = vision_set->vision_kalman_filter.gimbal_yaw_second_order_kalman.filtered_value[GIMBAL_ANGLE_ADDRESS_OFFSET] - vision_set->absolution_angle.yaw;
+#endif
+        }
+    }
+    else
+    {
+        //设置发射命令为停止发射
+        vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
     }
 
+#endif
 }
 
 /**
@@ -324,7 +389,7 @@ static void second_order_kalman_filter_init(kalman_filter_t* kalman_filter_struc
 
     //状态转移矩阵
     float A[MATRIX_SIZE] = {
-        1.0f, Dt * 6.0f,
+        1.0f, Dt,
         0.0f, 1.0f
     };
 
@@ -352,7 +417,7 @@ static void second_order_kalman_filter_init(kalman_filter_t* kalman_filter_struc
     memcpy(kalman_filter_init_struct->A_data, A, MATRIX_SIZE * sizeof(float));
     memcpy(kalman_filter_init_struct->P_data, P, MATRIX_SIZE * sizeof(float));
     memcpy(kalman_filter_init_struct->Q_data, Q, MATRIX_SIZE * sizeof(float));
-    memcpy(kalman_filter_init_struct->R_data, R, MATRIX_SIZE * sizeof(float));
+    memcpy(kalman_filter_init_struct->R_data, R, 1 * sizeof(float));
     
 
 

@@ -42,11 +42,46 @@ typedef struct {
 #define mat_inv arm_mat_inverse_f32
 #define mat_inv_f64 arm_mat_inverse_f64
 
+// //kalman filter数据矩阵
+// typedef struct 
+// {
+//     float32_t X[2];
+//     float32_t P[4];
+//     float32_t F[4];
+//     float32_t FT[4];
+//     float32_t R[1];
+//     float32_t H[2];
+//     float32_t HT[2];
+//     float32_t I[4];
+//     float32_t Q[4];
+//     float32_t Z[2];
+// }kalman_filter_data_t;
+
+
+// //kalman filter 计算结构体
+// typedef struct 
+// {
+//     mat x; //状态矩阵
+//     mat P; //状态协方差矩阵
+//     mat u; //外部运动
+//     mat F; //状态转移矩阵
+//     mat H; //测量矩阵
+//     mat R; //测量协方差矩阵
+//     mat I; //单位矩阵
+//     mat Q; //过程噪声协方差矩阵
+//     mat K; //kalman 增益
+//     mat Z; //观测矩阵
+//     mat HT;
+//     mat FT;
+// }kalman_filter_calc_t;
+
+
 #define Angle_limit 200         //角度小于50开启预测
-#define PredictAngle_limit 250 //预测值限幅
+#define PredictAngle_limit 250//预测值限幅
 
 #define Kf_Angle 0
 #define Kf_Speed 1
+
 
 typedef struct
 {
@@ -59,11 +94,11 @@ typedef struct
 {
   float raw_value;
   float filtered_value[2];
-  float xhat_data[2], xhatminus_data[2], z_data[2], Pminus_data[4], K_data[4];
+  float xhat_data[2], xhatminus_data[2], z_data[1], Pminus_data[4], K_data[2];
   float P_data[4];
   float AT_data[4], HT_data[4];
   float A_data[4];
-  float H_data[4];
+  float H_data[2];
   float Q_data[4];
   float R_data[4];
 } kalman_filter_init_t;

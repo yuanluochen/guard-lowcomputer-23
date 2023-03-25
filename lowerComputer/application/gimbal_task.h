@@ -165,15 +165,11 @@
 #define GIMBAL_ACCEL_Z_NUM 170.3f
 #endif
 
-/**
- * @brief 云台自瞄模式详解
- * 
- */
 
 //云台自瞄模式
 #define GIMBAL_AUTO_MODE 1//若该自瞄模式不需要了，则将该位置0即可
  //使能编译云台自瞄模式
-#if GIMBAL_AUTO_MODE
+
 /**kalman filter  Q R 的数值
  * R固定，Q越大，代表越信任侧量值，Q无穷代表只用测量值,反之，Q越小代表越信任模型预测值，Q为零则是只用模型预测
  */
@@ -184,7 +180,6 @@
 #define GIMBAL_PITCH_KALMAN_FILTER_Q 200
 #define GIMBAL_PITCH_KALMAN_FILTER_R 400
 
-#endif // !GIMBAL_AUTO_MODE
 
 
 //云台pitch轴最大值相对角度

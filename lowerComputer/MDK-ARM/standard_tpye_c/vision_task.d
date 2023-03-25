@@ -68,3 +68,10 @@ standard_tpye_c\vision_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/portab
 standard_tpye_c\vision_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
 standard_tpye_c\vision_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
 standard_tpye_c\vision_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+standard_tpye_c\vision_task.o: ..\application\shoot_task.h
+standard_tpye_c\vision_task.o: ..\application\CAN_receive.h
+standard_tpye_c\vision_task.o: ..\application\gimbal_task.h
+standard_tpye_c\vision_task.o: ..\application\remote_control.h
+standard_tpye_c\vision_task.o: ../bsp/boards/bsp_rc.h
+standard_tpye_c\vision_task.o: ../components/algorithm/user_lib.h
+standard_tpye_c\vision_task.o: ../kalman/kalman.h

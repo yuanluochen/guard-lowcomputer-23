@@ -24,7 +24,7 @@
 #define SHOOT_TASK_S_TO_MS(x) ((int32_t)((x * 1000.0f) / (SHOOT_TASK_DELAY_TIME)))
 
 //发射任务最大时间，以秒为单位 20 s
-#define SHOOT_TASK_MAX_INIT_TIME 20
+#define SHOOT_TASK_MAX_INIT_TIME 10
 
 //摩擦轮电机转速
 #define FRIC_MOTOR_RUN_SPEED 2.9
@@ -32,7 +32,7 @@
 #define FRIC_MOTOR_STOP_SPEED 0
 
 //拨弹盘电机转速
-#define TRIGGER_MOTOR_RUN_SPEED -4.0
+#define TRIGGER_MOTOR_RUN_SPEED 10.0
 //拨弹盘电机停转
 #define TRIGGER_MOTOR_STOP_SPEED 0
 
@@ -210,6 +210,9 @@ extern void shoot_control_loop(void);
  * @param pvParameters 
  */
 void shoot_task(void const *pvParameters);
+
+//射击控制视觉任务
+bool_t shoot_control_vision_task(void);
 
 
 #endif

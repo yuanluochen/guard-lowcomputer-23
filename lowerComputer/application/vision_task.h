@@ -252,4 +252,6 @@ gimbal_vision_control_t* get_vision_gimbal_point(void);
 // 获取上位机发射命令
 shoot_vision_control_t* get_vision_shoot_point(void);
 
+
+
 #endif // !VISION_TASK_H
