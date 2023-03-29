@@ -266,6 +266,8 @@ static void gimbal_init(gimbal_control_t *init)
     const static fp32 gimbal_y_order_filter_RC[1] = {GIMBAL_ACCEL_Y_NUM};
     const static fp32 gimbal_x_order_filter_auto[1] = {GIMBAL_ACCEL_X_NUM - 50};
     const static fp32 gimbal_y_order_filter_auto[1] = {GIMBAL_ACCEL_Y_NUM};
+    const static fp32 gimbal_vision_yaw_filter[1] = {GIMBAL_ACCEL_Y_NUM};
+    const static fp32 gimbal_vision_pitch_filter[1] = {GIMBAL_ACCEL_Y_NUM};
 
     //给底盘跟随云台模式用的
     gimbal_control.gimbal_yaw_motor.frist_ecd = GIMBAL_YAW_OFFSET_ENCODE;
@@ -295,6 +297,8 @@ static void gimbal_init(gimbal_control_t *init)
     first_order_filter_init(&init->gimbal_cmd_slow_set_vz, GIMBAL_CONTROL_TIME, gimbal_z_order_filter);
     first_order_filter_init(&init->gimbal_cmd_slow_set_vx_auto, GIMBAL_CONTROL_TIME, gimbal_x_order_filter_auto);
     first_order_filter_init(&init->gimbal_cmd_slow_set_vy_auto, GIMBAL_CONTROL_TIME, gimbal_y_order_filter_auto);
+    first_order_filter_init(&init->gimbal_vision_control_pitch, GIMBAL_CONTROL_TIME, gimbal_vision_pitch_filter);
+    first_order_filter_init(&init->gimbal_vision_control_yaw, GIMBAL_CONTROL_TIME, gimbal_vision_yaw_filter);
     // 初始化yaw电机pid
     stm32_pid_init();
     // 初始化pitch轴电机pid

@@ -1,11 +1,9 @@
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\Ac506u7\Bin'
 Build target 'standard_robot'
-compiling vision_task.c...
-..\application\vision_task.c(375): warning:  #177-D: function "vision_shoot_judge"  was declared but never referenced
-  static void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw_angle, fp32 vision_begin_add_pitch_angle)
-..\application\vision_task.c: 1 warning, 0 errors
+compiling gimbal_behaviour.c...
+compiling gimbal_task.c...
 linking...
-Program Size: Code=95568 RO-data=13236 RW-data=1308 ZI-data=60372  
+Program Size: Code=95824 RO-data=13244 RW-data=1308 ZI-data=60404  
 FromELF: creating hex file...
-"standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 1 Warning(s).
-Build Time Elapsed:  00:00:04
+"standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 0 Warning(s).
+Build Time Elapsed:  00:00:05

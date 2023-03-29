@@ -468,14 +468,19 @@ static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal
 {
     //判断云台视觉控制云台数值
     fp32 yaw_error = 0;//yaw轴设定值与当前值的差值
-    fp32 pitch_error = 0; //pitch轴设定值与当前值之间的差值    
+    fp32 pitch_error = 0; //pitch轴设定值与当前值之间的差值
 
+    //滤波处理
     yaw_error = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
     pitch_error = gimbal_control_set->gimbal_pitch_motor.absolute_angle_set - gimbal_control_set->gimbal_pitch_motor.absolute_angle;
 
+    first_order_filter_cali(&gimbal_control_set->gimbal_vision_control_pitch, gimbal_control_set->gimbal_vision_point->gimbal_pitch);
+    first_order_filter_cali(&gimbal_control_set->gimbal_vision_control_yaw, gimbal_control_set->gimbal_vision_point->gimbal_yaw);
     //赋值增量
-    *yaw = gimbal_control_set->gimbal_vision_point->gimbal_yaw * MOTOR_ECD_TO_RAD - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
-    *pitch = gimbal_control_set->gimbal_vision_point->gimbal_pitch * MOTOR_ECD_TO_RAD - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;
+    *yaw = gimbal_control_set->gimbal_vision_control_yaw.out * ANGLE_TO_RADIAN - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
+    *pitch = gimbal_control_set->gimbal_vision_control_pitch.out * ANGLE_TO_RADIAN - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;
+    // *yaw = gimbal_control_set->gimbal_vision_point->gimbal_yaw * ANGLE_TO_RADIAN;
+    // *pitch = gimbal_control_set->gimbal_vision_point->gimbal_pitch * ANGLE_TO_RADIAN;
 } 
 /**
   * @brief          云台初始化控制，电机是陀螺仪角度控制，云台先抬起pitch轴，后旋转yaw轴
