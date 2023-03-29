@@ -223,7 +223,7 @@ void gimbal_task(void const *pvParameters)
 
         yaw_can_set_current = gimbal_control.gimbal_yaw_motor.given_current;
         pitch_can_set_current = gimbal_control.gimbal_pitch_motor.given_current;
-        // CAN_cmd_gimbal(yaw_can_set_current, pitch_can_set_current, 0);
+        CAN_cmd_gimbal(yaw_can_set_current, pitch_can_set_current, 0);
         vTaskDelay(GIMBAL_CONTROL_TIME);
 #if INCLUDE_uxTaskGetStackHighWaterMark
         gimbal_high_water = uxTaskGetStackHighWaterMark(NULL);
@@ -269,6 +269,7 @@ static void gimbal_init(gimbal_control_t *init)
 
     //给底盘跟随云台模式用的
     gimbal_control.gimbal_yaw_motor.frist_ecd = GIMBAL_YAW_OFFSET_ENCODE;
+    gimbal_control.gimbal_yaw_motor.LAST_ZERO_ECD = GIMBAL_YAW_LAST_OFFSET_ENCODE;
 
     static const fp32 Pitch_speed_pid[3] = {PITCH_SPEED_PID_KP, PITCH_SPEED_PID_KI, PITCH_SPEED_PID_KD};
     volatile static const fp32 Yaw_speed_pid[3] = {YAW_SPEED_PID_KP, YAW_SPEED_PID_KI, YAW_SPEED_PID_KD};

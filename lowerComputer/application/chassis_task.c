@@ -140,8 +140,8 @@ void chassis_task(void const *pvParameters)
         
         // send control current
         //发送控制电流
-        // CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
-        //                chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+        CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
+                       chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
 
         //os delay
         //系统延时
@@ -265,13 +265,14 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_move_tra
     if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_SPIN) &&
         chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
     {
+        //小陀螺模式就近对位
         chassis_move_transit->mode_flag = 1;
     }
-    if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_NO_FOLLOW_YAW) &&
-        chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
-    {
-        chassis_move_transit->mode_flag = 1;
-    }
+    // if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_NO_FOLLOW_YAW) &&
+    //     chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
+    // {
+    //     chassis_move_transit->mode_flag = 1;
+    // }
 
     chassis_move_transit->last_chassis_mode = chassis_move_transit->chassis_mode;
 }
@@ -604,46 +605,50 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
     // 赋值电流值
     for (i = 0; i < 4; i++)
     {
-            if (abs(chassis_move_control_loop->motor_chassis[i].give_current) >= abs(chassis_move_control_loop->power_control.MAX_current[i]))
-            {
-                chassis_move_control_loop->motor_chassis[i].give_current = chassis_move_control_loop->power_control.MAX_current[i];
-            }
-            else
-            {
-                chassis_move_control_loop->motor_chassis[i].give_current = (int16_t)(chassis_move_control_loop->motor_speed_pid[i].out);
-            }
+        if (abs(chassis_move_control_loop->motor_chassis[i].give_current) >= abs(chassis_move_control_loop->power_control.MAX_current[i]))
+        {
+            chassis_move_control_loop->motor_chassis[i].give_current = chassis_move_control_loop->power_control.MAX_current[i];
+        }
+        else
+        {
+            chassis_move_control_loop->motor_chassis[i].give_current = (int16_t)(chassis_move_control_loop->motor_speed_pid[i].out);
+        }
     }
     chassis_move_control_loop->mode_flag = 0;
 }
 
-
-
-//就近对位角度处理，取劣弧
-void Angle_Error_Compare(int now_angle,int zero_angle,int last_zero_angle)  
+// 就近对位角度处理，取劣弧
+void Angle_Error_Compare(int now_angle, int zero_angle, int last_zero_angle)
 {
-	fp32 flag_angle[2]={0};
-	if(zero_angle>4096)
-	{
-		flag_angle[0]=abs((now_angle-zero_angle));
-		if(flag_angle[0]>4096)  flag_angle[0]=8191-	zero_angle+now_angle;	
-    flag_angle[1]=abs((now_angle-last_zero_angle));
-    if(flag_angle[1]>4096)  flag_angle[1]=8191-	now_angle+last_zero_angle;	
-    if(flag_angle[0]>flag_angle[1])
-		{
-		 zero_angle-=4096;	X_FLAG++;
-		 gimbal_control.gimbal_yaw_motor.frist_ecd=zero_angle;
-		}
-	}
-	else if(zero_angle<=4096)
-	{ 
-		flag_angle[0]=abs((now_angle-zero_angle));
-		if(flag_angle[0]>4096)  flag_angle[0]=8191-	now_angle+zero_angle;		
-    flag_angle[1]=abs((now_angle-last_zero_angle));
-    if(flag_angle[1]>4096)  flag_angle[1]=8191-	last_zero_angle+now_angle;		
-    if(	flag_angle[0]>flag_angle[1])
-		{		
-		zero_angle+=4096;	X_FLAG++;
-		gimbal_control.gimbal_yaw_motor.frist_ecd=zero_angle;
-		}
-	}	
+    fp32 flag_angle[2] = {0};
+    if (zero_angle > 4096)
+    {
+        flag_angle[0] = abs((now_angle - zero_angle));
+        if (flag_angle[0] > 4096)
+            flag_angle[0] = 8191 - zero_angle + now_angle;
+        flag_angle[1] = abs((now_angle - last_zero_angle));
+        if (flag_angle[1] > 4096)
+            flag_angle[1] = 8191 - now_angle + last_zero_angle;
+        if (flag_angle[0] > flag_angle[1])
+        {
+            zero_angle -= 4096;
+            X_FLAG++;
+            gimbal_control.gimbal_yaw_motor.frist_ecd = zero_angle;
+        }
+    }
+    else if (zero_angle <= 4096)
+    {
+        flag_angle[0] = abs((now_angle - zero_angle));
+        if (flag_angle[0] > 4096)
+            flag_angle[0] = 8191 - now_angle + zero_angle;
+        flag_angle[1] = abs((now_angle - last_zero_angle));
+        if (flag_angle[1] > 4096)
+            flag_angle[1] = 8191 - last_zero_angle + now_angle;
+        if (flag_angle[0] > flag_angle[1])
+        {
+            zero_angle += 4096;
+            X_FLAG++;
+            gimbal_control.gimbal_yaw_motor.frist_ecd = zero_angle;
+        }
+    }
 }

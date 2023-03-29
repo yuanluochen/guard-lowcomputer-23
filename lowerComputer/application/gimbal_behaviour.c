@@ -466,11 +466,16 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
  */
 static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set)
 {
-    
+    //判断云台视觉控制云台数值
+    fp32 yaw_error = 0;//yaw轴设定值与当前值的差值
+    fp32 pitch_error = 0; //pitch轴设定值与当前值之间的差值    
 
-    *yaw = -gimbal_control_set->gimbal_vision_point->gimbal_yaw_add * MOTOR_ECD_TO_RAD;
-    *pitch = gimbal_control_set->gimbal_vision_point->gimbal_pitch_add * MOTOR_ECD_TO_RAD;
+    yaw_error = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
+    pitch_error = gimbal_control_set->gimbal_pitch_motor.absolute_angle_set - gimbal_control_set->gimbal_pitch_motor.absolute_angle;
 
+    //赋值增量
+    *yaw = gimbal_control_set->gimbal_vision_point->gimbal_yaw * MOTOR_ECD_TO_RAD - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
+    *pitch = gimbal_control_set->gimbal_vision_point->gimbal_pitch * MOTOR_ECD_TO_RAD - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;
 } 
 /**
   * @brief          云台初始化控制，电机是陀螺仪角度控制，云台先抬起pitch轴，后旋转yaw轴

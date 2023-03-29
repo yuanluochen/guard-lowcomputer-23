@@ -29,7 +29,7 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
  *        1 为一阶 
  * 
  */
-#define KALMAN_FILTER_TYPE 0
+#define KALMAN_FILTER_TYPE 1
 
 //运算时间差
 #define DT 2
@@ -121,6 +121,9 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 //向上位机发送数据为处理符号做加pi处理
 #define SEND_MESSAGE_ERROR PI
 
+//最大未接受到上位机数据的时间
+#define MAX_UNRX_TIME 3
+
 
 //上位机模式,包括装甲板模式,能量机关模式,前哨站模式
 typedef enum
@@ -167,10 +170,10 @@ typedef struct
 //哨兵云台电机运动命令,经滤波处理后的数值
 typedef struct 
 {
-    //本次云台yaw轴增量
-    fp32 gimbal_yaw_add;
-    //本次云台pitch轴增量
-    fp32 gimbal_pitch_add;
+    //本次云台yaw轴数值
+    fp32 gimbal_yaw;
+    //本次云台pitch轴数值
+    fp32 gimbal_pitch;
 }gimbal_vision_control_t;
 
 //哨兵发射命令
@@ -211,6 +214,8 @@ typedef struct
 
     // kalman filter 结构体，用于处理视觉上位机发来的数据
     vision_kalman_filter_t vision_kalman_filter;
+
+    // 初始化一阶滤波器
 
     // 云台电机运动命令
     gimbal_vision_control_t gimbal_vision_control;    
