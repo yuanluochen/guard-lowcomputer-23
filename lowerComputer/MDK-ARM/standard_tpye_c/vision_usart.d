@@ -64,7 +64,6 @@ standard_tpye_c\vision_usart.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\vision_usart.o: ..\application\vision_task.h
 standard_tpye_c\vision_usart.o: ../Inc/dma.h
 standard_tpye_c\vision_usart.o: ..\application\INS_task.h
-standard_tpye_c\vision_usart.o: ../kalman/kalman.h
 standard_tpye_c\vision_usart.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 standard_tpye_c\vision_usart.o: ../Inc/FreeRTOSConfig.h
 standard_tpye_c\vision_usart.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h

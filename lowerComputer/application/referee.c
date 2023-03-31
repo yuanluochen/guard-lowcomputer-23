@@ -28,7 +28,7 @@ ext_shoot_data_t shoot_data_t;
 ext_bullet_remaining_t bullet_remaining_t;
 ext_student_interactive_data_t student_interactive_data_t;
 
-
+ext_rfid_status_t  rfid_status_t;
 
 
 void init_referee_struct_data(void)
@@ -93,8 +93,10 @@ void referee_data_solve(uint8_t *frame)
             memcpy(&game_robot_HP_t, frame + index, sizeof(ext_game_robot_HP_t));
         }
         break;
-
-
+		case RFID_STATE_CMD_ID:
+		{
+						memcpy(&rfid_status_t, frame + index, sizeof(rfid_status_t));
+		}
         case FIELD_EVENTS_CMD_ID:
         {
             memcpy(&field_event, frame + index, sizeof(field_event));
@@ -172,7 +174,6 @@ void get_chassis_power_and_buffer(fp32 *power, fp32 *buffer)
 {
     *power = power_heat_data_t.chassis_power;
     *buffer = power_heat_data_t.chassis_power_buffer;
-
 }
 
 
@@ -181,15 +182,8 @@ uint8_t get_robot_id(void)
     return robot_state.robot_id;
 }
 
-void get_shoot_heat0_limit_and_heat0(uint16_t *heat0_limit, uint16_t *heat0)
+void get_shoot_heat_limit_and_heat(uint16_t *heat_limit, uint16_t *heat)
 {
-    *heat0_limit = robot_state.shooter_heat0_cooling_limit;
-    *heat0 = power_heat_data_t.shooter_heat0;
+    *heat_limit = robot_state.shooter_id1_42mm_cooling_limit;
+    *heat = power_heat_data_t.shooter_id1_42mm_cooling_heat;
 }
-
-void get_shoot_heat1_limit_and_heat1(uint16_t *heat1_limit, uint16_t *heat1)
-{
-    *heat1_limit = robot_state.shooter_heat1_cooling_limit;
-    *heat1 = power_heat_data_t.shooter_heat1;
-}
-

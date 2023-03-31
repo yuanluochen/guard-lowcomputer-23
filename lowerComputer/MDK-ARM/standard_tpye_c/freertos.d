@@ -80,7 +80,6 @@ standard_tpye_c\freertos.o: ../application/vision_task.h
 standard_tpye_c\freertos.o: ../Inc/usart.h
 standard_tpye_c\freertos.o: ../Inc/dma.h
 standard_tpye_c\freertos.o: ../application/INS_task.h
-standard_tpye_c\freertos.o: ../kalman/kalman.h
 standard_tpye_c\freertos.o: ../application/detect_task.h
 standard_tpye_c\freertos.o: ../application/shoot_task.h
 standard_tpye_c\freertos.o: ../application/led_flow_task.h

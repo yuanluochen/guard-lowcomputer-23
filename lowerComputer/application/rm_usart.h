@@ -6,9 +6,6 @@ typedef struct
     fp32 yaw_fifo;         // YAW角度增量信息
     fp32 pitch_fifo;       // PITCH角度增量信息
 
-    fp32 last_yaw_fifo;    // YAW角度增量信息
-    fp32 last_pitch_fifo;  // PITCH角度增量信息
-
     fp32 yaw_speed_fifo;   // YAW速度信息
     fp32 pitch_speed_fifo; // PITCH速度信息
 

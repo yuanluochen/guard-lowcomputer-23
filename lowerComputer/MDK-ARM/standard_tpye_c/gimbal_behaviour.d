@@ -65,7 +65,6 @@ standard_tpye_c\gimbal_behaviour.o: ..\application\vision_task.h
 standard_tpye_c\gimbal_behaviour.o: ../Inc/usart.h
 standard_tpye_c\gimbal_behaviour.o: ../Inc/dma.h
 standard_tpye_c\gimbal_behaviour.o: ..\application\INS_task.h
-standard_tpye_c\gimbal_behaviour.o: ../kalman/kalman.h
 standard_tpye_c\gimbal_behaviour.o: ../bsp/boards/bsp_buzzer.h
 standard_tpye_c\gimbal_behaviour.o: ..\application\detect_task.h
 standard_tpye_c\gimbal_behaviour.o: ..\application\chassis_behaviour.h

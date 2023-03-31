@@ -19,6 +19,7 @@
         "vision_task.h": "c",
         "usart.h": "c",
         "gpio.h": "c",
-        "limits": "c"
+        "limits": "c",
+        "referee.h": "c"
     }
 }

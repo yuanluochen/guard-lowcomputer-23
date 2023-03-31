@@ -89,7 +89,7 @@ void vision_task(void const* pvParameters)
     vision_task_init(&vision_control);
     while (1)
     {
-        // 判断任务是否进行
+        // 等待预装弹完毕，判断任务是否进行
         if (shoot_control_vision_task())
         {
             // 更新数据
