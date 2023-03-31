@@ -23,13 +23,13 @@
 //外部变量
 extern DMA_HandleTypeDef hdma_usart1_tx;
 
-/**
- * @brief kalman filter 类型
- *        0 为二阶
- *        1 为一阶 
- * 
- */
-#define KALMAN_FILTER_TYPE 1
+// /**
+//  * @brief kalman filter 类型
+//  *        0 为二阶
+//  *        1 为一阶 
+//  * 
+//  */
+// #define KALMAN_FILTER_TYPE 1
 
 //运算时间差
 #define DT 2
@@ -67,12 +67,12 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 
 
 //允许发弹角度误差
-#define ALLOW_ATTACK_ERROR 5
+#define ALLOW_ATTACK_ERROR 20
 
 //发弹判断计数次数
-#define JUDGE_ATTACK_COUNT 20
+#define JUDGE_ATTACK_COUNT 2
 //发弹停止判断计数次数
-#define JUDGE_STOP_ATTACK_COUNT 20
+#define JUDGE_STOP_ATTACK_COUNT 5000
 
 //延时等待
 #define VISION_SEND_TASK_INIT_TIME 401
@@ -122,7 +122,7 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 #define SEND_MESSAGE_ERROR PI
 
 //最大未接受到上位机数据的时间
-#define MAX_UNRX_TIME 3
+#define MAX_UNRX_TIME 50
 
 
 //上位机模式,包括装甲板模式,能量机关模式,前哨站模式

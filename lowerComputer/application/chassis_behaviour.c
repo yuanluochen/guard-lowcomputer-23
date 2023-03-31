@@ -152,6 +152,15 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
         //上档为自动模式,底盘不动
         chassis_behaviour_mode = CHASSIS_NO_MOVE;
     }
+    else if (toe_is_error(DBUS_TOE))
+    {
+        //无信号
+        chassis_behaviour_mode = CHASSIS_ZERO_FORCE;
+    }
+    else
+    {
+        chassis_behaviour_mode = CHASSIS_ZERO_FORCE;
+    }
     //when gimbal in some mode, such as init mode, chassis must's move
     //当云台在某些模式下，像初始化， 底盘不动
     if (gimbal_cmd_to_chassis_stop())
@@ -318,7 +327,6 @@ static void chassis_no_move_control(fp32 *vx_set, fp32 *vy_set, fp32 *wz_set, ch
   * @param[in]      chassis_move_rc_to_vector底盘数据
   * @retval         返回空
   */
-//扭腰部分已删（没有用）
 static void chassis_infantry_follow_gimbal_yaw_control(fp32 *vx_set, fp32 *vy_set, fp32 *angle_set, chassis_move_t *chassis_move_rc_to_vector)
 {
     if (vx_set == NULL || vy_set == NULL || angle_set == NULL || chassis_move_rc_to_vector == NULL)

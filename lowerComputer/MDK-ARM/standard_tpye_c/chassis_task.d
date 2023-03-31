@@ -67,6 +67,7 @@ standard_tpye_c\chassis_task.o: ../Inc/dma.h
 standard_tpye_c\chassis_task.o: ..\application\INS_task.h
 standard_tpye_c\chassis_task.o: ../kalman/kalman.h
 standard_tpye_c\chassis_task.o: ..\application\chassis_behaviour.h
+standard_tpye_c\chassis_task.o: ..\application\detect_task.h
 standard_tpye_c\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 standard_tpye_c\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 standard_tpye_c\chassis_task.o: ../Inc/FreeRTOSConfig.h
@@ -81,5 +82,4 @@ standard_tpye_c\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/inclu
 standard_tpye_c\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 standard_tpye_c\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 standard_tpye_c\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-standard_tpye_c\chassis_task.o: ..\application\detect_task.h
 standard_tpye_c\chassis_task.o: ..\application\chassis_power_control.h

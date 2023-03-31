@@ -326,6 +326,10 @@ static void Shoot_Set_Mode(void)
         //此时哨兵初始化控制模式
         shoot_mode = SHOOT_INIT;
     }
+    else if (shoot_control_mode == SHOOT_STOP_CONTROL)
+    {
+        shoot_mode = SHOOT_STOP;
+    }
     else
     {
         shoot_mode = SHOOT_STOP;
