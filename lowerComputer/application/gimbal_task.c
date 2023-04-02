@@ -266,8 +266,8 @@ static void gimbal_init(gimbal_control_t *init)
     const static fp32 gimbal_y_order_filter_RC[1] = {GIMBAL_ACCEL_Y_NUM};
     const static fp32 gimbal_x_order_filter_auto[1] = {GIMBAL_ACCEL_X_NUM - 50};
     const static fp32 gimbal_y_order_filter_auto[1] = {GIMBAL_ACCEL_Y_NUM};
-    const static fp32 gimbal_vision_yaw_filter[1] = {GIMBAL_ACCEL_Y_NUM};
-    const static fp32 gimbal_vision_pitch_filter[1] = {GIMBAL_ACCEL_Y_NUM};
+    const static fp32 gimbal_vision_yaw_filter[1] = {GIMBAL_VISION_YAW_NUM};
+    const static fp32 gimbal_vision_pitch_filter[1] = {GIMBAL_VISION_PITCH_NUM};
 
     //给底盘跟随云台模式用的
     gimbal_control.gimbal_yaw_motor.frist_ecd = GIMBAL_YAW_OFFSET_ENCODE;
@@ -297,8 +297,10 @@ static void gimbal_init(gimbal_control_t *init)
     first_order_filter_init(&init->gimbal_cmd_slow_set_vz, GIMBAL_CONTROL_TIME, gimbal_z_order_filter);
     first_order_filter_init(&init->gimbal_cmd_slow_set_vx_auto, GIMBAL_CONTROL_TIME, gimbal_x_order_filter_auto);
     first_order_filter_init(&init->gimbal_cmd_slow_set_vy_auto, GIMBAL_CONTROL_TIME, gimbal_y_order_filter_auto);
+    // 
     first_order_filter_init(&init->gimbal_vision_control_pitch, GIMBAL_CONTROL_TIME, gimbal_vision_pitch_filter);
     first_order_filter_init(&init->gimbal_vision_control_yaw, GIMBAL_CONTROL_TIME, gimbal_vision_yaw_filter);
+
     // 初始化yaw电机pid
     stm32_pid_init();
     // 初始化pitch轴电机pid
@@ -309,7 +311,7 @@ static void gimbal_init(gimbal_control_t *init)
     PID_init(&init->gimbal_pitch_motor.gimbal_motor_gyro_pid, PID_POSITION, Pitch_speed_pid, PITCH_SPEED_PID_MAX_OUT, PITCH_SPEED_PID_MAX_IOUT);
     // 清除所有PID
     gimbal_total_pid_clear(init);
-    //云台数据更新
+    // 云台数据更新
     gimbal_feedback_update(init);
     // yaw轴电机初始化
     init->gimbal_yaw_motor.absolute_angle_set = init->gimbal_yaw_motor.absolute_angle;
@@ -321,12 +323,12 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_pitch_motor.motor_gyro_set = init->gimbal_pitch_motor.motor_gyro;
 
     init->gimbal_yaw_motor.offset_ecd = GIMBAL_YAW_OFFSET_ENCODE;
-    init->gimbal_pitch_motor.offset_ecd = GIMBAL_PITCH_OFFSET_ENCODE;//pitch轴云台初始化相对角度
-    
-    //获取初始数据
+    init->gimbal_pitch_motor.offset_ecd = GIMBAL_PITCH_OFFSET_ENCODE; // pitch轴云台初始化相对角度
+
+    // 获取初始数据
     init->gimbal_yaw_absolute_offset_angle = init->gimbal_yaw_motor.absolute_angle;
-    
-    //设置pitch轴相对角最大值
+
+    // 设置pitch轴相对角最大值
     init->gimbal_pitch_motor.max_relative_angle = GIMBAL_PITCH_MAX_ENCODE * MOTOR_ECD_TO_RAD;
     init->gimbal_pitch_motor.min_relative_angle = GIMBAL_PITCH_MIN_ENCODE * MOTOR_ECD_TO_RAD;
 }

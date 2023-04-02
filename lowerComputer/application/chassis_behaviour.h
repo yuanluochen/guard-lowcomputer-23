@@ -88,7 +88,7 @@ typedef enum
 {
     CHASSIS_ZERO_FORCE,                  // chassis will be like no power,底盘无力, 跟没上电那样
     CHASSIS_NO_MOVE,                     // chassis will be stop,底盘保持不动
-    CHASSIS_FOLLOW_GIMBAL_YAW,  // chassis will follow gimbal, usually in infantry,正常步兵底盘跟随云台
+    CHASSIS_FOLLOW_GIMBAL_YAW,           // chassis will follow gimbal, usually in infantry,正常步兵底盘跟随云台
     CHASSIS_ENGINEER_FOLLOW_CHASSIS_YAW, // chassis will follow chassis yaw angle, usually in engineer,
                                          // because chassis does have gyro sensor, its yaw angle is calculed by gyro in gimbal and gimbal motor angle,
                                          // if you have a gyro sensor in chassis, please updata yaw, pitch, roll angle in "chassis_feedback_update"  function
@@ -99,14 +99,10 @@ typedef enum
     CHASSIS_OPEN,                        // the value of remote control will mulitiply a value, get current value that will be sent to can bus
                                          //  遥控器的值乘以比例成电流值 直接发送到can总线上
     CHASSIS_SPIN,
-
-    CHASSIS_RC, // 底盘遥控器控制模式，默认为底盘跟随云台
+    CHASSIS_RC,   // 底盘遥控器控制模式，默认为底盘跟随云台
+    CHASSIS_AUTO, // 底盘自动模式
 
 } chassis_behaviour_e;
-
-
-
-
 
 #define CHASSIS_OPEN_RC_SCALE 10 // in CHASSIS_OPEN mode, multiply the value. 在chassis_open 模型下，遥控器乘以该比例发送到can上
 

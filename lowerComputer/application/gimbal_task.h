@@ -165,6 +165,8 @@
 #define GIMBAL_ACCEL_Z_NUM 170.3f
 #endif
 
+#define GIMBAL_VISION_PITCH_NUM 133.3f
+#define GIMBAL_VISION_YAW_NUM 133.3f
 
 //云台自瞄模式
 #define GIMBAL_AUTO_MODE 1//若该自瞄模式不需要了，则将该位置0即可

@@ -83,6 +83,14 @@
 #define TRIGGER_SPEED 3.0f
 #define SWITCH_TRIGGER_ON 0
 
+//哨兵热量上限
+#define GUARD_MAX_MUZZLE_HEAT 240
+
+//哨兵枪口热量距离最大值最大允许误差
+#define GUARD_MAX_ALLOW_MUZZLE_HEAT_ERR0R 50
+//建议发弹的热量距离最大值允许误差
+#define GUARD_SUGGEST_SHOOT_MUZZLE_HEAT 200
+
 typedef enum
 {
     SHOOT_STOP = 0,

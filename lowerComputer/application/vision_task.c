@@ -14,6 +14,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "shoot_task.h"
+#include "gimbal_behaviour.h"
 
 
 //视觉发送任务结构体初始化
@@ -89,8 +90,8 @@ void vision_task(void const* pvParameters)
     vision_task_init(&vision_control);
     while (1)
     {
-        // 等待预装弹完毕，判断任务是否进行
-        if (shoot_control_vision_task())
+        // 等待预装弹完毕，以及云台底盘初始化完毕，判断任务是否进行
+        if (shoot_control_vision_task() && gimbal_control_vision_task())
         {
             // 更新数据
             vision_task_feedback_update(&vision_control);
@@ -112,9 +113,9 @@ static void vision_send_msg(vision_send_t* vision_send)
     vision_send_task_feedback_update(vision_send);
 
     //配置串口发送数据,编码
-    vision_tx_encode(vision_send->send_message, vision_send->send_absolution_angle.yaw * RADIAN_TO_ANGle,
-                                                vision_send->send_absolution_angle.pitch * RADIAN_TO_ANGle,
-                                                vision_send->send_absolution_angle.roll * RADIAN_TO_ANGle,
+    vision_tx_encode(vision_send->send_message, vision_send->send_absolution_angle.yaw * RADIAN_TO_ANGLE,
+                                                vision_send->send_absolution_angle.pitch * RADIAN_TO_ANGLE,
+                                                vision_send->send_absolution_angle.roll * RADIAN_TO_ANGLE,
                                                 ARMOURED_PLATE);
     //串口发送
     send_message_to_vision(vision_send->send_message_usart, vision_send->send_message_dma, vision_send->send_message, SERIAL_SEND_MESSAGE_SIZE);
@@ -180,10 +181,10 @@ static void vision_send_task_feedback_update(vision_send_t* update)
 }
 static void vision_task_feedback_update(vision_control_t* update)
 {
-    // 获取原始数据
-    update->absolution_angle.yaw = *(update->vision_angle_point + INS_YAW_ADDRESS_OFFSET);
-    update->absolution_angle.pitch = -*(update->vision_angle_point + INS_PITCH_ADDRESS_OFFSET);
-    update->absolution_angle.roll = *(update->vision_angle_point + INS_ROLL_ADDRESS_OFFSET);
+    // 获取原始数据并转化为角度制
+    update->absolution_angle.yaw = *(update->vision_angle_point + INS_YAW_ADDRESS_OFFSET) * RADIAN_TO_ANGLE;
+    update->absolution_angle.pitch = -*(update->vision_angle_point + INS_PITCH_ADDRESS_OFFSET) * RADIAN_TO_ANGLE;
+    update->absolution_angle.roll = *(update->vision_angle_point + INS_ROLL_ADDRESS_OFFSET) * RADIAN_TO_ANGLE;
 
 }
 static void vision_tx_encode(uint8_t* buf, float yaw, float pitch, float roll, uint8_t mode_switch)
@@ -219,57 +220,82 @@ static void vision_tx_encode(uint8_t* buf, float yaw, float pitch, float roll, u
         buf[YAW_ADDRESS_OFFSET * UINT8_T_DATA_SIZE + j] = yaw_temp.uin8_value[i];
         buf[PITCH_ADDRESS_OFFSET * UINT8_T_DATA_SIZE + j] = pitch_temp.uin8_value[i];
         buf[ROLL_ADDRESS_OFFSET * UINT8_T_DATA_SIZE + j] = roll_temp.uin8_value[i];
-        buf[SWITCH_ADDRESS_OFFSET * UINT8_T_DATA_SIZE + j] = switch_temp.uin8_value[i]; 
+        buf[SWITCH_ADDRESS_OFFSET * UINT8_T_DATA_SIZE + j] = switch_temp.uin8_value[i];
         buf[END_ADDRESS_OFFSET * UINT8_T_DATA_SIZE + j] = end_temp.uin8_value[i];
     }
 }
 
-static void vision_analysis_date(vision_control_t* vision_set)
+static void vision_analysis_date(vision_control_t *vision_set)
 {
+    
     // 上位机视觉版本
-    // 上位机视觉原始数据
     static fp32 vision_gimbal_yaw = 0;   // yaw轴绝对角
     static fp32 vision_gimbal_pitch = 0; // pitch轴绝对角
-
-    //未接收到上位机的时间
+    // 未接收到上位机的时间
     static int32_t unrx_time = MAX_UNRX_TIME;
-
     // 上位机
-    //  判断是否接收到上位机数据
-    if (vision_set->vision_rxfifo->rx_flag)//识别到目标
+
+	//判断当前云台模式为自瞄模式
+    if (judge_gimbal_mode_is_auto_mode())
     {
-        unrx_time = 0;
-        // 接收到上位机数据
-        // 接收位置零
-        vision_set->vision_rxfifo->rx_flag = 0;
+        //是自瞄模式，设置角度为上位机设置角度
 
-        // 获取上位机视觉数据
-        vision_gimbal_pitch = vision_set->vision_rxfifo->pitch_fifo;
-        vision_gimbal_yaw = vision_set->vision_rxfifo->yaw_fifo;
+        // 判断是否接收到上位机数据
+        if (vision_set->vision_rxfifo->rx_flag) // 识别到目标
+        {
+            unrx_time = 0;
+            // 接收到上位机数据
+            // 接收标志位 置零
+            vision_set->vision_rxfifo->rx_flag = 0;
+					
+			// 获取上位机视觉数据
+            vision_gimbal_pitch = vision_set->vision_rxfifo->pitch_fifo;
+            vision_gimbal_yaw = vision_set->vision_rxfifo->yaw_fifo;
+					
+            // 判断发射
+            vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
+        }
+        else
+        {
+            unrx_time++;
+        }
 
-        // 判断发射
-        vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
+        // 判断上位机视觉停止发送指令
+        if (unrx_time >= MAX_UNRX_TIME)
+        {
+            // 数据置零
+            unrx_time = 0;
+            vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
+        }
     }
     else
     {
-        unrx_time++;
+        //此步的意义在于云台状态切换，使其他模式变为自瞄模式时云台状态为切换前的状态
+
+        //不是自瞄模式，角度为当前云台角度
+        vision_gimbal_pitch = vision_set->absolution_angle.pitch;
+        vision_gimbal_yaw = vision_set->absolution_angle.yaw;
     }
 
-    //判断上位机视觉停止发送指令
-    if (unrx_time >= MAX_UNRX_TIME)
+    // 赋值控制值
+    // 判断是否控制值被赋值
+    if (vision_gimbal_pitch == 0 && vision_gimbal_yaw == 0)
     {
-        //数据置零
-        unrx_time = 0;
-        vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
+        // 未赋值依旧为当前值
+        vision_set->gimbal_vision_control.gimbal_pitch = vision_set->absolution_angle.pitch;
+        vision_set->gimbal_vision_control.gimbal_yaw = vision_set->absolution_angle.yaw;
     }
-
-    vision_set->gimbal_vision_control.gimbal_pitch = vision_gimbal_pitch;
-    vision_set->gimbal_vision_control.gimbal_yaw = vision_gimbal_yaw;
+    else
+    {
+        //已赋值，用设置值
+        vision_set->gimbal_vision_control.gimbal_pitch = vision_gimbal_pitch;
+        vision_set->gimbal_vision_control.gimbal_yaw = vision_gimbal_yaw;
+    }
 }
 
 // /**
 //  * @brief 二阶kalman filter 初始化 针对yaw轴pitch轴角度运动模型
-//  * 
+//  *
 //  * @param kalman_filter_struct kalman filter运算矩阵
 //  * @param kalman_filter_init_struct kalman filter 初始化赋值矩阵，用于给kalman filter运算矩阵赋值
 //  * @param Dp 位移方差
@@ -277,8 +303,8 @@ static void vision_analysis_date(vision_control_t* vision_set)
 //  * @param Da 加速度方差
 //  * @param Dt 运算间隔
 //  */
-// static void second_order_kalman_filter_init(kalman_filter_t* kalman_filter_struct, 
-//                                             kalman_filter_init_t* kalman_filter_init_struct, 
+// static void second_order_kalman_filter_init(kalman_filter_t* kalman_filter_struct,
+//                                             kalman_filter_init_t* kalman_filter_init_struct,
 //                                             float Dp, float Dv, float Da, float Dt)
 // {
 //     //状态矩阵
@@ -366,7 +392,7 @@ static void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_
         }
     }
     // 上位机发射角度大于该范围计数值归零
-    else if (fabs(vision_begin_add_pitch_angle) >= ALLOW_ATTACK_ERROR || fabs(vision_begin_add_yaw_angle) >= ALLOW_ATTACK_ERROR)
+    else if (fabs(vision_begin_add_pitch_angle) > ALLOW_ATTACK_ERROR || fabs(vision_begin_add_yaw_angle) > ALLOW_ATTACK_ERROR)
     {
         
 
@@ -375,8 +401,8 @@ static void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_
             //达到停止击打的计数
             // 判断击打计数值归零
             attack_count = 0;
-            //设置准备击打
-            shoot_judge->shoot_vision_control.shoot_command = SHOOT_READY_ATTACK;
+            //设置停止击打
+            shoot_judge->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
         }
         else
         {
@@ -400,4 +426,3 @@ shoot_vision_control_t* get_vision_shoot_point(void)
 {
     return &vision_control.shoot_vision_control;
 }
-

@@ -93,10 +93,10 @@ void referee_data_solve(uint8_t *frame)
             memcpy(&game_robot_HP_t, frame + index, sizeof(ext_game_robot_HP_t));
         }
         break;
-		case RFID_STATE_CMD_ID:
-		{
+				case RFID_STATE_CMD_ID:
+				{
 						memcpy(&rfid_status_t, frame + index, sizeof(rfid_status_t));
-		}
+				}
         case FIELD_EVENTS_CMD_ID:
         {
             memcpy(&field_event, frame + index, sizeof(field_event));
@@ -187,3 +187,4 @@ void get_shoot_heat_limit_and_heat(uint16_t *heat_limit, uint16_t *heat)
     *heat_limit = robot_state.shooter_id1_42mm_cooling_limit;
     *heat = power_heat_data_t.shooter_id1_42mm_cooling_heat;
 }
+

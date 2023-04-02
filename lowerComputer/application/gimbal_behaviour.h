@@ -54,6 +54,8 @@
 
 #include "gimbal_task.h"
 
+#define AUTO_FILTER_ERROR 0.1f
+
 typedef enum
 {
   GIMBAL_ZERO_FORCE = 0, 
@@ -66,6 +68,12 @@ typedef enum
   GIMBAL_MOTIONLESS,     
 } gimbal_behaviour_e;
 
+typedef enum
+{
+    OTHER_MODE_TO_AUTO_MODE,
+    OTHER_MODE,
+    AUTO_MODE,
+} auto_mode_judge_e;
 
 //云台摇摆方向
 typedef enum
@@ -73,6 +81,8 @@ typedef enum
     POSITIVE, //正向 
     NEGATIVE, //反向
 }gimbal_swing_direction_e;
+
+
 
 /**
   * @brief          被gimbal_set_mode函数调用在gimbal_task.c,云台行为状态机以及电机状态机设置
@@ -106,4 +116,16 @@ extern bool_t gimbal_cmd_to_chassis_stop(void);
   */
 extern bool_t gimbal_cmd_to_shoot_stop(void);
 
+/**
+ * @brief 判断云台模式为自动模式
+ * 
+ * @return 返回1 为自动模式，返回0 不是自动模式 
+ */
+bool_t judge_gimbal_mode_is_auto_mode(void);
+/**
+ * @brief 云台控制底盘任务执行
+ * 
+ * @return bool_t 
+ */
+bool_t gimbal_control_vision_task(void);
 #endif

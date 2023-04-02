@@ -74,3 +74,4 @@ standard_tpye_c\vision_task.o: ../kalman/kalman.h
 standard_tpye_c\vision_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdlib.h
 standard_tpye_c\vision_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdio.h
 standard_tpye_c\vision_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdbool.h
+standard_tpye_c\vision_task.o: ..\application\gimbal_behaviour.h

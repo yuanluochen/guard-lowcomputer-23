@@ -149,7 +149,7 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     }
     else if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
-        //上档为自动模式,底盘不动
+        //上档为自动模式,底盘自动控制
         chassis_behaviour_mode = CHASSIS_NO_MOVE;
     }
     else if (toe_is_error(DBUS_TOE))
@@ -172,15 +172,15 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     //根据行为模式选择一个底盘控制模式
     if (chassis_behaviour_mode == CHASSIS_ZERO_FORCE)
     {
-        chassis_move_mode->chassis_mode = CHASSIS_VECTOR_RAW; 
+        chassis_move_mode->chassis_mode = CHASSIS_VECTOR_RAW;
     }
     else if (chassis_behaviour_mode == CHASSIS_NO_MOVE)
     {
-        chassis_move_mode->chassis_mode = CHASSIS_VECTOR_NO_FOLLOW_YAW; 
+        chassis_move_mode->chassis_mode = CHASSIS_VECTOR_NO_FOLLOW_YAW;
     }
     else if (chassis_behaviour_mode == CHASSIS_FOLLOW_GIMBAL_YAW)
     {
-        chassis_move_mode->chassis_mode = CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW; 
+        chassis_move_mode->chassis_mode = CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW;
     }
     else if (chassis_behaviour_mode == CHASSIS_ENGINEER_FOLLOW_CHASSIS_YAW)
     {
@@ -194,9 +194,15 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     {
         chassis_move_mode->chassis_mode = CHASSIS_VECTOR_RAW;
     }
-		else if (chassis_behaviour_mode == CHASSIS_SPIN)
+    else if (chassis_behaviour_mode == CHASSIS_SPIN)
     {
         chassis_move_mode->chassis_mode = CHASSIS_VECTOR_SPIN;
+    }
+    else if (chassis_behaviour_mode == CHASSIS_AUTO)
+    {
+        //当地盘为自动模式时，根据血量判断底盘运行模式
+
+
     }
 }
 

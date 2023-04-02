@@ -32,7 +32,7 @@ typedef enum
     ROBOT_HURT_CMD_ID                 = 0x0206,
     SHOOT_DATA_CMD_ID                 = 0x0207,
     BULLET_REMAINING_CMD_ID           = 0x0208,
-    RFID_STATE_CMD_ID                 = 0x0209,
+	  RFID_STATE_CMD_ID                 = 0x0209,  
     STUDENT_INTERACTIVE_DATA_CMD_ID   = 0x0301,
     IDCustomData,
 }referee_cmd_id_t;

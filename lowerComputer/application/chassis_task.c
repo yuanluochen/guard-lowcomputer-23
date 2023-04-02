@@ -88,13 +88,13 @@ uint32_t chassis_high_water;
 #endif
 
 /*----------------------------------内部变量---------------------------*/
-int x_flag=0;  //两个标志位，用在角度处理
-int X_FLAG=0;
+int x_flag = 0; // 两个标志位，用在角度处理
+int X_FLAG = 0;
 fp32 K;
 fp32 speed_set_x,speed_set_y=0; //键盘运动时速度设置
 fp32 w_set;
-chassis_move_t chassis_move; //底盘运动数据
-fp32 kx=1.f,ky=1.f,kw=1.f; //速度转换的几个系数
+chassis_move_t chassis_move;       // 底盘运动数据
+fp32 kx = 1.f, ky = 1.f, kw = 1.f; // 速度转换的几个系数
 /*----------------------------------外部变量---------------------------*/
 extern gimbal_control_t gimbal_control;
 
@@ -141,7 +141,7 @@ void chassis_task(void const *pvParameters)
         // send control current
         //发送控制电流
         CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
-                       chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+                     chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
 
         //os delay
         //系统延时
@@ -365,8 +365,6 @@ void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *ch
     {
         *vx_set = 0;
     }
-
-    // 与云台指定方向相关（车正前方或正后方）用于一键掉头和小陀螺就近对位
     if (x_flag == 0)
     {
         if (chassis_move_rc_to_vector->chassis_RC->key.v & KEY_PRESSED_OFFSET_X && (X_FLAG % 2 == 0))

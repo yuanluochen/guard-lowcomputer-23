@@ -65,7 +65,7 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 
 
 //允许发弹角度误差
-#define ALLOW_ATTACK_ERROR 20
+#define ALLOW_ATTACK_ERROR 10
 
 //发弹判断计数次数
 #define JUDGE_ATTACK_COUNT 2
@@ -93,7 +93,7 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 //串口阻塞时间
 #define VISION_USART_TIME_OUT 1000
 //弧度制转角度制
-#define RADIAN_TO_ANGle (360 / (2 * PI))
+#define RADIAN_TO_ANGLE (360 / (2 * PI))
 
 #define HEAD1_DATA 0x34
 #define HEAD2_DATA 0X43
@@ -120,7 +120,7 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 #define SEND_MESSAGE_ERROR PI
 
 //最大未接受到上位机数据的时间
-#define MAX_UNRX_TIME 50
+#define MAX_UNRX_TIME 500
 
 
 //上位机模式,包括装甲板模式,能量机关模式,前哨站模式

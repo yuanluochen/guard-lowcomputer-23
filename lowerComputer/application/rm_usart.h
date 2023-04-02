@@ -17,7 +17,7 @@ typedef struct
 } vision_rxfifo_t;
 
 #define VISION_RX_LEN_2 58u
-#define VISION_RX_LEN 29u
+#define VISION_RX_LEN 29u  //**
 
 #define HEAD0_BASE 0
 #define HEAD1_BASE 4
