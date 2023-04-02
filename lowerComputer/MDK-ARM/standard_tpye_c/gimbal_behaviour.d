@@ -69,3 +69,5 @@ standard_tpye_c\gimbal_behaviour.o: ../bsp/boards/bsp_buzzer.h
 standard_tpye_c\gimbal_behaviour.o: ..\application\detect_task.h
 standard_tpye_c\gimbal_behaviour.o: ..\application\chassis_behaviour.h
 standard_tpye_c\gimbal_behaviour.o: ..\application\chassis_task.h
+standard_tpye_c\gimbal_behaviour.o: ..\application\referee.h
+standard_tpye_c\gimbal_behaviour.o: ../application/protocol/protocol.h

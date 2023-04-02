@@ -117,6 +117,14 @@ static void chassis_no_follow_yaw_control(fp32 *vx_set, fp32 *vy_set, fp32 *wz_s
 
 static void chassis_open_set_control(fp32 *vx_set, fp32 *vy_set, fp32 *wz_set, chassis_move_t *chassis_move_rc_to_vector);
 
+
+/**
+ * @brief 根据血量判断底盘自动运行状态
+ * 
+ * @param chassis_judge_auto_mode 底盘结构体
+ */
+static void judge_chassis_auto_mode(chassis_move_t* chassis_judge_auto_mode);
+
 /*----------------------------------内部变量---------------------------*/
 //highlight, the variable chassis behaviour mode 
 //留意，这个底盘行为模式变量
@@ -150,7 +158,7 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     else if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
         //上档为自动模式,底盘自动控制
-        chassis_behaviour_mode = CHASSIS_NO_MOVE;
+        chassis_behaviour_mode = CHASSIS_AUTO;
     }
     else if (toe_is_error(DBUS_TOE))
     {
@@ -200,12 +208,91 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     }
     else if (chassis_behaviour_mode == CHASSIS_AUTO)
     {
-        //当地盘为自动模式时，根据血量判断底盘运行模式
+        //根据血量变化判断底盘自动模式
+        judge_chassis_auto_mode(chassis_move_mode);
 
+        if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_RUN)
+        {
+            //小陀螺
+            chassis_move_mode->chassis_mode = CHASSIS_VECTOR_SPIN;
+        }
+        else if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_ATTACK)
+        {
+            //不移动
+            chassis_move_mode->chassis_mode = CHASSIS_VECTOR_NO_FOLLOW_YAW;
+        }
 
     }
 }
 
+static void judge_chassis_auto_mode(chassis_move_t* chassis_judge_auto_mode)
+{   
+    //装甲板被击打标志
+    static bool_t hit_flag = 0; 
+    //未被击打的时间
+    static uint16_t not_hit_time = 0;
+    //读取血量
+    chassis_judge_auto_mode->chassis_auto.auto_HP.max_HP = chassis_judge_auto_mode->chassis_auto.ext_game_robot_state_point->max_HP;
+    chassis_judge_auto_mode->chassis_auto.auto_HP.last_HP = chassis_judge_auto_mode->chassis_auto.auto_HP.cur_HP; 
+    chassis_judge_auto_mode->chassis_auto.auto_HP.cur_HP = chassis_judge_auto_mode->chassis_auto.ext_game_robot_state_point->remain_HP;
+
+    //判断血量是否减少
+    if ((chassis_judge_auto_mode->chassis_auto.auto_HP.cur_HP - chassis_judge_auto_mode->chassis_auto.auto_HP.last_HP) < 0)
+    {
+        //血量减少
+
+        //判断是否为装甲板击打问题引发
+        if (chassis_judge_auto_mode->chassis_auto.ext_robot_hurt_point->hurt_type == ARMOR_HURT)
+        {
+            //标志被击打
+            hit_flag = 1;
+            //未被击打时间归零
+            not_hit_time = 0;
+            //是由于装甲板击打问题引发，底盘设置为逃逸
+            chassis_judge_auto_mode->chassis_auto.chassis_auto_mode = CHASSIS_RUN;
+        }
+        else
+        {
+            // 不是则保持之前的状态
+            ; 
+        }
+
+    }
+    else
+    {
+        //判断是否被击打过
+        if(hit_flag == 1)
+        {
+            //被击打过,计时
+            not_hit_time ++;
+
+            //判断距离上次击打后的时间是否到达安全时间
+            if (not_hit_time >= SAFE_TIME)
+            {
+                // 击打标志位归零
+                hit_flag = 0;
+
+                //底盘设置为袭击模式
+                chassis_judge_auto_mode->chassis_auto.chassis_auto_mode = CHASSIS_ATTACK;
+            }
+            else
+            {
+                //依旧为逃逸模式
+                chassis_judge_auto_mode->chassis_auto.chassis_auto_mode = CHASSIS_RUN;
+            }
+
+        }
+        else
+        {
+            //未被击打
+            //击打标志位归零
+            hit_flag = 0;
+            // 袭击模式
+            chassis_judge_auto_mode->chassis_auto.chassis_auto_mode = CHASSIS_ATTACK;
+   
+        }
+    }
+}
 
 /**
   * @brief          set control set-point. three movement param, according to difference control mode,

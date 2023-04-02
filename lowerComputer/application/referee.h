@@ -31,6 +31,12 @@ typedef enum
     PROGRESS_BATTLE = 4,
     PROGRESS_CALCULATING = 5,
 } game_progress_t;
+
+//伤害类型
+typedef enum
+{
+    ARMOR_HURT = 0x00,//装甲板伤害
+}hurt_type_t;
 typedef __packed struct // 0001
 {
     uint8_t game_type : 4;
@@ -225,4 +231,10 @@ extern void get_chassis_power_and_buffer(fp32 *power, fp32 *buffer);
 extern uint8_t get_robot_id(void);
 
 extern void get_shoot_heat_limit_and_heat(uint16_t *heat_limit, uint16_t *heat);
+
+//获取机器人状态指针
+ext_game_robot_state_t* get_game_robot_status_point(void);
+//获取伤害类型指针
+ext_robot_hurt_t* get_robot_hurt_point(void);
+
 #endif

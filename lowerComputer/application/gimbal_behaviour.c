@@ -489,10 +489,6 @@ static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal
     // 赋值设定值
     pitch_set_angle = gimbal_control_set->gimbal_vision_control_pitch.out;
     yaw_set_angle = gimbal_control_set->gimbal_vision_control_yaw.out; 
-
-    pitch_set_angle = gimbal_control_set->gimbal_vision_point->gimbal_pitch;
-    yaw_set_angle = gimbal_control_set->gimbal_vision_point->gimbal_yaw;
-
     //赋值增量
     *yaw = yaw_set_angle * ANGLE_TO_RADIAN - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
     *pitch = pitch_set_angle * ANGLE_TO_RADIAN - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;

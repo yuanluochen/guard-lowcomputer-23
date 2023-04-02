@@ -66,6 +66,8 @@ standard_tpye_c\chassis_behaviour.o: ..\application\vision_task.h
 standard_tpye_c\chassis_behaviour.o: ../Inc/usart.h
 standard_tpye_c\chassis_behaviour.o: ../Inc/dma.h
 standard_tpye_c\chassis_behaviour.o: ..\application\INS_task.h
+standard_tpye_c\chassis_behaviour.o: ..\application\referee.h
+standard_tpye_c\chassis_behaviour.o: ../application/protocol/protocol.h
 standard_tpye_c\chassis_behaviour.o: ..\application\detect_task.h
 standard_tpye_c\chassis_behaviour.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 standard_tpye_c\chassis_behaviour.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h

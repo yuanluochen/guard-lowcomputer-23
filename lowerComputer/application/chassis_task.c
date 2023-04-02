@@ -185,6 +185,11 @@ static void chassis_init(chassis_move_t *chassis_move_init)
     //获取云台电机数据指针
     chassis_move_init->chassis_yaw_motor = get_yaw_motor_point();
     chassis_move_init->chassis_pitch_motor = get_pitch_motor_point();
+
+    //获取比赛状态指针
+    chassis_move_init->chassis_auto.ext_game_robot_state_point = get_game_robot_status_point();
+    //获取伤害类型指针
+    chassis_move_init->chassis_auto.ext_robot_hurt_point = get_robot_hurt_point();
     
     //get chassis motor data point,  initialize motor speed PID
     //获取底盘电机数据指针，初始化PID 
@@ -209,6 +214,12 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 
     chassis_move_init->vy_max_speed = NORMAL_MAX_CHASSIS_SPEED_Y;
     chassis_move_init->vy_min_speed = -NORMAL_MAX_CHASSIS_SPEED_Y;
+
+    //初始化血量
+    chassis_move_init->chassis_auto.auto_HP.max_HP = chassis_move_init->chassis_auto.ext_game_robot_state_point->max_HP;
+    chassis_move_init->chassis_auto.auto_HP.cur_HP = chassis_move_init->chassis_auto.ext_game_robot_state_point->max_HP;
+    chassis_move_init->chassis_auto.auto_HP.last_HP = chassis_move_init->chassis_auto.ext_game_robot_state_point->max_HP;
+
 
     //update data
     //更新一下数据
@@ -469,7 +480,7 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
         chassis_move_control->chassis_relative_angle_set = rad_format(angle_set);
         chassis_move_control->vx_set = cos_yaw * vx_set - sin_yaw * vy_set;
         chassis_move_control->vy_set = sin_yaw * vx_set + cos_yaw * vy_set;
-        chassis_move_control->wz_set = -5;
+        chassis_move_control->wz_set = SPIN_SPEED;  
         // 速度限幅
         chassis_move_control->vx_set = fp32_constrain(chassis_move_control->vx_set, chassis_move_control->vx_min_speed, chassis_move_control->vx_max_speed);
         chassis_move_control->vy_set = fp32_constrain(chassis_move_control->vy_set, chassis_move_control->vy_min_speed, chassis_move_control->vy_max_speed);

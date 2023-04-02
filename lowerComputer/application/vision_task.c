@@ -265,7 +265,12 @@ static void vision_analysis_date(vision_control_t *vision_set)
         {
             // Êý¾ÝÖÃÁã
             unrx_time = 0;
+            //Í£Ö¹·¢µ¯
             vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
+            //ÔÆÌ¨Ò¡°Ú
+            //pitchÖáÒ¡°Ú
+            
+
         }
     }
     else

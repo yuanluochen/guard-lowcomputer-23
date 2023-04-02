@@ -275,6 +275,26 @@
           <WinNumber>1</WinNumber>
           <ItemText>power_heat_data_t</ItemText>
         </Ww>
+        <Ww>
+          <count>24</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>robot_hurt_t</ItemText>
+        </Ww>
+        <Ww>
+          <count>25</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>game_robot_HP_t</ItemText>
+        </Ww>
+        <Ww>
+          <count>26</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>robot_state,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>27</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gimbal_control</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
