@@ -88,6 +88,8 @@
     }
 
 
+
+
 /*----------------------------------内部函数---------------------------*/
 /**
   * @brief          pitch轴滤波.
@@ -138,6 +140,16 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
  */
 static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set);
 
+/**
+ * @brief 设置单轴自动扫描,根据当前角度设置控制值，主要用于设置云台浮动值
+ * 
+ * @param gimbal_set 云台设置值，角度未绝对角(这个变脸要为一个常变量)
+ * @param range 从中心点到最大扫描值的幅度值
+ * @param period 云台单次扫描的周期
+ * @param run_time 扫描运行时间
+ */
+static void scan_control_set(fp32* gimbal_set, fp32 range, fp32 period, fp32 run_time);
+
 /*----------------------------------结构体---------------------------*/
 //云台行为状态机
 static gimbal_behaviour_e gimbal_behaviour = GIMBAL_ZERO_FORCE;
@@ -148,6 +160,15 @@ fp32 Pitch_Set[8]={0};
 extern chassis_behaviour_e chassis_behaviour_mode;
 //云台初始化完毕标志位
 bool_t gimbal_init_finish_flag = 0;
+/**
+ * @brief 标志变量，云台从其他模式切入自瞄模式标志位
+ * 
+ *        该位为1， 则发生了从其他模式切入自瞄模式
+ * 
+ */
+bool_t other_mode_transform_auto_mode_flag = 0;
+
+
 
 /**
   * @brief          gimbal_set_mode函数调用在gimbal_task.c,云台行为状态机以及电机状态机设置
@@ -310,9 +331,6 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
             
             //初始化完成,计时归零,重新计时
             init_time = 0;
-            //初始化完成，保存初始化后的绝对角,该绝对角用于哨兵云台yaw轴摇摆
-            gimbal_mode_set->gimbal_yaw_absolute_offset_angle = gimbal_mode_set->gimbal_yaw_motor.absolute_angle;
-
             // 标志初始化完成
             gimbal_init_finish_flag = 1;
         }
@@ -347,6 +365,12 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
         gimbal_behaviour = GIMBAL_INIT;
         //标志初始化未完成
         gimbal_init_finish_flag = 0;
+    }
+
+    //判断是否发生云台从其他模式切入自瞄模式
+    if (last_gimbal_behaviour != GIMBAL_AUTO && gimbal_behaviour == GIMBAL_AUTO)
+    {
+        other_mode_transform_auto_mode_flag = 1;
     }
 
     // 保存历史数据
@@ -471,24 +495,63 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
  */
 static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set)
 {
-    //判断云台视觉控制云台数值
+    //判断是否从其他模式切入自瞄模式
+    if (judge_other_mode_transform_auto_mode())
+    {
+        //赋值yaw轴，pitch轴自动扫描中值
+        gimbal_control_set->gimbal_auto_scan.pitch_center_value = PITCH_CENTER_VAL * RADIAN_TO_ANGLE;
+        gimbal_control_set->gimbal_auto_scan.yaw_center_value = gimbal_control_set->gimbal_yaw_motor.absolute_angle * RADIAN_TO_ANGLE;
+    }
     fp32 yaw_error = 0;//yaw轴设定值与当前值的差值
     fp32 pitch_error = 0; //pitch轴设定值与当前值之间的差值
 
-    //pitch轴yaw轴角度
+    //视觉任务设置变量
+    fp32 vision_set_yaw = 0;
+    fp32 vision_set_pitch = 0;
+
+    // pitch轴yaw轴设定角度
     fp32 pitch_set_angle = 0;
     fp32 yaw_set_angle = 0;;
 
     yaw_error = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
     pitch_error = gimbal_control_set->gimbal_pitch_motor.absolute_angle_set - gimbal_control_set->gimbal_pitch_motor.absolute_angle;
 
-    // 滤波处理
-    first_order_filter_cali(&gimbal_control_set->gimbal_vision_control_pitch, gimbal_control_set->gimbal_vision_point->gimbal_pitch);
-    first_order_filter_cali(&gimbal_control_set->gimbal_vision_control_yaw, gimbal_control_set->gimbal_vision_point->gimbal_yaw);
+    //获取上位机视觉数据
+    vision_set_pitch = gimbal_control_set->gimbal_vision_point->gimbal_pitch;
+    vision_set_yaw = gimbal_control_set->gimbal_vision_point->gimbal_yaw;
 
-    // 赋值设定值
-    pitch_set_angle = gimbal_control_set->gimbal_vision_control_pitch.out;
-    yaw_set_angle = gimbal_control_set->gimbal_vision_control_yaw.out; 
+    //判断数据是否长久未更新
+    if (judge_not_rx_vision_data())
+    {
+        //长久未更新
+
+        // 自动扫描设置浮动值
+        static fp32 auto_scan_AC_set_yaw = 0;
+
+        //计算运行时间
+        gimbal_control_set->gimbal_auto_scan.scan_run_time = TIME_MS_TO_S(HAL_GetTick()) - gimbal_control_set->gimbal_auto_scan.scan_begin_time;
+        
+        // //云台自动扫描,设置浮动值
+        scan_control_set(&auto_scan_AC_set_yaw, gimbal_control_set->gimbal_auto_scan.yaw_range, gimbal_control_set->gimbal_auto_scan.scan_yaw_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
+
+        //赋值控制值  = 中心值 + 加上浮动函数
+        pitch_set_angle = 0;
+        yaw_set_angle = auto_scan_AC_set_yaw + gimbal_control_set->gimbal_auto_scan.yaw_center_value;
+    }
+    else
+    {
+        //仍在更新
+        //云台自动扫描更新初始时间
+        gimbal_control_set->gimbal_auto_scan.scan_begin_time = TIME_MS_TO_S(HAL_GetTick());
+        // 滤波处理
+        first_order_filter_cali(&gimbal_control_set->gimbal_vision_control_pitch, vision_set_pitch);
+        first_order_filter_cali(&gimbal_control_set->gimbal_vision_control_yaw, vision_set_yaw);
+
+        // 赋值设定值
+        pitch_set_angle = gimbal_control_set->gimbal_vision_control_pitch.out;
+        yaw_set_angle = gimbal_control_set->gimbal_vision_control_yaw.out;
+
+    }
     //赋值增量
     *yaw = yaw_set_angle * ANGLE_TO_RADIAN - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
     *pitch = pitch_set_angle * ANGLE_TO_RADIAN - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;
@@ -574,6 +637,33 @@ static void gimbal_cali_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
     }
 }
 
+static void scan_control_set(fp32* gimbal_set, fp32 range, fp32 period, fp32 run_time)
+{
+    //计算单次运行的步长
+    fp32 step = 4.0f * range / period;
+    //判断云台设置浮动角度是否超过最大值,限制最大值
+    if (*gimbal_set >= range)
+    {
+        *gimbal_set = range;
+    }
+    else if (*gimbal_set <= -range)
+    {
+        *gimbal_set = -range;
+    }
+
+    // 处理运行时间，将运行时间处理到一个周期内
+    fp32 calc_time = run_time - period * ((int16_t)(run_time / period));
+    // 判断当前时间所处的位置，根据当前位置，判断数值计算方向
+    if (calc_time < period / 2.0f)
+    {
+        //上半周期,数值未向上递增函数,step为正值
+        *gimbal_set = step * calc_time - range;
+    }
+    else if (calc_time >= period / 2.0f)
+    {
+        *gimbal_set = -(step * calc_time) + 3 * range;
+    }
+}
 
 bool_t judge_gimbal_mode_is_auto_mode(void)
 {
@@ -582,8 +672,17 @@ bool_t judge_gimbal_mode_is_auto_mode(void)
 
 }
 
+bool_t judge_other_mode_transform_auto_mode(void)
+{
+    //读取数值，判断事件是否发生
+    bool_t temp = other_mode_transform_auto_mode_flag;
+    //数值归零
+    other_mode_transform_auto_mode_flag = 0;
+    return temp;
+}
 
 bool_t gimbal_control_vision_task(void)
 {
     return gimbal_init_finish_flag;
 }
+

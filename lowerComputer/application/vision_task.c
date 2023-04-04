@@ -60,10 +60,15 @@ static void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_
  * @param vision_send 上位机数据发送结构体
  */
 static void vision_send_msg(vision_send_t* vision_send);
+
 //视觉任务结构体
 vision_control_t vision_control = { 0 };
 //视觉发送任务结构体
 vision_send_t vision_send = { 0 };
+
+//为接收到视觉数据标志位
+bool_t not_rx_vision_data_flag = 0;
+
 
 
 void vision_send_task(void const *pvParameters)
@@ -233,8 +238,7 @@ static void vision_analysis_date(vision_control_t *vision_set)
     static fp32 vision_gimbal_pitch = 0; // pitch轴绝对角
     // 未接收到上位机的时间
     static int32_t unrx_time = MAX_UNRX_TIME;
-    // 上位机
-
+    
 	//判断当前云台模式为自瞄模式
     if (judge_gimbal_mode_is_auto_mode())
     {
@@ -243,12 +247,15 @@ static void vision_analysis_date(vision_control_t *vision_set)
         // 判断是否接收到上位机数据
         if (vision_set->vision_rxfifo->rx_flag) // 识别到目标
         {
+            //接收到数据标志位为0
+            not_rx_vision_data_flag = 0;
+
             unrx_time = 0;
             // 接收到上位机数据
             // 接收标志位 置零
             vision_set->vision_rxfifo->rx_flag = 0;
-					
-			// 获取上位机视觉数据
+
+            // 获取上位机视觉数据
             vision_gimbal_pitch = vision_set->vision_rxfifo->pitch_fifo;
             vision_gimbal_yaw = vision_set->vision_rxfifo->yaw_fifo;
 					
@@ -267,20 +274,10 @@ static void vision_analysis_date(vision_control_t *vision_set)
             unrx_time = 0;
             //停止发弹
             vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
-            //云台摇摆
-            //pitch轴摇摆
-            
-
+            not_rx_vision_data_flag = 1;
         }
     }
-    else
-    {
-        //此步的意义在于云台状态切换，使其他模式变为自瞄模式时云台状态为切换前的状态
-
-        //不是自瞄模式，角度为当前云台角度
-        vision_gimbal_pitch = vision_set->absolution_angle.pitch;
-        vision_gimbal_yaw = vision_set->absolution_angle.yaw;
-    }
+    
 
     // 赋值控制值
     // 判断是否控制值被赋值
@@ -418,6 +415,12 @@ static void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_
 
         
     }
+}
+
+
+bool_t judge_not_rx_vision_data(void)
+{
+    return not_rx_vision_data_flag;
 }
 
 // 获取上位机云台命令

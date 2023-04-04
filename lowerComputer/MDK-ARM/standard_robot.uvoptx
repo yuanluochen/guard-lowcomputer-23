@@ -295,6 +295,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>gimbal_control</ItemText>
         </Ww>
+        <Ww>
+          <count>28</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>calc_time</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

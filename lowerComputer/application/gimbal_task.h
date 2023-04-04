@@ -168,6 +168,10 @@
 #define GIMBAL_VISION_PITCH_NUM 133.0f
 #define GIMBAL_VISION_YAW_NUM 133.3f
 
+//自动扫描滤波系数
+#define GIMBAL_AUTO_SCAN_PITCH_NUM 133.3f
+#define GIMBAL_AUTO_SCAN_yaw_NUM 133.3f
+
 //云台自瞄模式
 #define GIMBAL_AUTO_MODE 1//若该自瞄模式不需要了，则将该位置0即可
  //使能编译云台自瞄模式
@@ -217,12 +221,52 @@
 //云台yaw轴pitch轴设置最大时间
 #define GIMBAL_SWING_STOP_COUNT 1000
 
+//yaw轴扫描范围，以中心为基础
+#define YAW_SCAN_RANGE  60
+//pitch轴扫描范围，以中心值为基础
+#define PITCH_SCAN_RANGE 5
+
+//yaw轴扫描周期
+#define YAW_SCAN_PERIOD 5
+//pitch轴扫描周期
+#define PITCH_SCAN_PERIOD 0.5f
+
 typedef enum
 {
     GIMBAL_MOTOR_RAW = 0, //电机原始值控制
     GIMBAL_MOTOR_GYRO,    //电机陀螺仪角度控制
     GIMBAL_MOTOR_ENCONDE, //电机编码值角度控制
 } gimbal_motor_mode_e;
+
+//哨兵扫描结构体，用于在上位机未识别到目标时自动扫描做准备
+typedef struct 
+{
+    //yaw轴中心值
+    fp32 yaw_center_value;
+    //pitch轴中心值
+    fp32 pitch_center_value;
+
+
+    //yaw轴运动幅度
+    fp32 yaw_range;
+    //pitch轴运动幅度
+    fp32 pitch_range;
+
+    //当前运行时间 单位s
+    fp32 scan_run_time;
+    //初始计时时间 单位s
+    fp32 scan_begin_time;
+
+    //yaw轴扫描周期 单位s
+    fp32 scan_yaw_period;
+    //pitch轴扫描周期  单位s
+    fp32 scan_pitch_period;
+
+    //自动扫描低通滤波
+    first_order_filter_type_t gimbal_auto_scan_yaw_first_order_filter;
+    first_order_filter_type_t gimbal_auto_scan_pitch_first_order_filter;
+}scan_t;
+
 
 
 typedef struct
@@ -293,12 +337,13 @@ typedef struct
 
     //获取视觉上位机数据
     const gimbal_vision_control_t* gimbal_vision_point;
+
+    //自动扫描结构体
+    scan_t gimbal_auto_scan;
     
 
     const fp32 *gimbal_INT_angle_point;
     const fp32 *gimbal_INT_gyro_point;
-
-    fp32 gimbal_yaw_absolute_offset_angle;            //云台yaw轴初始角度
 
     gimbal_motor_t gimbal_yaw_motor;
     gimbal_motor_t gimbal_pitch_motor;
@@ -316,6 +361,7 @@ typedef struct
 
     first_order_filter_type_t gimbal_vision_control_pitch; 
     first_order_filter_type_t gimbal_vision_control_yaw; 
+
 } gimbal_control_t;
 
 /**

@@ -133,8 +133,8 @@
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT 6.0f
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 0.2f
 
-//底盘小陀螺中心值
-#define SPIN_SPEED -10
+//底盘小陀螺速度值
+#define SPIN_SPEED -20
 
 
 typedef enum

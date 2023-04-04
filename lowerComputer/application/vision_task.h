@@ -120,8 +120,7 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 #define SEND_MESSAGE_ERROR PI
 
 //最大未接受到上位机数据的时间
-#define MAX_UNRX_TIME 500
-
+#define MAX_UNRX_TIME 400
 
 //上位机模式,包括装甲板模式,能量机关模式,前哨站模式
 typedef enum
@@ -189,6 +188,8 @@ typedef struct
     shoot_command_e shoot_command;
 }shoot_vision_control_t;
 
+
+
 //视觉任务结构体
 typedef struct
 {
@@ -244,6 +245,11 @@ gimbal_vision_control_t* get_vision_gimbal_point(void);
 // 获取上位机发射命令
 shoot_vision_control_t* get_vision_shoot_point(void);
 
-
+/**
+ * @brief 判断未接收到上位机数据
+ * 
+ * @return 返回1 未接收到， 返回0 接收到 
+ */
+bool_t judge_not_rx_vision_data(void);
 
 #endif // !VISION_TASK_H

@@ -109,7 +109,7 @@ void chassis_task(void const *pvParameters)
     speed_set_x = 2.1f;
     speed_set_y = 1.82f;
     K=105.f;
-    chassis_move.power_control.POWER_MAX = 60;
+    chassis_move.power_control.POWER_MAX = 130;
     //wait a time 
     //ø’œ–“ª∂Œ ±º‰
     vTaskDelay(CHASSIS_TASK_INIT_TIME);

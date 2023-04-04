@@ -268,6 +268,8 @@ static void gimbal_init(gimbal_control_t *init)
     const static fp32 gimbal_y_order_filter_auto[1] = {GIMBAL_ACCEL_Y_NUM};
     const static fp32 gimbal_vision_yaw_filter[1] = {GIMBAL_VISION_YAW_NUM};
     const static fp32 gimbal_vision_pitch_filter[1] = {GIMBAL_VISION_PITCH_NUM};
+    const static fp32 gimbal_auto_scan_pitch_filter[1] = {GIMBAL_AUTO_SCAN_PITCH_NUM};
+    const static fp32 gimbal_auto_scan_yaw_filter[1] = {GIMBAL_AUTO_SCAN_yaw_NUM};
 
     //给底盘跟随云台模式用的
     gimbal_control.gimbal_yaw_motor.frist_ecd = GIMBAL_YAW_OFFSET_ENCODE;
@@ -297,9 +299,13 @@ static void gimbal_init(gimbal_control_t *init)
     first_order_filter_init(&init->gimbal_cmd_slow_set_vz, GIMBAL_CONTROL_TIME, gimbal_z_order_filter);
     first_order_filter_init(&init->gimbal_cmd_slow_set_vx_auto, GIMBAL_CONTROL_TIME, gimbal_x_order_filter_auto);
     first_order_filter_init(&init->gimbal_cmd_slow_set_vy_auto, GIMBAL_CONTROL_TIME, gimbal_y_order_filter_auto);
-    // 
+    // 视觉数据处理
     first_order_filter_init(&init->gimbal_vision_control_pitch, GIMBAL_CONTROL_TIME, gimbal_vision_pitch_filter);
     first_order_filter_init(&init->gimbal_vision_control_yaw, GIMBAL_CONTROL_TIME, gimbal_vision_yaw_filter);
+
+    //自动扫描滤波处理，使扫描平滑
+    first_order_filter_init(&init->gimbal_auto_scan.gimbal_auto_scan_pitch_first_order_filter, GIMBAL_CONTROL_TIME, gimbal_auto_scan_pitch_filter); 
+    first_order_filter_init(&init->gimbal_auto_scan.gimbal_auto_scan_yaw_first_order_filter, GIMBAL_CONTROL_TIME, gimbal_auto_scan_yaw_filter); 
 
     // 初始化yaw电机pid
     stm32_pid_init();
@@ -325,8 +331,14 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_yaw_motor.offset_ecd = GIMBAL_YAW_OFFSET_ENCODE;
     init->gimbal_pitch_motor.offset_ecd = GIMBAL_PITCH_OFFSET_ENCODE; // pitch轴云台初始化相对角度
 
-    // 获取初始数据
-    init->gimbal_yaw_absolute_offset_angle = init->gimbal_yaw_motor.absolute_angle;
+
+    //初始化云台自动扫描结构体的扫描范围
+    init->gimbal_auto_scan.pitch_range = PITCH_SCAN_RANGE;
+    init->gimbal_auto_scan.yaw_range = YAW_SCAN_RANGE;
+
+    //初始化云台自动扫描周期
+    init->gimbal_auto_scan.scan_pitch_period = PITCH_SCAN_PERIOD;
+    init->gimbal_auto_scan.scan_yaw_period = YAW_SCAN_PERIOD;
 
     // 设置pitch轴相对角最大值
     init->gimbal_pitch_motor.max_relative_angle = GIMBAL_PITCH_MAX_ENCODE * MOTOR_ECD_TO_RAD;

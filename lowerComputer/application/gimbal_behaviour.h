@@ -56,6 +56,19 @@
 
 #define AUTO_FILTER_ERROR 0.1f
 
+
+
+//pitch轴中心
+#define PITCH_CENTER_VAL 0
+
+//视觉未更新判断计数阈值
+#define VISION_DATA_MAX_NOT_UPDATE_DATA_TIME 500
+
+//时间ms转s
+#define TIME_MS_TO_S(ms) (fp32)(ms / 1000.0f)
+
+
+
 typedef enum
 {
   GIMBAL_ZERO_FORCE = 0, 
@@ -122,6 +135,13 @@ extern bool_t gimbal_cmd_to_shoot_stop(void);
  * @return 返回1 为自动模式，返回0 不是自动模式 
  */
 bool_t judge_gimbal_mode_is_auto_mode(void);
+
+/**
+ * @brief  判断云台从其他模式切入自动模式，当该函数执行时，标志位会清零
+ * 
+ * @return 返回1 事件发生 返回0 事件未发生 
+ */
+bool_t judge_other_mode_transform_auto_mode(void);
 /**
  * @brief 云台控制底盘任务执行
  * 
