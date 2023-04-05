@@ -134,7 +134,7 @@
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 0.2f
 
 //底盘小陀螺速度值
-#define SPIN_SPEED -20
+#define SPIN_SPEED -15
 
 
 typedef enum

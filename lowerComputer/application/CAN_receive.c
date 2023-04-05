@@ -117,20 +117,20 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 void CAN_cmd_shoot(int16_t fric1,int16_t fric2 ,int16_t shoot, int16_t rev)
 {
-	  uint32_t send_mail_box;
-    shoot_tx_message.StdId = CAN_SHOOT_ALL_ID;
-    shoot_tx_message.IDE = CAN_ID_STD;
-    shoot_tx_message.RTR = CAN_RTR_DATA;
-    shoot_tx_message.DLC = 0x08;
-    shoot_can_send_data[0] = (fric1 >> 8);
-    shoot_can_send_data[1] = fric1;
-    shoot_can_send_data[2] = (fric2 >> 8);
-    shoot_can_send_data[3] = fric2;
-    shoot_can_send_data[4] = (shoot >> 8);
-    shoot_can_send_data[5] = shoot;
-    shoot_can_send_data[6] = (rev >> 8);
-    shoot_can_send_data[7] = rev;
-    HAL_CAN_AddTxMessage( &hcan2,  &shoot_tx_message, shoot_can_send_data, &send_mail_box);
+   uint32_t send_mail_box;
+   shoot_tx_message.StdId = CAN_SHOOT_ALL_ID;
+   shoot_tx_message.IDE = CAN_ID_STD;
+   shoot_tx_message.RTR = CAN_RTR_DATA;
+   shoot_tx_message.DLC = 0x08;
+   shoot_can_send_data[0] = (fric1 >> 8);
+   shoot_can_send_data[1] = fric1;
+   shoot_can_send_data[2] = (fric2 >> 8);
+   shoot_can_send_data[3] = fric2;
+   shoot_can_send_data[4] = (shoot >> 8);
+   shoot_can_send_data[5] = shoot;
+   shoot_can_send_data[6] = (rev >> 8);
+   shoot_can_send_data[7] = rev;
+   HAL_CAN_AddTxMessage(&hcan2, &shoot_tx_message, shoot_can_send_data, &send_mail_box);
 
 }
 

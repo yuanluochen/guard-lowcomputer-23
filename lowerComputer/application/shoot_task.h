@@ -66,6 +66,9 @@
 
 #define TRIGGER_BULLET_PID_MAX_OUT 15000.0f
 #define TRIGGER_BULLET_PID_MAX_IOUT 5000.0f
+// 摩擦轮电机最大输入转速
+#define FRIC_MOTOR_PID_MAX_OUT 15000.0f
+#define FRIC_MOTOR_PID_MAX_IOUT 5000.0f
 
 #define Half_ecd_range 395  //395  7796
 #define ecd_range 8191

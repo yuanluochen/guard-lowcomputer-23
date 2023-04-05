@@ -520,52 +520,48 @@ static void gimbal_set_control(gimbal_control_t *set_control)
 static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add)
 {
     static fp32 angle_set_yaw = 0;
-    // 历史值与当前值之间的误差
-    // fp32 gimbal_pitch_angle_error = 0;
 
     static fp32 angle_set_pitch = 0;
     if (gimbal_motor == NULL)
     {
         return;
-   }
-   if (gimbal_motor == &gimbal_control.gimbal_yaw_motor)
-   {
+    }
+    if (gimbal_motor == &gimbal_control.gimbal_yaw_motor)
+    {
         angle_set_yaw = gimbal_motor->absolute_angle_set + INS_YAW_ERROR; // 陀螺仪问题
         gimbal_motor->absolute_angle_set = rad_format(angle_set_yaw + add);
-	}
-	else
-	{
+    }
+    else
+    {
         angle_set_pitch = gimbal_motor->absolute_angle_set;
-        //超过云台设置最大的角度范围，设置数据不在增长
+        // 超过云台设置最大的角度范围，设置数据不在增长
         if (gimbal_motor->gimbal_motor_measure->ecd >= GIMBAL_PITCH_MAX_ENCODE)
         {
             // 当前为相对角度最大，实际pitch轴绝对角最小，在该情况下，允许绝对角增大，不允许减小
             gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + (add < 0 ? add : 0));
-        } 
+        }
         else if (gimbal_motor->gimbal_motor_measure->ecd <= GIMBAL_PITCH_MIN_ENCODE)
         {
             // 当前为相对角度最小，实际pitch轴绝对角最大，在该情况下，由于c板安装问题，绝对角也是反的，允许绝对角增大，不允许减小
             gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + (add > 0 ? add : 0));
         }
-        //未超过最大值，设置值增长
+        // 未超过最大值，设置值增长
         else
         {
             gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + add);
         }
-
-
     }
 }
 /**
-  * @brief          gimbal control mode :GIMBAL_MOTOR_ENCONDE, use the encode relative angle  to control. 
-  * @param[out]     gimbal_motor: yaw motor or pitch motor
-  * @retval         none
-  */
+ * @brief          gimbal control mode :GIMBAL_MOTOR_ENCONDE, use the encode relative angle  to control.
+ * @param[out]     gimbal_motor: yaw motor or pitch motor
+ * @retval         none
+ */
 /**
-  * @brief          云台控制模式:GIMBAL_MOTOR_ENCONDE，使用编码相对角进行控制
-  * @param[out]     gimbal_motor:yaw电机或者pitch电机
-  * @retval         none
-  */
+ * @brief          云台控制模式:GIMBAL_MOTOR_ENCONDE，使用编码相对角进行控制
+ * @param[out]     gimbal_motor:yaw电机或者pitch电机
+ * @retval         none
+ */
 static void gimbal_relative_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add)
 {
     if (gimbal_motor == NULL)

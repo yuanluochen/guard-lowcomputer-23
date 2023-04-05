@@ -35,9 +35,7 @@
 /**
  * @brief   Éä»÷×´Ì¬»ú
  */
-// void Choose_Shoot_Mode(void);
 static void Shoot_Set_Mode(void);
-// static void shoot_level(void);
 /**
  * @brief   Éä»÷Êý¾Ý¸üÐÂ
  */
@@ -50,12 +48,6 @@ static void fric_control_loop(fric_move_t *fric_move_control_loop);
  * 
  */
 static void trigger_control_loop(Shoot_Motor_t* trigger_move_control_loop);
-// static void shoot_fric_off(fric_move_t *fric1_off);
-
-// /**
-//  * @brief  Éä»÷¿ØÖÆ£¬¿ØÖÆ²¦µ¯µç»ú½Ç¶È£¬Íê³ÉÒ»´Î·¢Éä
-//  */
-// static void shoot_bullet_control(void);
 
 /**
  * @brief ÉèÖÃ·¢Éä¿ØÖÆÄ£Ê½
@@ -91,7 +83,6 @@ extern ext_power_heat_data_t power_heat_data_t;//»úÆ÷ÈËµ±Ç°µÄ¹¦ÂÊ×´Ì¬£¬Ö÷ÒªÅÐ¶ÏÇ
 /*---------------------------------------------------------------------*/
 // ¿ØÖÆÄ£Ê½
 shoot_mode_e shoot_mode = SHOOT_STOP;                             // ´Ë´ÎÉä»÷Ä£Ê½
-// shoot_mode_e last_shoot_mode = SHOOT_STOP;                        // ÉÏ´ÎÉä»÷Ä£Ê½
 shoot_control_mode_e shoot_control_mode = SHOOT_STOP_CONTROL;     // Éä»÷¿ØÖÆÄ£Ê½
 shoot_init_state_e shoot_init_state = SHOOT_INIT_UNFINISH;        // Éä»÷³õÊ¼»¯Ã¶¾ÙÌå
 shoot_motor_control_mode_e fric_motor_mode = SHOOT_MOTOR_STOP;    // Ä¦²ÁÂÖµç»ú
@@ -453,7 +444,7 @@ void shoot_control_loop(void)
         break;
     }
 
-    // pid¼ÆËã
+   // pid¼ÆËã
     fric_control_loop(&fric_move);        // Ä¦²ÁÂÖ¿ØÖÆ
     trigger_control_loop(&trigger_motor); // ²¦µ¯ÅÌ¿ØÖÆ
 }
@@ -467,8 +458,8 @@ static void fric_control_loop(fric_move_t *fric_move_control_loop)
     // PIDÊä³öÏÞ·ù
     for (i = 0; i < 2; i++)
     {
-        fric_move_control_loop->motor_speed_pid[i].max_out = TRIGGER_BULLET_PID_MAX_OUT;
-        fric_move_control_loop->motor_speed_pid[i].max_iout = TRIGGER_BULLET_PID_MAX_IOUT;
+        fric_move_control_loop->motor_speed_pid[i].max_out = FRIC_MOTOR_PID_MAX_OUT;
+        fric_move_control_loop->motor_speed_pid[i].max_iout = FRIC_MOTOR_PID_MAX_IOUT;
     }
     // ËÙ¶ÈÉèÖÃ
     fric_move_control_loop->speed_set[0] = fric;
@@ -482,6 +473,15 @@ static void fric_control_loop(fric_move_t *fric_move_control_loop)
     stm32_step_shoot_1(fric_move_control_loop->speed_set[1], fric_move_control_loop->motor_fric[1].speed);
     fric_move.fric_CAN_Set_Current[0] = stm32_Y.out_shoot;
     fric_move.fric_CAN_Set_Current[1] = stm32_Y.out_shoot1;
+
+    // // ÅÐ¶ÏÄ¦²ÁÂÖ×´Ì¬¸ù¾ÝÄ¦²ÁÂÖ×´Ì¬ÉèÖÃµçÁ÷¿ØÖÆÖµ
+    // if (fric_motor_mode == SHOOT_MOTOR_STOP)
+    // {
+    //     //Èç¹ûµç»úÎÞÁ¦£¬Ôò²»·¢µçÁ÷
+    //     fric_move.fric_CAN_Set_Current[0] = 0;     
+    //     fric_move.fric_CAN_Set_Current[1] = 0;     
+    // }
+ 
 }
 
 
