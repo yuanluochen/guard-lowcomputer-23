@@ -130,8 +130,6 @@ static void judge_chassis_auto_mode(chassis_move_t* chassis_judge_auto_mode);
 //留意，这个底盘行为模式变量
 chassis_behaviour_e chassis_behaviour_mode = CHASSIS_ZERO_FORCE;
 
-//底盘自动状态 1为逃逸 0为袭击
-bool_t chassis_auto_status_flag = 0;
 
 
 /**
@@ -218,13 +216,11 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
         {
             //小陀螺
             chassis_move_mode->chassis_mode = CHASSIS_VECTOR_SPIN;
-            chassis_auto_status_flag = 1;
         }
         else if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_ATTACK)
         {
             //不移动
             chassis_move_mode->chassis_mode = CHASSIS_VECTOR_NO_FOLLOW_YAW;
-            chassis_auto_status_flag = 0;
         }
 
     }
@@ -294,7 +290,6 @@ static void judge_chassis_auto_mode(chassis_move_t* chassis_judge_auto_mode)
             hit_flag = 0;
             // 袭击模式
             chassis_judge_auto_mode->chassis_auto.chassis_auto_mode = CHASSIS_ATTACK;
-   
         }
     }
 }
@@ -533,15 +528,15 @@ static void chassis_open_set_control(fp32 *vx_set, fp32 *vy_set, fp32 *wz_set, c
  * @brief 由于上位机视频比较缓慢，为保证安全底盘自动模式下小陀螺，云台不动
  * 
  */
-bool_t chassis_auto_mode_control_gimbal_auto_mode(void)
-{
-    //判断底盘是否为自动模式
-    if (chassis_behaviour_mode == CHASSIS_AUTO)
-    {
-        return chassis_auto_status_flag; 
-    }
-    else
-    {
-        return 0;
-    }
-}
+// bool_t chassis_auto_mode_control_gimbal_auto_mode(void)
+// {
+//     //判断底盘是否为自动模式
+//     if (chassis_behaviour_mode == CHASSIS_AUTO)
+//     {
+//         return chassis_auto_status_flag; 
+//     }
+//     else
+//     {
+//         return 0;
+//     }
+// }

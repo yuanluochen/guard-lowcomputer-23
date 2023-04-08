@@ -107,7 +107,7 @@ typedef enum
 #define CHASSIS_OPEN_RC_SCALE 10 // in CHASSIS_OPEN mode, multiply the value. 在chassis_open 模型下，遥控器乘以该比例发送到can上
 
 //安全时间, 大概一个数字1ms
-#define SAFE_TIME 4000
+#define SAFE_TIME 15000
 
 
 /**

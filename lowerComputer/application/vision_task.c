@@ -260,8 +260,8 @@ static void vision_analysis_date(vision_control_t *vision_set)
             vision_gimbal_yaw = vision_set->vision_rxfifo->yaw_fifo;
 
             // ÅÐ¶Ï·¢Éä
-            // vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
-            vision_shoot_judge(vision_set, vision_gimbal_yaw, (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
+            vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
+            // vision_shoot_judge(vision_set, vision_gimbal_yaw, (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
         }
         else
         {
