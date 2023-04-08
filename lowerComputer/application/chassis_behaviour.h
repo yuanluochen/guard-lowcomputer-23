@@ -107,7 +107,7 @@ typedef enum
 #define CHASSIS_OPEN_RC_SCALE 10 // in CHASSIS_OPEN mode, multiply the value. 在chassis_open 模型下，遥控器乘以该比例发送到can上
 
 //安全时间, 大概一个数字1ms
-#define SAFE_TIME 5000
+#define SAFE_TIME 4000
 
 
 /**
@@ -141,5 +141,8 @@ extern void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode);
   */
 
 extern void chassis_behaviour_control_set(fp32 *vx_set, fp32 *vy_set, fp32 *angle_set, chassis_move_t *chassis_move_rc_to_vector);
+
+
+bool_t chassis_auto_mode_control_gimbal_auto_mode(void);
 
 #endif

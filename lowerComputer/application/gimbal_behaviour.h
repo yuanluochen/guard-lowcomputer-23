@@ -56,6 +56,9 @@
 
 #define AUTO_FILTER_ERROR 0.1f
 
+//Ç½±Ú¶Ëµã
+#define WALL_POINT1 -27
+#define WALL_POINT2 60
 
 
 //pitchÖáÖÐÐÄ
@@ -148,4 +151,6 @@ bool_t judge_other_mode_transform_auto_mode(void);
  * @return bool_t 
  */
 bool_t gimbal_control_vision_task(void);
+
+
 #endif

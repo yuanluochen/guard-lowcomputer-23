@@ -83,6 +83,7 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop);
   * @brief          //就近对位角度处理，取劣弧
   */
 void Angle_Error_Compare(int now_angle,int zero_angle,int last_zero_angle);
+
 #if INCLUDE_uxTaskGetStackHighWaterMark
 uint32_t chassis_high_water;
 #endif
@@ -109,7 +110,7 @@ void chassis_task(void const *pvParameters)
     speed_set_x = 2.1f;
     speed_set_y = 1.82f;
     K=105.f;
-    chassis_move.power_control.POWER_MAX = 130;
+    chassis_move.power_control.POWER_MAX = 90;
     //wait a time 
     //空闲一段时间
     vTaskDelay(CHASSIS_TASK_INIT_TIME);
@@ -141,7 +142,7 @@ void chassis_task(void const *pvParameters)
         // send control current
         //发送控制电流
         CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
-                     chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+                    chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
 
         //os delay
         //系统延时
@@ -516,6 +517,7 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
         chassis_move_control->chassis_cmd_slow_set_vy.out = 0.0f;
     }
 }
+
 
 /**
   * @brief          四个麦轮速度是通过三个参数计算出来的

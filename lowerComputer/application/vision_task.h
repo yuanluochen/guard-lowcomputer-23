@@ -65,12 +65,12 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 
 
 //允许发弹角度误差
-#define ALLOW_ATTACK_ERROR 10
+#define ALLOW_ATTACK_ERROR 7
 
 //发弹判断计数次数
 #define JUDGE_ATTACK_COUNT 2
 //发弹停止判断计数次数
-#define JUDGE_STOP_ATTACK_COUNT 5000
+#define JUDGE_STOP_ATTACK_COUNT 100
 
 //延时等待
 #define VISION_SEND_TASK_INIT_TIME 401

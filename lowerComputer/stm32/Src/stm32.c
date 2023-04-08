@@ -47,50 +47,54 @@ RT_MODEL_stm32 *const stm32_M = &stm32_M_;
 /* Model step function */
 void stm32_step(void)
 {
-  real_T rtb_Sum1;
-  real_T rtb_Reciprocal;
-  real_T rtb_FilterDifferentiatorTF;
-  real_T rtb_IProdOut;
-  real_T Integrator;
-  real_T Integrator_d;
-  real_T TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1;
-  real_T TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1;
-  rtb_FilterDifferentiatorTF = stm32_U.P_N * 0.0005;
-  rtb_Sum1 = 1.0 / (rtb_FilterDifferentiatorTF + 1.0);
-  TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1 =
-    (rtb_FilterDifferentiatorTF - 1.0) * rtb_Sum1;
-  rtb_FilterDifferentiatorTF = stm32_U.S_N * 0.0005;
-  rtb_Reciprocal = 1.0 / (rtb_FilterDifferentiatorTF + 1.0);
-  TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 =
-    (rtb_FilterDifferentiatorTF - 1.0) * rtb_Reciprocal;
-  rtb_FilterDifferentiatorTF = stm32_U.angle_set - stm32_U.angle_feedback;
-  rtb_IProdOut = rtb_FilterDifferentiatorTF * stm32_U.P_I;
-  Integrator = 0.0005 * rtb_IProdOut + stm32_DW.Integrator_DSTATE;
-  TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1 =
-    rtb_FilterDifferentiatorTF * stm32_U.P_D -
-    TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1 *
-    stm32_DW.FilterDifferentiatorTF_states;
-  rtb_Sum1 = ((TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1 +
-               -stm32_DW.FilterDifferentiatorTF_states) * rtb_Sum1 * stm32_U.P_N
-              + (rtb_FilterDifferentiatorTF * stm32_U.P_P + Integrator)) -
-    stm32_U.speed_feedback;
-  rtb_FilterDifferentiatorTF = rtb_Sum1 * stm32_U.S_D -
-    TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 *
-    stm32_DW.FilterDifferentiatorTF_states_o;
-  TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 = rtb_Sum1 *
-    stm32_U.S_I;
-  Integrator_d = 0.0005 *
-    TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 +
-    stm32_DW.Integrator_DSTATE_p;
-  stm32_Y.Out1 = (rtb_FilterDifferentiatorTF +
-                  -stm32_DW.FilterDifferentiatorTF_states_o) * rtb_Reciprocal *
-    stm32_U.S_N + (rtb_Sum1 * stm32_U.S_P + Integrator_d);
-  stm32_DW.Integrator_DSTATE = 0.0005 * rtb_IProdOut + Integrator;
-  stm32_DW.FilterDifferentiatorTF_states =
-    TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1;
-  stm32_DW.FilterDifferentiatorTF_states_o = rtb_FilterDifferentiatorTF;
-  stm32_DW.Integrator_DSTATE_p = 0.0005 *
-    TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 + Integrator_d;
+    real_T rtb_Sum1;
+    real_T rtb_Reciprocal;
+    real_T rtb_FilterDifferentiatorTF;
+    real_T rtb_IProdOut;
+    real_T Integrator;
+    real_T Integrator_d;
+    real_T TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1;
+    real_T TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1;
+    rtb_FilterDifferentiatorTF = stm32_U.P_N * 0.0005;
+    rtb_Sum1 = 1.0 / (rtb_FilterDifferentiatorTF + 1.0);
+    TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1 =
+        (rtb_FilterDifferentiatorTF - 1.0) * rtb_Sum1;
+    rtb_FilterDifferentiatorTF = stm32_U.S_N * 0.0005;
+    rtb_Reciprocal = 1.0 / (rtb_FilterDifferentiatorTF + 1.0);
+    TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 =
+        (rtb_FilterDifferentiatorTF - 1.0) * rtb_Reciprocal;
+    rtb_FilterDifferentiatorTF = stm32_U.angle_set - stm32_U.angle_feedback;
+    rtb_IProdOut = rtb_FilterDifferentiatorTF * stm32_U.P_I;
+    Integrator = 0.0005 * rtb_IProdOut + stm32_DW.Integrator_DSTATE;
+    TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1 =
+        rtb_FilterDifferentiatorTF * stm32_U.P_D -
+        TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1 *
+            stm32_DW.FilterDifferentiatorTF_states;
+    rtb_Sum1 = ((TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1 +
+                 -stm32_DW.FilterDifferentiatorTF_states) *
+                    rtb_Sum1 * stm32_U.P_N +
+                (rtb_FilterDifferentiatorTF * stm32_U.P_P + Integrator)) -
+               stm32_U.speed_feedback;
+    rtb_FilterDifferentiatorTF = rtb_Sum1 * stm32_U.S_D -
+                                 TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 *
+                                     stm32_DW.FilterDifferentiatorTF_states_o;
+    TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 = rtb_Sum1 *
+                                                                 stm32_U.S_I;
+    Integrator_d = 0.0005 *
+                       TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 +
+                   stm32_DW.Integrator_DSTATE_p;
+    stm32_Y.Out1 = (rtb_FilterDifferentiatorTF +
+                    -stm32_DW.FilterDifferentiatorTF_states_o) *
+                       rtb_Reciprocal *
+                       stm32_U.S_N +
+                   (rtb_Sum1 * stm32_U.S_P + Integrator_d);
+    stm32_DW.Integrator_DSTATE = 0.0005 * rtb_IProdOut + Integrator;
+    stm32_DW.FilterDifferentiatorTF_states =
+        TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1;
+    stm32_DW.FilterDifferentiatorTF_states_o = rtb_FilterDifferentiatorTF;
+    stm32_DW.Integrator_DSTATE_p = 0.0005 *
+                                       TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1 +
+                                   Integrator_d;
 }
 
 /* Model initialize function */

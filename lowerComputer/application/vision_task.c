@@ -232,22 +232,22 @@ static void vision_tx_encode(uint8_t* buf, float yaw, float pitch, float roll, u
 
 static void vision_analysis_date(vision_control_t *vision_set)
 {
-    
+
     // 上位机视觉版本
     static fp32 vision_gimbal_yaw = 0;   // yaw轴绝对角
     static fp32 vision_gimbal_pitch = 0; // pitch轴绝对角
     // 未接收到上位机的时间
     static int32_t unrx_time = MAX_UNRX_TIME;
-    
-	//判断当前云台模式为自瞄模式
+
+    // 判断当前云台模式为自瞄模式
     if (judge_gimbal_mode_is_auto_mode())
     {
-        //是自瞄模式，设置角度为上位机设置角度
+        // 是自瞄模式，设置角度为上位机设置角度
 
         // 判断是否接收到上位机数据
         if (vision_set->vision_rxfifo->rx_flag) // 识别到目标
         {
-            //接收到数据标志位为0
+            // 接收到数据标志位为0
             not_rx_vision_data_flag = 0;
 
             unrx_time = 0;
@@ -258,9 +258,10 @@ static void vision_analysis_date(vision_control_t *vision_set)
             // 获取上位机视觉数据
             vision_gimbal_pitch = vision_set->vision_rxfifo->pitch_fifo;
             vision_gimbal_yaw = vision_set->vision_rxfifo->yaw_fifo;
-					
+
             // 判断发射
-            vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
+            // vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
+            vision_shoot_judge(vision_set, vision_gimbal_yaw, (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
         }
         else
         {
@@ -272,12 +273,11 @@ static void vision_analysis_date(vision_control_t *vision_set)
         {
             // 数据置零
             unrx_time = 0;
-            //停止发弹
+            // 停止发弹
             vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
             not_rx_vision_data_flag = 1;
         }
     }
-    
 
     // 赋值控制值
     // 判断是否控制值被赋值
@@ -289,7 +289,7 @@ static void vision_analysis_date(vision_control_t *vision_set)
     }
     else
     {
-        //已赋值，用设置值
+        // 已赋值，用设置值
         vision_set->gimbal_vision_control.gimbal_pitch = vision_gimbal_pitch;
         vision_set->gimbal_vision_control.gimbal_yaw = vision_gimbal_yaw;
     }

@@ -222,12 +222,12 @@
 #define GIMBAL_SWING_STOP_COUNT 1000
 
 //yaw轴扫描范围，以中心为基础
-#define YAW_SCAN_RANGE  60
+#define YAW_SCAN_RANGE  135
 //pitch轴扫描范围，以中心值为基础
 #define PITCH_SCAN_RANGE 5
 
 //yaw轴扫描周期
-#define YAW_SCAN_PERIOD 5
+#define YAW_SCAN_PERIOD 7
 //pitch轴扫描周期
 #define PITCH_SCAN_PERIOD 0.5f
 

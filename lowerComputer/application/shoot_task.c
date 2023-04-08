@@ -464,24 +464,15 @@ static void fric_control_loop(fric_move_t *fric_move_control_loop)
     // 速度设置
     fric_move_control_loop->speed_set[0] = fric;
     fric_move_control_loop->speed_set[1] = -fric;
-    for (i = 0; i < 2; i++)
-    {
-        fric_move_control_loop->motor_fric[i].speed_set = fric_move.speed_set[i];
-        PID_Calc(&fric_move_control_loop->motor_speed_pid[i], fric_move_control_loop->motor_fric[i].speed, fric_move_control_loop->motor_fric[i].speed_set);
-    }
+    // for (i = 0; i < 2; i++)
+    // {
+    //     fric_move_control_loop->motor_fric[i].speed_set = fric_move.speed_set[i];
+    //     PID_Calc(&fric_move_control_loop->motor_speed_pid[i], fric_move_control_loop->motor_fric[i].speed, fric_move_control_loop->motor_fric[i].speed_set);
+    // }
     stm32_step_shoot_0(fric_move_control_loop->speed_set[0], fric_move_control_loop->motor_fric[0].speed);
     stm32_step_shoot_1(fric_move_control_loop->speed_set[1], fric_move_control_loop->motor_fric[1].speed);
     fric_move.fric_CAN_Set_Current[0] = stm32_Y.out_shoot;
     fric_move.fric_CAN_Set_Current[1] = stm32_Y.out_shoot1;
-
-    // // 判断摩擦轮状态根据摩擦轮状态设置电流控制值
-    // if (fric_motor_mode == SHOOT_MOTOR_STOP)
-    // {
-    //     //如果电机无力，则不发电流
-    //     fric_move.fric_CAN_Set_Current[0] = 0;     
-    //     fric_move.fric_CAN_Set_Current[1] = 0;     
-    // }
- 
 }
 
 

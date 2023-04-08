@@ -331,7 +331,6 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_yaw_motor.offset_ecd = GIMBAL_YAW_OFFSET_ENCODE;
     init->gimbal_pitch_motor.offset_ecd = GIMBAL_PITCH_OFFSET_ENCODE; // pitch轴云台初始化相对角度
 
-
     //初始化云台自动扫描结构体的扫描范围
     init->gimbal_auto_scan.pitch_range = PITCH_SCAN_RANGE;
     init->gimbal_auto_scan.yaw_range = YAW_SCAN_RANGE;
