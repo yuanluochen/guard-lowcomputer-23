@@ -250,7 +250,7 @@ static void chassis_set_mode(chassis_move_t *chassis_move_mode)
   */
 static void chassis_mode_change_control_transit(chassis_move_t *chassis_move_transit)
 {
-		//切入小陀螺模式
+    // 切入小陀螺模式
     if ((chassis_move_transit->last_chassis_mode != CHASSIS_VECTOR_SPIN) && 
 			   chassis_move_transit->chassis_mode == CHASSIS_VECTOR_SPIN)
     {

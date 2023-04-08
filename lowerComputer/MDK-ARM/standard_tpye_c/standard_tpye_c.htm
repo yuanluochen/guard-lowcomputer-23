@@ -3,7 +3,7 @@
 <title>Static Call Graph - [standard_tpye_c\standard_tpye_c.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image standard_tpye_c\standard_tpye_c.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat Apr 08 16:19:50 2023
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat Apr 08 16:35:46 2023
 <BR><P>
 <H3>Maximum Stack Usage =        544 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -684,8 +684,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_cos_f32
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_to_quat
-<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_init
+<BR>[Called By]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_init
+<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_to_quat
 </UL>
 
 <P><STRONG><a name="[a9]"></a>AHRS_get_height</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, ahrs_middleware.o(i.AHRS_get_height))
@@ -699,14 +699,14 @@ Global Symbols
 <P><STRONG><a name="[a8]"></a>AHRS_init</STRONG> (Thumb, 626 bytes, Stack size 80 bytes, ahrs.o(i.AHRS_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = AHRS_init &rArr; angle_to_quat &rArr; AHRS_sinf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_to_quat
-<LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_sinf
+<BR>[Calls]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_sinf
 <LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_invSqrt
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_get_latitude
 <LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_get_height
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_cosf
 <LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_atan2f
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_asinf
+<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_to_quat
 </UL>
 <BR>[Called By]<UL><LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INS_task
 </UL>
@@ -716,10 +716,10 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrtf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;quat_normalization
+<BR>[Called By]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_init
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;quat_normalization
 <LI><a href="#[20d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_update_kp_ki
 <LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_comple_filter
-<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_init
 </UL>
 
 <P><STRONG><a name="[ab]"></a>AHRS_sinf</STRONG> (Thumb, 24 bytes, Stack size 16 bytes, ahrs_middleware.o(i.AHRS_sinf))
@@ -727,8 +727,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_sin_f32
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_to_quat
-<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_init
+<BR>[Called By]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_init
+<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_to_quat
 </UL>
 
 <P><STRONG><a name="[b0]"></a>AHRS_update</STRONG> (Thumb, 314 bytes, Stack size 136 bytes, ahrs.o(i.AHRS_update))
@@ -3912,10 +3912,10 @@ Global Symbols
 <P><STRONG><a name="[2b7]"></a>pvPortMalloc</STRONG> (Thumb, 218 bytes, Stack size 24 bytes, heap_4.o(i.pvPortMalloc))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = pvPortMalloc &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInsertBlockIntoFreeList
-<LI><a href="#[2b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvHeapInit
-<LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
+<BR>[Calls]<UL><LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[2af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
+<LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInsertBlockIntoFreeList
+<LI><a href="#[2b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvHeapInit
 </UL>
 <BR>[Called By]<UL><LI><a href="#[28e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCreate
 </UL>
@@ -4205,9 +4205,9 @@ Global Symbols
 <P><STRONG><a name="[2a0]"></a>vPortFree</STRONG> (Thumb, 88 bytes, Stack size 16 bytes, heap_4.o(i.vPortFree))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = vPortFree &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInsertBlockIntoFreeList
-<LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
+<BR>[Calls]<UL><LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[2af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
+<LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInsertBlockIntoFreeList
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvProcessReceivedCommands
 <LI><a href="#[28e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCreate
@@ -5824,8 +5824,8 @@ Local Symbols
 <P><STRONG><a name="[b1]"></a>accel_comple_filter</STRONG> (Thumb, 454 bytes, Stack size 64 bytes, ahrs.o(i.accel_comple_filter))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = accel_comple_filter &rArr; accel_update_kp_ki &rArr; AHRS_invSqrt &rArr; __hardfp_sqrtf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[20d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_update_kp_ki
-<LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_invSqrt
+<BR>[Calls]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_invSqrt
+<LI><a href="#[20d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_update_kp_ki
 </UL>
 <BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_update
 </UL>
@@ -5833,8 +5833,8 @@ Local Symbols
 <P><STRONG><a name="[20d]"></a>accel_update_kp_ki</STRONG> (Thumb, 370 bytes, Stack size 40 bytes, ahrs.o(i.accel_update_kp_ki))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = accel_update_kp_ki &rArr; AHRS_invSqrt &rArr; __hardfp_sqrtf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_fabs
-<LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_invSqrt
+<BR>[Calls]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_invSqrt
+<LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AHRS_fabs
 </UL>
 <BR>[Called By]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_comple_filter
 </UL>

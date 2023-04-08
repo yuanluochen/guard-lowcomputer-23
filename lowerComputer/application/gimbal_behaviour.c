@@ -313,6 +313,7 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
     {
         // 初始化时间
         static int init_time = 0;
+        static int init_finish_time = 0;
         init_time++; // 初始化时间增加
         // 是否初始化完成
         if ((fabs(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR) &&
@@ -526,7 +527,7 @@ static void gimbal_auto_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
     yaw_error = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
     pitch_error = gimbal_control_set->gimbal_pitch_motor.absolute_angle_set - gimbal_control_set->gimbal_pitch_motor.absolute_angle;
 
-    // 判断数据是否长久未更新或底盘小陀螺
+    // 判断数据是否长久未更新
     if (judge_not_rx_vision_data())
     {
         // 长久未更新
