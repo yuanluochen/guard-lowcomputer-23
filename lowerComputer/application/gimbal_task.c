@@ -215,11 +215,11 @@ void gimbal_task(void const *pvParameters)
     // 死循环
     while (1)
     {
-        gimbal_set_mode(&gimbal_control);                     // 设置云台控制模式
+        gimbal_set_mode(&gimbal_control);                    // 设置云台控制模式
         gimbal_mode_change_control_transit(&gimbal_control); // 控制模式切换 控制数据过渡
-        gimbal_feedback_update(&gimbal_control);              // 云台数据反馈
-        gimbal_set_control(&gimbal_control);                  // 设置云台控制量
-        gimbal_control_loop(&gimbal_control);                 // 云台控制计算
+        gimbal_feedback_update(&gimbal_control);             // 云台数据反馈
+        gimbal_set_control(&gimbal_control);                 // 设置云台控制量
+        gimbal_control_loop(&gimbal_control);                // 云台控制计算
 
         yaw_can_set_current = gimbal_control.gimbal_yaw_motor.given_current;
         pitch_can_set_current = gimbal_control.gimbal_pitch_motor.given_current;
