@@ -130,7 +130,7 @@
 //云台初始化回中值，允许的误差,并且在误差范围内停止一段时间以及最大时间6s后解除初始化状态，
 #define GIMBAL_INIT_ANGLE_ERROR     0.01f
 #define GIMBAL_INIT_STOP_TIME       100
-#define GIMBAL_INIT_TIME            6000
+#define GIMBAL_INIT_TIME            5000
 #define GIMBAL_CALI_REDUNDANT_ANGLE 0.1f
 //云台初始化回中值的速度以及控制到的角度
 #define GIMBAL_INIT_PITCH_SPEED     0.004f
@@ -195,7 +195,7 @@
 //云台pitch轴中值
 #define GIMBAL_PITCH_OFFSET_ENCODE 6800
 //云台yaw轴中值
-#define GIMBAL_YAW_OFFSET_ENCODE 3379
+#define GIMBAL_YAW_OFFSET_ENCODE 3432
 //yaw轴后侧中值
 #define GIMBAL_YAW_LAST_OFFSET_ENCODE (((GIMBAL_YAW_OFFSET_ENCODE + HALF_ECD_RANGE) > ECD_RANGE) ? (GIMBAL_YAW_OFFSET_ENCODE + HALF_ECD_RANGE - ECD_RANGE) : (GIMBAL_YAW_OFFSET_ENCODE + HALF_ECD_RANGE))
 //云台yaw轴陀螺仪误差
@@ -262,12 +262,7 @@ typedef struct
     //pitch轴扫描周期  单位s
     fp32 scan_pitch_period;
 
-    //自动扫描低通滤波
-    first_order_filter_type_t gimbal_auto_scan_yaw_first_order_filter;
-    first_order_filter_type_t gimbal_auto_scan_pitch_first_order_filter;
-}scan_t;
-
-
+} scan_t;
 
 typedef struct
 {

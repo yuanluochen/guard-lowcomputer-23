@@ -31,19 +31,6 @@ static void vision_tx_encode(uint8_t* buf, float yaw, float pitch, float roll, u
 static void vision_analysis_date(vision_control_t* vision_set);
 //发送数据
 static void send_message_to_vision(UART_HandleTypeDef* send_message_usart, DMA_HandleTypeDef* send_message_dma, uint8_t* send_message, uint16_t send_message_size);
-// /**
-//  * @brief 二阶kalman filter 初始化 针对yaw轴pitch轴角度运动模型
-//  *  
-//  * @param kalman_filter_struct kalman filter运算矩阵
-//  * @param kalman_filter_init_struct kalman filter 初始化赋值矩阵，用于给kalman filter运算矩阵赋值
-//  * @param Dp 位移方差
-//  * @param Dv 速度方差
-//  * @param Da 加速度方差
-//  * @param Dt 运算间隔
-//  */
-// static void second_order_kalman_filter_init(kalman_filter_t* kalman_filter_struct, 
-//                                             kalman_filter_init_t* kalman_filter_init_struct, 
-//                                             float Dp, float Dv, float Da, float Dt);
 
 /**
  * @brief 分析视觉原始增加数据，根据原始数据，判断是否要进行发射
@@ -61,13 +48,16 @@ static void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_
  */
 static void vision_send_msg(vision_send_t* vision_send);
 
+
+
+
 //视觉任务结构体
 vision_control_t vision_control = { 0 };
 //视觉发送任务结构体
 vision_send_t vision_send = { 0 };
 
-//为接收到视觉数据标志位
-bool_t not_rx_vision_data_flag = 0;
+//未接收到视觉数据标志位，该位为1 则未接收
+bool_t not_rx_vision_data_flag = 1;
 
 
 
@@ -261,7 +251,6 @@ static void vision_analysis_date(vision_control_t *vision_set)
 
             // 判断发射
             vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
-            // vision_shoot_judge(vision_set, vision_gimbal_yaw, (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
         }
         else
         {
@@ -283,6 +272,7 @@ static void vision_analysis_date(vision_control_t *vision_set)
     // 判断是否控制值被赋值
     if (vision_gimbal_pitch == 0 && vision_gimbal_yaw == 0)
     {
+
         // 未赋值依旧为当前值
         vision_set->gimbal_vision_control.gimbal_pitch = vision_set->absolution_angle.pitch;
         vision_set->gimbal_vision_control.gimbal_yaw = vision_set->absolution_angle.yaw;
@@ -295,68 +285,6 @@ static void vision_analysis_date(vision_control_t *vision_set)
     }
 }
 
-// /**
-//  * @brief 二阶kalman filter 初始化 针对yaw轴pitch轴角度运动模型
-//  *
-//  * @param kalman_filter_struct kalman filter运算矩阵
-//  * @param kalman_filter_init_struct kalman filter 初始化赋值矩阵，用于给kalman filter运算矩阵赋值
-//  * @param Dp 位移方差
-//  * @param Dv 速度方差
-//  * @param Da 加速度方差
-//  * @param Dt 运算间隔
-//  */
-// static void second_order_kalman_filter_init(kalman_filter_t* kalman_filter_struct,
-//                                             kalman_filter_init_t* kalman_filter_init_struct,
-//                                             float Dp, float Dv, float Da, float Dt)
-// {
-//     //状态矩阵
-//     float X[STATUS_MATRIX_SIZE] = {
-//         1,
-//         1
-//     };
-
-//     //状态转移矩阵
-//     float H[H_MATRIX_SIZE] = {
-//         1,
-//         1
-//     };
-
-//     //状态转移矩阵
-//     float A[MATRIX_SIZE] = {
-//         1.0f, Dt,
-//         0.0f, 1.0f
-//     };
-
-//     //状态协方差矩阵,数值不需要太精准,但绝对不可以太小，如果太小会使响应过慢
-//     float P[MATRIX_SIZE] = {
-//         1000.0f, 0.0f,
-//         0.0f, 1000.0f
-//     };
-
-//     //过程噪声协方差矩阵
-//     float Q[MATRIX_SIZE] = {
-//         0.1,0,
-//         0,  0.1
-//     };
-
-//     //观测噪声协方差矩阵
-//     float R[1] = {
-//         2  
-//     };
-    
-//     //赋值数组
-//     memcpy(kalman_filter_init_struct->xhat_data, X, STATUS_MATRIX_SIZE * sizeof(float));
-//     memcpy(kalman_filter_init_struct->H_data, H, H_MATRIX_SIZE * sizeof(float));
-//     memcpy(kalman_filter_init_struct->A_data, A, MATRIX_SIZE * sizeof(float));
-//     memcpy(kalman_filter_init_struct->P_data, P, MATRIX_SIZE * sizeof(float));
-//     memcpy(kalman_filter_init_struct->Q_data, Q, MATRIX_SIZE * sizeof(float));
-//     memcpy(kalman_filter_init_struct->R_data, R, 1 * sizeof(float));
-    
-
-
-//     //初始化kalman filter结构体
-//     kalman_filter_init(kalman_filter_struct, kalman_filter_init_struct);
-// }
 
 /**
  * @brief 分析视觉原始增加数据，根据原始数据，判断是否要进行发射，判断yaw轴pitch的角度，如果在一定范围内，则计算值增加，增加到一定数值则判断发射，如果yaw轴pitch轴角度大于该范围，则计数归零

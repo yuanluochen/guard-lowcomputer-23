@@ -76,29 +76,10 @@ typedef enum
 {
   GIMBAL_ZERO_FORCE = 0, 
   GIMBAL_INIT,           
-  GIMBAL_CALI,           
   GIMBAL_AUTO,             //自动模式
   GIMBAL_RC,               //遥控器控制模式
-  GIMBAL_ABSOLUTE_ANGLE, 
-  GIMBAL_RELATIVE_ANGLE, 
   GIMBAL_MOTIONLESS,     
 } gimbal_behaviour_e;
-
-typedef enum
-{
-    OTHER_MODE_TO_AUTO_MODE,
-    OTHER_MODE,
-    AUTO_MODE,
-} auto_mode_judge_e;
-
-//云台摇摆方向
-typedef enum
-{
-    POSITIVE, //正向 
-    NEGATIVE, //反向
-}gimbal_swing_direction_e;
-
-
 
 /**
   * @brief          被gimbal_set_mode函数调用在gimbal_task.c,云台行为状态机以及电机状态机设置

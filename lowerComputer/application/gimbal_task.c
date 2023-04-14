@@ -193,7 +193,7 @@ gimbal_control_t gimbal_control;
 FuzzyPID fuzzy_pid_gimbal_speed;
 FuzzyPID fuzzy_pid_gimbal_angle;
 /*----------------------------------外部变量---------------------------*/
-extern ExtY_stm32 stm32_Y; 
+extern ExtY_stm32 stm32_Y_yaw; 
 extern ExtY_stm32 stm32_Y_pitch;
 
 /**
@@ -212,7 +212,7 @@ void gimbal_task(void const *pvParameters)
     //gimbal init
     //云台初始化
     gimbal_init(&gimbal_control);
-    // 死循环
+    // 循环
     while (1)
     {
         gimbal_set_mode(&gimbal_control);                    // 设置云台控制模式
@@ -268,10 +268,7 @@ static void gimbal_init(gimbal_control_t *init)
     const static fp32 gimbal_y_order_filter_auto[1] = {GIMBAL_ACCEL_Y_NUM};
     const static fp32 gimbal_vision_yaw_filter[1] = {GIMBAL_VISION_YAW_NUM};
     const static fp32 gimbal_vision_pitch_filter[1] = {GIMBAL_VISION_PITCH_NUM};
-    const static fp32 gimbal_auto_scan_pitch_filter[1] = {GIMBAL_AUTO_SCAN_PITCH_NUM};
-    const static fp32 gimbal_auto_scan_yaw_filter[1] = {GIMBAL_AUTO_SCAN_yaw_NUM};
-
-    //给底盘跟随云台模式用的
+    // 给底盘跟随云台模式用的
     gimbal_control.gimbal_yaw_motor.frist_ecd = GIMBAL_YAW_OFFSET_ENCODE;
     gimbal_control.gimbal_yaw_motor.LAST_ZERO_ECD = GIMBAL_YAW_LAST_OFFSET_ENCODE;
 
@@ -303,12 +300,8 @@ static void gimbal_init(gimbal_control_t *init)
     first_order_filter_init(&init->gimbal_vision_control_pitch, GIMBAL_CONTROL_TIME, gimbal_vision_pitch_filter);
     first_order_filter_init(&init->gimbal_vision_control_yaw, GIMBAL_CONTROL_TIME, gimbal_vision_yaw_filter);
 
-    //自动扫描滤波处理，使扫描平滑
-    first_order_filter_init(&init->gimbal_auto_scan.gimbal_auto_scan_pitch_first_order_filter, GIMBAL_CONTROL_TIME, gimbal_auto_scan_pitch_filter); 
-    first_order_filter_init(&init->gimbal_auto_scan.gimbal_auto_scan_yaw_first_order_filter, GIMBAL_CONTROL_TIME, gimbal_auto_scan_yaw_filter); 
-
     // 初始化yaw电机pid
-    stm32_pid_init();
+    stm32_pid_init_yaw();
     // 初始化pitch轴电机pid
     stm32_pid_init_pitch();
 
@@ -648,8 +641,8 @@ static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
     }
     if (gimbal_motor == &gimbal_control.gimbal_yaw_motor)
     {
-        stm32_step(gimbal_motor->absolute_angle_set, gimbal_motor->absolute_angle, 0);
-        gimbal_motor->current_set=stm32_Y.Out1;
+        stm32_step_yaw(gimbal_motor->absolute_angle_set, gimbal_motor->absolute_angle, 0);
+        gimbal_motor->current_set=stm32_Y_yaw.Out1;
 		gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
 	}
 	else if(gimbal_motor==&gimbal_control.gimbal_pitch_motor)
@@ -672,8 +665,8 @@ static void gimbal_motor_relative_angle_control(gimbal_motor_t *gimbal_motor)
     }
     if (gimbal_motor == &gimbal_control.gimbal_yaw_motor)
     {
-        stm32_step(gimbal_motor->relative_angle_set, gimbal_motor->relative_angle, 0);
-        gimbal_motor->current_set = stm32_Y.Out1;
+        stm32_step_yaw(gimbal_motor->relative_angle_set, gimbal_motor->relative_angle, 0);
+        gimbal_motor->current_set = stm32_Y_yaw.Out1;
         gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
     }
     else if (gimbal_motor == &gimbal_control.gimbal_pitch_motor)
@@ -787,19 +780,9 @@ static void gimbal_PID_clear(gimbal_PID_t *gimbal_pid_clear)
     }
     gimbal_pid_clear->err = gimbal_pid_clear->set = gimbal_pid_clear->get = 0.0f;
     gimbal_pid_clear->out = gimbal_pid_clear->Pout = gimbal_pid_clear->Iout = gimbal_pid_clear->Dout = 0.0f;
-		stm32_Y.Out1=0;
-		stm32_Y_pitch.Out1=0;
+    stm32_Y_yaw.Out1 = 0;
+    stm32_Y_pitch.Out1 = 0;
 }
-
-
-
-
-
-
-
-
-
-
 
 /**
   * @brief          云台校准设置，将校准的云台中值以及最小最大机械相对角度

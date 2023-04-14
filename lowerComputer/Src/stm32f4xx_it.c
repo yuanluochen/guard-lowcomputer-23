@@ -158,6 +158,8 @@ void DebugMon_Handler(void)
   /* USER CODE END DebugMonitor_IRQn 1 */
 }
 
+extern void xPortSysTickHandler(void);
+
 /**
   * @brief This function handles System tick timer.
   */

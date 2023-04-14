@@ -27,7 +27,7 @@
 #define SHOOT_TASK_MAX_INIT_TIME 10
 
 //摩擦轮电机转速
-#define FRIC_MOTOR_RUN_SPEED 2.9
+#define FRIC_MOTOR_RUN_SPEED 3.0
 //摩擦轮电机停止转速
 #define FRIC_MOTOR_STOP_SPEED 0
 
@@ -186,7 +186,7 @@ typedef struct
     shoot_mode_e last_fric_mode;          // 上一次的发射模式
     fric_Motor_t motor_fric[2];           // 左右摩擦轮
     fp32 fric_CAN_Set_Current[2];         // can发射电流
-    PidTypeDef motor_speed_pid[4];        // 电机速度pid
+    // PidTypeDef motor_speed_pid[4];        // 电机速度pid
 
 
     first_order_filter_type_t fric1_cmd_slow_set_speed; // 摩擦轮一阶低通

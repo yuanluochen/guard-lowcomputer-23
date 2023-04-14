@@ -71,14 +71,12 @@ int flag = 0;
 int time_l = 0;
 int flag1 = 0;
 int trigger_flag = 0, trigger_flag1 = 0;
-int add_t = 0;
+int add_t = 90;
 /*----------------------------------结构体------------------------------*/
 Shoot_Motor_t trigger_motor;                                  // 拨弹轮数据
 fric_move_t fric_move;                                        // 发射控制
 /*----------------------------------外部变量---------------------------*/
-extern ExtY_stm32 stm32_Y;
-extern ExtU_stm32 stm32_U;
-
+extern ExtY_stm32 stm32_Y_shoot;
 extern ext_power_heat_data_t power_heat_data_t;//机器人当前的功率状态，主要判断枪口热量
 /*---------------------------------------------------------------------*/
 // 控制模式
@@ -130,11 +128,6 @@ void shoot_init(void)
     stm32_shoot_pid_init();
     static const fp32 Trigger_speed_pid[3] = {900, 0, 100};
     PID_Init(&trigger_motor.motor_pid, PID_POSITION, Trigger_speed_pid, TRIGGER_READY_PID_MAX_OUT, TRIGGER_READY_PID_MAX_IOUT);
-    const static fp32 motor_speed_pid[3] = {S3505_MOTOR_SPEED_PID_KP, S3505_MOTOR_SPEED_PID_KI, S3505_MOTOR_SPEED_PID_KD};
-    PID_Init(&fric_move.motor_speed_pid[0], PID_POSITION, motor_speed_pid, S3505_MOTOR_SPEED_PID_MAX_OUT, S3505_MOTOR_SPEED_PID_MAX_IOUT);
-    PID_Init(&fric_move.motor_speed_pid[1], PID_POSITION, motor_speed_pid, S3505_MOTOR_SPEED_PID_MAX_OUT, S3505_MOTOR_SPEED_PID_MAX_IOUT);
-    fric_move.motor_speed_pid[0].mode_again = KI_SEPRATE;
-    fric_move.motor_speed_pid[1].mode_again = KI_SEPRATE;
     // 数据指针获取
     fric_move.shoot_rc = get_remote_control_point();
     // 获取视觉控制指针
@@ -196,7 +189,7 @@ static void Shoot_Feedback_Update(void)
     for (i = 0; i < 2; i++)
     {
         fric_move.motor_fric[i].speed = 0.000415809748903494517209f * fric_move.motor_fric[i].fric_motor_measure->speed_rpm;
-        fric_move.motor_fric[i].accel = fric_move.motor_speed_pid[i].Dbuf[0] * 500.0f;
+        // fric_move.motor_fric[i].accel = fric_move.motor_speed_pid[i].Dbuf[0] * 500.0f;
     }
 }
 
@@ -454,25 +447,14 @@ void shoot_control_loop(void)
  */
 static void fric_control_loop(fric_move_t *fric_move_control_loop)
 {
-    uint8_t i = 0;
-    // PID输出限幅
-    for (i = 0; i < 2; i++)
-    {
-        fric_move_control_loop->motor_speed_pid[i].max_out = FRIC_MOTOR_PID_MAX_OUT;
-        fric_move_control_loop->motor_speed_pid[i].max_iout = FRIC_MOTOR_PID_MAX_IOUT;
-    }
     // 速度设置
     fric_move_control_loop->speed_set[0] = fric;
     fric_move_control_loop->speed_set[1] = -fric;
-    // for (i = 0; i < 2; i++)
-    // {
-    //     fric_move_control_loop->motor_fric[i].speed_set = fric_move.speed_set[i];
-    //     PID_Calc(&fric_move_control_loop->motor_speed_pid[i], fric_move_control_loop->motor_fric[i].speed, fric_move_control_loop->motor_fric[i].speed_set);
-    // }
+    // pid 计算
     stm32_step_shoot_0(fric_move_control_loop->speed_set[0], fric_move_control_loop->motor_fric[0].speed);
     stm32_step_shoot_1(fric_move_control_loop->speed_set[1], fric_move_control_loop->motor_fric[1].speed);
-    fric_move.fric_CAN_Set_Current[0] = stm32_Y.out_shoot;
-    fric_move.fric_CAN_Set_Current[1] = stm32_Y.out_shoot1;
+    fric_move.fric_CAN_Set_Current[0] = stm32_Y_shoot.out_shoot_0;
+    fric_move.fric_CAN_Set_Current[1] = stm32_Y_shoot.out_shoot_1;
 }
 
 

@@ -90,7 +90,6 @@
 
 
 
-/*----------------------------------内部函数---------------------------*/
 /**
   * @brief          pitch轴滤波.
   */
@@ -111,11 +110,6 @@ static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
   * @brief          云台初始化控制，电机是陀螺仪角度控制，云台先抬起pitch轴，后旋转yaw轴
   */
 static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
-
-/**
-  * @brief          云台校准控制，电机是raw控制，云台先抬起pitch，放下pitch，在正转yaw，最后反转yaw，记录当时的角度和编码值
-  */
-static void gimbal_cali_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 
 /**
   * @brief          云台控制，电机是角度控制，
@@ -197,19 +191,18 @@ void gimbal_behaviour_mode_set(gimbal_control_t *gimbal_mode_set)
     //根据云台行为状态机设置电机状态机
     switch (gimbal_behaviour)
     {
-    //无力模式下,设置为电机原始值控制，方便让电机处于无力态
-		case GIMBAL_ZERO_FORCE:
+        // 无力模式下,设置为电机原始值控制，方便让电机处于无力态
+    case GIMBAL_ZERO_FORCE:
         gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_mode = GIMBAL_MOTOR_RAW;
         gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_RAW;
         break;
-        
-    //相对角度控制和遥控器和初始化模式以及自动模式都采用一种控制模式
+
+    // 相对角度控制和遥控器和初始化模式以及自动模式都采用一种控制模式
     case GIMBAL_RC:
     case GIMBAL_INIT:
-    case GIMBAL_RELATIVE_ANGLE: 
     case GIMBAL_AUTO:
-        gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;      // yaw轴通过陀螺仪的绝对角控制
-        gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;    // pitch轴通过陀螺仪的绝对角控制
+        gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;   // yaw轴通过陀螺仪的绝对角控制
+        gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO; // pitch轴通过陀螺仪的绝对角控制
         break;
 
     case GIMBAL_MOTIONLESS:
@@ -239,14 +232,12 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
     case GIMBAL_ZERO_FORCE: // 无力模式云台无力
         gimbal_zero_force_control(add_yaw, add_pitch, gimbal_control_set);
         break;
+
     case GIMBAL_INIT: // 初始化模式，云台初始化
         gimbal_init_control(add_yaw, add_pitch, gimbal_control_set);
         break;
-    case GIMBAL_CALI: // 校准模式，云台校准
-        gimbal_cali_control(add_yaw, add_pitch, gimbal_control_set);
-        break;
-    case GIMBAL_RC: // 相对角度控制和绝对角度控制都采用统一的控制方式，即pitch轴相对角度控制，yaw轴绝对角度控制
-    case GIMBAL_RELATIVE_ANGLE:
+
+    case GIMBAL_RC: // 遥控器控制模式,绝对角控制
         gimbal_RC_control(add_yaw, add_pitch, gimbal_control_set);
         break;
 
@@ -268,7 +259,7 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
 
 bool_t gimbal_cmd_to_chassis_stop(void)
 {
-    if (gimbal_behaviour == GIMBAL_INIT || gimbal_behaviour == GIMBAL_CALI || gimbal_behaviour == GIMBAL_MOTIONLESS || gimbal_behaviour == GIMBAL_ZERO_FORCE)
+    if (gimbal_behaviour == GIMBAL_INIT || gimbal_behaviour == GIMBAL_MOTIONLESS || gimbal_behaviour == GIMBAL_ZERO_FORCE)
     {
         return 1;
     }
@@ -286,7 +277,7 @@ bool_t gimbal_cmd_to_chassis_stop(void)
 
 bool_t gimbal_cmd_to_shoot_stop(void)
 {
-    if (gimbal_behaviour == GIMBAL_INIT || gimbal_behaviour == GIMBAL_CALI || gimbal_behaviour == GIMBAL_ZERO_FORCE)
+    if (gimbal_behaviour == GIMBAL_INIT || gimbal_behaviour == GIMBAL_ZERO_FORCE)
     {
         return 1;
     }
@@ -313,31 +304,40 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
     {
         // 初始化时间
         static int init_time = 0;
+        //初始化停止时间
+        static int init_stop_time = 0;
         // static int init_finish_time = 0;
         init_time++; // 初始化时间增加
         // 是否初始化完成
-        if ((fabs(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR) &&
-            (fabs(gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_measure->ecd - gimbal_mode_set->gimbal_pitch_motor.frist_ecd) > GIMBAL_INIT_ANGLE_ERROR))
+        if ((fabs(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) < GIMBAL_INIT_ANGLE_ERROR) &&
+            (fabs(gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_measure->ecd - gimbal_mode_set->gimbal_yaw_motor.frist_ecd) * MOTOR_ECD_TO_RAD < GIMBAL_INIT_ANGLE_ERROR))
         {
-            // 初始化未完成，判断初始化时间
-            if (init_time >= GIMBAL_INIT_TIME)
+            // 判断是否到达初始化停止时间
+            if (init_time < GIMBAL_INIT_STOP_TIME)
             {
-                // 不进行任何行为，直接判断进入其他模式,计时归零
-                init_time = 0;
-            }
-            else
-            {
-                // 退出模式选择，依旧为初始化模式
-                return;
+                // 初始化时间增加
+                init_stop_time++;
             }
         }
         else
         {
-            // 初始化完成,计时归零,重新计时
-            init_time = 0;
-            // 标志初始化完成
-            gimbal_init_finish_flag = 1;
+            if (init_time < GIMBAL_INIT_TIME)
+            {
+                init_time++;
+            }
         }
+
+        //超过初始化最大时间，或者已经稳定到中值一段时间，退出初始化状态开下档2，或者掉线
+        if (init_time < GIMBAL_INIT_TIME && init_stop_time < GIMBAL_INIT_STOP_TIME && !switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]) && !toe_is_error(DBUS_TOE))
+        {
+            return;
+        }
+        else
+        {
+            init_stop_time = 0;
+            init_time = 0;
+        }
+
         //数值仅保存一次
         if (save_auto_scan_center_value_flag == 0)
         {
@@ -536,15 +536,6 @@ static void gimbal_auto_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
     }
     else
     {
-        // // 仍在更新
-        // if (chassis_auto_mode_control_gimbal_auto_mode())
-        // {
-        //     //保存当前数据，云台固定保持稳定
-        //     pitch_set_angle = gimbal_control_set->gimbal_pitch_motor.absolute_angle_set * RADIAN_TO_ANGLE;
-        //     yaw_set_angle = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set;
-        // }
-        // else
-        // {
         //  获取上位机视觉数据
         vision_set_pitch = gimbal_control_set->gimbal_vision_point->gimbal_pitch;
         vision_set_yaw = gimbal_control_set->gimbal_vision_point->gimbal_yaw;
@@ -556,8 +547,6 @@ static void gimbal_auto_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
         // 赋值设定值
         pitch_set_angle = gimbal_control_set->gimbal_vision_control_pitch.out;
         yaw_set_angle = gimbal_control_set->gimbal_vision_control_yaw.out;
-        // }
-        
    }
     // 赋值增量
     *yaw = yaw_set_angle * ANGLE_TO_RADIAN - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
@@ -572,7 +561,6 @@ static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
     {
         return;
     }
-
     // 初始化状态控制量计算
     if (fabs(INIT_PITCH_SET - gimbal_control_set->gimbal_pitch_motor.absolute_angle) > GIMBAL_INIT_ANGLE_ERROR) // pitch轴回正
     {
@@ -582,67 +570,13 @@ static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
     else // yaw轴回归初始值
     {
         // pitch轴保持不变yaw轴回归中值
-        *pitch = (INIT_PITCH_SET - gimbal_control_set->gimbal_pitch_motor.absolute_angle);
+        *pitch = (INIT_PITCH_SET - gimbal_control_set->gimbal_pitch_motor.absolute_angle) * GIMBAL_INIT_PITCH_SPEED;
         // yaw轴绝对角计算控制yaw轴正方向
-        *yaw = (gimbal_control_set->gimbal_yaw_motor.frist_ecd - gimbal_control_set->gimbal_yaw_motor.gimbal_motor_measure->ecd) * MOTOR_ECD_TO_RAD;
+        *yaw = (gimbal_control_set->gimbal_yaw_motor.frist_ecd - gimbal_control_set->gimbal_yaw_motor.gimbal_motor_measure->ecd) * MOTOR_ECD_TO_RAD * GIMBAL_INIT_YAW_SPEED;
     }
 }
 
-/**
- * @brief          云台校准控制，电机是raw控制，云台先抬起pitch，放下pitch，在正转yaw，最后反转yaw，记录当时的角度和编码值
- */
-static void gimbal_cali_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
-{
-    if (yaw == NULL || pitch == NULL || gimbal_control_set == NULL)
-    {
-        return;
-    }
-    static uint16_t cali_time = 0;
 
-    if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_PITCH_MAX_STEP)
-    {
-
-        *pitch = GIMBAL_CALI_MOTOR_SET;
-        *yaw = 0;
-
-        // 判断陀螺仪数据， 并记录最大最小角度数据
-        gimbal_cali_gyro_judge(gimbal_control_set->gimbal_pitch_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.max_pitch,
-                               gimbal_control_set->gimbal_pitch_motor.absolute_angle, gimbal_control_set->gimbal_cali.max_pitch_ecd,
-                               gimbal_control_set->gimbal_pitch_motor.gimbal_motor_measure->ecd, gimbal_control_set->gimbal_cali.step);
-    }
-    else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_PITCH_MIN_STEP)
-    {
-        *pitch = -GIMBAL_CALI_MOTOR_SET;
-        *yaw = 0;
-
-        gimbal_cali_gyro_judge(gimbal_control_set->gimbal_pitch_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.min_pitch,
-                               gimbal_control_set->gimbal_pitch_motor.absolute_angle, gimbal_control_set->gimbal_cali.min_pitch_ecd,
-                               gimbal_control_set->gimbal_pitch_motor.gimbal_motor_measure->ecd, gimbal_control_set->gimbal_cali.step);
-    }
-    else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_YAW_MAX_STEP)
-    {
-        *pitch = 0;
-        *yaw = GIMBAL_CALI_MOTOR_SET;
-
-        gimbal_cali_gyro_judge(gimbal_control_set->gimbal_yaw_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.max_yaw,
-                               gimbal_control_set->gimbal_yaw_motor.absolute_angle, gimbal_control_set->gimbal_cali.max_yaw_ecd,
-                               gimbal_control_set->gimbal_yaw_motor.gimbal_motor_measure->ecd, gimbal_control_set->gimbal_cali.step);
-    }
-
-    else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_YAW_MIN_STEP)
-    {
-        *pitch = 0;
-        *yaw = -GIMBAL_CALI_MOTOR_SET;
-
-        gimbal_cali_gyro_judge(gimbal_control_set->gimbal_yaw_motor.motor_gyro, cali_time, gimbal_control_set->gimbal_cali.min_yaw,
-                               gimbal_control_set->gimbal_yaw_motor.absolute_angle, gimbal_control_set->gimbal_cali.min_yaw_ecd,
-                               gimbal_control_set->gimbal_yaw_motor.gimbal_motor_measure->ecd, gimbal_control_set->gimbal_cali.step);
-    }
-    else if (gimbal_control_set->gimbal_cali.step == GIMBAL_CALI_END_STEP)
-    {
-        cali_time = 0;
-    }
-}
 
 static void scan_control_set(fp32* gimbal_set, fp32 range, fp32 period, fp32 run_time)
 {

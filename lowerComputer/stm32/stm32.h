@@ -33,91 +33,91 @@
 #include "STM32_Config.h"
 #include "stm32_External_Functions.h"
 #ifndef stm32_COMMON_INCLUDES_
-# define stm32_COMMON_INCLUDES_
+#define stm32_COMMON_INCLUDES_
 #include "rtwtypes.h"
-#endif                                 /* stm32_COMMON_INCLUDES_ */
+#endif /* stm32_COMMON_INCLUDES_ */
 
 #include "stm32_types.h"
 
 /* Macros for accessing real-time model data structure */
 #ifndef rtmGetErrorStatus
-# define rtmGetErrorStatus(rtm)        ((rtm)->errorStatus)
+#define rtmGetErrorStatus(rtm) ((rtm)->errorStatus)
 #endif
 
 #ifndef rtmSetErrorStatus
-# define rtmSetErrorStatus(rtm, val)   ((rtm)->errorStatus = (val))
+#define rtmSetErrorStatus(rtm, val) ((rtm)->errorStatus = (val))
 #endif
 
 /* Block states (default storage) for system '<Root>' */
-typedef struct {
-  fp32 Integrator_DSTATE;            /* '<S36>/Integrator' */
-  fp32 FilterDifferentiatorTF_states;/* '<S29>/Filter Differentiator TF' */
-  fp32 FilterDifferentiatorTF_states_o;/* '<S79>/Filter Differentiator TF' */
-  fp32 Integrator_DSTATE_p;          /* '<S86>/Integrator' */
+typedef struct
+{
+    fp32 Integrator_DSTATE;               /* '<S36>/Integrator' */
+    fp32 FilterDifferentiatorTF_states;   /* '<S29>/Filter Differentiator TF' */
+    fp32 FilterDifferentiatorTF_states_o; /* '<S79>/Filter Differentiator TF' */
+    fp32 Integrator_DSTATE_p;             /* '<S86>/Integrator' */
 } DW_stm32;
 
 /* External inputs (root inport signals with default storage) */
-typedef struct {
-  fp32 angle_set;                    /* '<Root>/angle_set' */
-  fp32 angle_feedback;               /* '<Root>/angle_feedback' */
-  fp32 speed_feedback;               /* '<Root>/speed_feedback' */
-  fp32 P_P;                          /* '<Root>/P_P' */
-  fp32 P_I;                          /* '<Root>/P_I' */
-  fp32 P_D;                          /* '<Root>/P_D' */
-  fp32 P_N;                          /* '<Root>/P_N' */
-  fp32 S_P;                          /* '<Root>/S_P' */
-  fp32 S_I;                          /* '<Root>/S_I' */
-  fp32 S_D;                          /* '<Root>/S_D' */
-  fp32 S_N;                          /* '<Root>/S_N' */
-  fp32 KP;
-  fp32 KI;
-  fp32 KD;
-  fp32 N;
-	fp32 speed_set;
-	fp32 speed_back;
+typedef struct
+{
+    fp32 angle_set;      /* '<Root>/angle_set' */
+    fp32 angle_feedback; /* '<Root>/angle_feedback' */
+    fp32 speed_feedback; /* '<Root>/speed_feedback' */
+    fp32 P_P;            /* '<Root>/P_P' */
+    fp32 P_I;            /* '<Root>/P_I' */
+    fp32 P_D;            /* '<Root>/P_D' */
+    fp32 P_N;            /* '<Root>/P_N' */
+    fp32 S_P;            /* '<Root>/S_P' */
+    fp32 S_I;            /* '<Root>/S_I' */
+    fp32 S_D;            /* '<Root>/S_D' */
+    fp32 S_N;            /* '<Root>/S_N' */
+    fp32 KP;
+    fp32 KI;
+    fp32 KD;
+    fp32 N;
+    fp32 speed_set;
+    fp32 speed_back;
 } ExtU_stm32;
 
 /* External outputs (root outports fed by signals with default storage) */
-typedef struct {
-  fp32 Out1; 
-  fp32 out_shoot;
-  fp32 out_shoot1;	/* '<Root>/Out1' */
+typedef struct
+{
+    fp32 Out1;
+    fp32 out_shoot_0;
+    fp32 out_shoot_1; /* '<Root>/Out1' */
 } ExtY_stm32;
 
 /* Real-time Model Data Structure */
-struct tag_RTM_stm32 {
-  const char_T *errorStatus;
+struct tag_RTM_stm32
+{
+    const char_T *errorStatus;
 };
 
 /* Block states (default storage) */
 extern DW_stm32 stm32_DW;
 
 /* External inputs (root inport signals with default storage) */
-extern ExtU_stm32 stm32_U;
+extern ExtU_stm32 stm32_U_shoot;
 
 /* External outputs (root outports fed by signals with default storage) */
-extern ExtY_stm32 stm32_Y;
+extern ExtY_stm32 stm32_Y_shoot;
 
 /* Model entry point functions */
-void stm32_initialize(void);
-void stm32_step(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
-void sm32_pid_init(void);
 
+// 云台电机pid 初始化
 void stm32_pid_init_pitch(void);
-void stm32_step_pitch(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
-void stm32_pid_init_pitch_gyro(void);
-void stm32_step_shoot_0(fp32 speedset,fp32 speedback);
-void stm32_step_shoot_1(fp32 speedset,fp32 speedback);
-void stm32_shoot_pid_init(void) ;
-void stm32_step_auto(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
-void stm32_step_pitch_auto(fp32 angle_set,fp32 angle_feedback,fp32 speed_feedback);
-void stm32_auto_pid_init(void);
-void stm32_pid_init(void);
-void stm32_pid_auto_init_pitch(void);
+void stm32_pid_init_yaw(void);
+
+//摩擦轮电机初始化
+void stm32_shoot_pid_init(void);
+
+void stm32_step_pitch(fp32 angle_set, fp32 angle_feedback, fp32 speed_feedback);
+void stm32_step_yaw(fp32 angle_set, fp32 angle_feedback, fp32 speed_feedback);
+
+void stm32_step_shoot_0(fp32 speedset, fp32 speedback);
+void stm32_step_shoot_1(fp32 speedset, fp32 speedback);
 /* Real-time Model object */
 extern RT_MODEL_stm32 *const stm32_M;
-void stm32_relative_pid_init_pitch(void);
-
 
 /*-
  * These blocks were eliminated from the model due to optimizations:
@@ -244,7 +244,7 @@ void stm32_relative_pid_init_pitch(void);
  * '<S101>' : 'stm32/Discrete PID Controller1/postSat Signal/Forward_Path'
  * '<S102>' : 'stm32/Discrete PID Controller1/preSat Signal/Forward_Path'
  */
-#endif                                 /* RTW_HEADER_stm32_h_ */
+#endif /* RTW_HEADER_stm32_h_ */
 
 /* File trailer for Real-Time Workshop generated code.
  *
