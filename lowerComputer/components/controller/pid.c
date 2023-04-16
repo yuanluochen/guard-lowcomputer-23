@@ -107,23 +107,6 @@ fp32 PID_calc(pid_type_def *pid, fp32 ref, fp32 set)
     return pid->out;
 }
 
-/**
-  * @brief          pid 输出清除
-  * @param[out]     pid: PID结构数据指针
-  * @retval         none
-  */
-void PID_clear(pid_type_def *pid)
-{
-    if (pid == NULL)
-    {
-        return;
-    }
-
-    pid->error[0] = pid->error[1] = pid->error[2] = 0.0f;
-    pid->Dbuf[0] = pid->Dbuf[1] = pid->Dbuf[2] = 0.0f;
-    pid->out = pid->Pout = pid->Iout = pid->Dout = 0.0f;
-    pid->fdb = pid->set = 0.0f;
-}
 
 /**********************************************************************************************************
 *功能说明: PID+各种优化

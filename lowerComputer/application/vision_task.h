@@ -147,23 +147,6 @@ typedef struct
 }eular_angle_t;
 
 
-// //视觉kalman filter结构体
-// typedef struct 
-// {
-//     //一维kalman
-//     kalman gimbal_pitch_kalman;  //pitch轴电机kalman filter结构体    
-//     kalman gimbal_yaw_kalman;    //云台yaw轴电机kalman filter结构体
-//     kalman disdance_kalman;      //距离结构体    
-
-//     //二阶kalman filter,主要处理云台电机数据
-//     kalman_filter_t gimbal_pitch_second_order_kalman;
-//     kalman_filter_t gimbal_yaw_second_order_kalman;
-
-//     //二阶kalman filter 初始化结构体，用于给矩阵运算库的矩阵赋值
-//     kalman_filter_init_t gimbal_pitch_second_order_kalman_init;
-//     kalman_filter_init_t gimbal_yaw_second_order_kalman_init;
-// }vision_kalman_filter_t;
-
 //哨兵云台电机运动命令,经滤波处理后的数值
 typedef struct 
 {
@@ -201,9 +184,6 @@ typedef struct
     
     // 绝对角
     eular_angle_t absolution_angle;
-
-    // // kalman filter 结构体，用于处理视觉上位机发来的数据
-    // vision_kalman_filter_t vision_kalman_filter;
 
     // 云台电机运动命令
     gimbal_vision_control_t gimbal_vision_control;    

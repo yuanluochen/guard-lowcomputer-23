@@ -19,6 +19,7 @@
 #include "bsp_laser.h"
 #include "bsp_fric.h"
 #include "arm_math.h"
+
 #include "user_lib.h"
 #include "referee.h"
 #include "CAN_receive.h"
@@ -56,6 +57,12 @@ static void trigger_control_loop(Shoot_Motor_t* trigger_move_control_loop);
 static void shoot_set_control_mode(fric_move_t* fric_set_control);
 
 /**
+ * @brief Éä»÷Ä£Ê½ÇÐ»»Êý¾Ý¹ý¶É 
+ * 
+ */
+static void shoot_mode_change_transit(void);
+
+/**
  * @brief  Éä»÷³õÊ¼»¯
  */
 void shoot_init(void);
@@ -64,14 +71,6 @@ void shoot_init(void);
 
 /*----------------------------------ÄÚ²¿±äÁ¿---------------------------*/
 fp32 fric;
-int jam_flag = 0;
-// uint16_t ShootSpeed;
-// fp32 KH = 0;
-int flag = 0;
-int time_l = 0;
-int flag1 = 0;
-int trigger_flag = 0, trigger_flag1 = 0;
-int add_t = 90;
 /*----------------------------------½á¹¹Ìå------------------------------*/
 Shoot_Motor_t trigger_motor;                                  // ²¦µ¯ÂÖÊý¾Ý
 fric_move_t fric_move;                                        // ·¢Éä¿ØÖÆ
@@ -81,6 +80,7 @@ extern ext_power_heat_data_t power_heat_data_t;//»úÆ÷ÈËµ±Ç°µÄ¹¦ÂÊ×´Ì¬£¬Ö÷ÒªÅÐ¶ÏÇ
 /*---------------------------------------------------------------------*/
 // ¿ØÖÆÄ£Ê½
 shoot_mode_e shoot_mode = SHOOT_STOP;                             // ´Ë´ÎÉä»÷Ä£Ê½
+shoot_mode_e last_shoot_mode = SHOOT_STOP;                        // ÉÏ´ÎÉä»÷Ä£Ê½
 shoot_control_mode_e shoot_control_mode = SHOOT_STOP_CONTROL;     // Éä»÷¿ØÖÆÄ£Ê½
 shoot_init_state_e shoot_init_state = SHOOT_INIT_UNFINISH;        // Éä»÷³õÊ¼»¯Ã¶¾ÙÌå
 shoot_motor_control_mode_e fric_motor_mode = SHOOT_MOTOR_STOP;    // Ä¦²ÁÂÖµç»ú
@@ -98,6 +98,8 @@ void shoot_task(void const *pvParameters)
     {
         //ÉèÖÃ·¢ÉäÄ£Ê½
         Shoot_Set_Mode();
+        // Ä£Ê½ÇÐ»»Êý¾Ý¹ý¶É,Ö÷ÒªPIDÇå³ý
+        shoot_mode_change_transit();
         //·¢ÉäÊý¾Ý¸üÐÂ
         Shoot_Feedback_Update();
         //Éä»÷¿ØÖÆÑ­»·
@@ -126,6 +128,8 @@ void shoot_init(void)
     trigger_motor.move_flag = 1;
     // ³õÊ¼»¯PID
     stm32_shoot_pid_init();
+    //Ä¦²ÁÂÖµç»úPIDÇå³ý
+    stm32_step_shoot_pid_clear();
     static const fp32 Trigger_speed_pid[3] = {900, 0, 100};
     PID_Init(&trigger_motor.motor_pid, PID_POSITION, Trigger_speed_pid, TRIGGER_READY_PID_MAX_OUT, TRIGGER_READY_PID_MAX_IOUT);
     // Êý¾ÝÖ¸Õë»ñÈ¡
@@ -141,13 +145,17 @@ void shoot_init(void)
     const static fp32 fric_2_order_filter[1] = {0.1666666667f};
     first_order_filter_init(&fric_move.fric1_cmd_slow_set_speed, SHOOT_CONTROL_TIME, fric_1_order_filter);
     first_order_filter_init(&fric_move.fric2_cmd_slow_set_speed, SHOOT_CONTROL_TIME, fric_2_order_filter);
-    // ËÙ¶ÈÏÞ·ù
-    fric_move.max_speed = 4.75f;
-    fric_move.min_speed = -4.75f;
     Shoot_Feedback_Update();
-    trigger_motor.set_angle = trigger_motor.angle;
 }
 
+static void shoot_mode_change_transit(void)
+{
+    if (last_shoot_mode != shoot_mode)
+    {
+        //Ä£Ê½·¢ÉúÇÐ»»,pidÇå³ý
+        stm32_step_shoot_pid_clear();
+    }
+}
 
 /**
  * @brief          Éä»÷Êý¾Ý¸üÐÂ
@@ -189,7 +197,6 @@ static void Shoot_Feedback_Update(void)
     for (i = 0; i < 2; i++)
     {
         fric_move.motor_fric[i].speed = 0.000415809748903494517209f * fric_move.motor_fric[i].fric_motor_measure->speed_rpm;
-        // fric_move.motor_fric[i].accel = fric_move.motor_speed_pid[i].Dbuf[0] * 500.0f;
     }
 }
 
@@ -282,6 +289,11 @@ static void Shoot_Set_Mode(void)
 {
     //ÉèÖÃ·¢Éä¿ØÖÆÄ£Ê½
     shoot_set_control_mode(&fric_move);
+
+    //±£ÁôÉÏ´ÎÉä»÷Ä£Ê½
+    last_shoot_mode = shoot_mode;
+
+    //¸üÐÂµ±Ç°Éä»÷Ä£Ê½
 
     //ÅÐ¶Ïµ±Ç°Ç¹¿ÚÈÈÁ¿ÊÇ·ñ¼´½«µ½´ï×î´óÖµ
     if (GUARD_MAX_MUZZLE_HEAT - power_heat_data_t.shooter_id1_17mm_cooling_heat >= GUARD_MAX_ALLOW_MUZZLE_HEAT_ERR0R &&
@@ -437,7 +449,7 @@ void shoot_control_loop(void)
         break;
     }
 
-   // pid¼ÆËã
+    // pid¼ÆËã
     fric_control_loop(&fric_move);        // Ä¦²ÁÂÖ¿ØÖÆ
     trigger_control_loop(&trigger_motor); // ²¦µ¯ÅÌ¿ØÖÆ
 }

@@ -86,21 +86,18 @@ typedef struct
     fp32 out_shoot_0;
     fp32 out_shoot_1; /* '<Root>/Out1' */
 } ExtY_stm32;
-
-/* Real-time Model Data Structure */
-struct tag_RTM_stm32
+typedef struct
 {
-    const char_T *errorStatus;
-};
-
-/* Block states (default storage) */
-extern DW_stm32 stm32_DW;
-
-/* External inputs (root inport signals with default storage) */
-extern ExtU_stm32 stm32_U_shoot;
-
-/* External outputs (root outports fed by signals with default storage) */
-extern ExtY_stm32 stm32_Y_shoot;
+   fp32 rtb_Sum1;
+   fp32 rtb_Reciprocal;
+   fp32 rtb_FilterDifferentiatorTF;
+   fp32 rtb_IProdOut;
+   fp32 Integrator;
+   fp32 Integrator_d;
+   fp32 TmpSignalConversionAtFilterDifferentiatorTFInport2_idx_1;
+   fp32 TmpSignalConversionAtFilterDifferentiatorTFInport2_c_idx_1;
+		
+} stm32_PID_t;
 
 /* Model entry point functions */
 
@@ -116,8 +113,10 @@ void stm32_step_yaw(fp32 angle_set, fp32 angle_feedback, fp32 speed_feedback);
 
 void stm32_step_shoot_0(fp32 speedset, fp32 speedback);
 void stm32_step_shoot_1(fp32 speedset, fp32 speedback);
-/* Real-time Model object */
-extern RT_MODEL_stm32 *const stm32_M;
+
+//pidÇå³ý
+void stm32_step_shoot_pid_clear(void);
+void stm32_step_gimbal_pid_clear(void);
 
 /*-
  * These blocks were eliminated from the model due to optimizations:

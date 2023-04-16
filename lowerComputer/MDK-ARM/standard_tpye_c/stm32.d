@@ -50,3 +50,4 @@ standard_tpye_c\stm32.o: ..\stm32\rtwtypes.h
 standard_tpye_c\stm32.o: ..\stm32\stm32_External_Functions.h
 standard_tpye_c\stm32.o: ..\stm32\stm32_types.h
 standard_tpye_c\stm32.o: ..\stm32\stm32_private.h
+standard_tpye_c\stm32.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\string.h

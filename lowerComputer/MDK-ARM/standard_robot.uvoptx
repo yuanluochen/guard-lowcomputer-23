@@ -305,6 +305,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>fric_move</ItemText>
         </Ww>
+        <Ww>
+          <count>30</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>stm32_DW_shoot_0</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
