@@ -352,6 +352,7 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
     {
         // 遥控器控制模式
         gimbal_behaviour = GIMBAL_ZERO_FORCE;
+    
     }
     if (switch_is_mid(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
@@ -385,6 +386,7 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
         other_mode_transform_auto_mode_flag = 1;
     }
 
+    
     // 保存历史数据
     last_gimbal_behaviour = gimbal_behaviour;
 }

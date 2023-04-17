@@ -267,7 +267,6 @@ void INS_task(void const *pvParameters)
         get_angle(INS_quat, INS_angle + INS_YAW_ADDRESS_OFFSET, INS_angle + INS_ROLL_ADDRESS_OFFSET, INS_angle + INS_PITCH_ADDRESS_OFFSET);
 
         
-        
         //because no use ist8310 and save time, no use
         if(mag_update_flag &= 1 << IMU_DR_SHFITS)
         {

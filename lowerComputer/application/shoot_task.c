@@ -104,16 +104,20 @@ void shoot_task(void const *pvParameters)
         Shoot_Feedback_Update();
         //射击控制循环
         shoot_control_loop();
-        if (toe_is_error(DBUS_TOE))
+        if (!(toe_is_error(TRIGGER_MOTOR_TOE) && !toe_is_error(FRIC_LEFT_MOTOR_TOE) && !toe_is_error(FRIC_RIGHT_MOTOR_TOE)))
         {
-            //遥控器报错，停止运行
-            CAN_cmd_shoot(0, 0, 0, 0);
+            if (toe_is_error(DBUS_TOE))
+            {
+                // 遥控器报错，停止运行
+                CAN_cmd_shoot(0, 0, 0, 0);
+            }
+            else
+            {
+                // 发送控制指令
+                CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
+            }
         }
-        else
-        {
-            // 发送控制指令
-            CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
-        }
+        
         vTaskDelay(SHOOT_TASK_DELAY_TIME);
     }
 }

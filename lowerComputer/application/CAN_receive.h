@@ -40,7 +40,7 @@ typedef enum
     CAN_TRIGGER_MOTOR_ID = 0x207,
     CAN_GIMBAL_ALL_ID = 0x1FF,
 
-		CAN_SHOOT_ALL_ID = 0x1FF,
+    CAN_SHOOT_ALL_ID = 0x1FF,
     CAN_3508_S1_ID = 0x205,
     CAN_3508_S2_ID = 0x206,
 

@@ -67,53 +67,69 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
 
- 	if(hcan==&hcan1)
-	{ 
+    if (hcan == &hcan1)
+    { 
 		switch (rx_header.StdId)
     {
         case CAN_3508_M1_ID:
         case CAN_3508_M2_ID:
         case CAN_3508_M3_ID:
         case CAN_3508_M4_ID:
-				case CAN_YAW_MOTOR_ID:				
-				case CAN_PIT_MOTOR_ID:
         {
             static uint8_t i = 0;
             i = rx_header.StdId - CAN_3508_M4_ID;
             get_motor_measure(&motor_chassis[i], rx_data);
+            detect_hook(CHASSIS_MOTOR1_TOE + i);
+            break;
+        }
+        case CAN_YAW_MOTOR_ID:
+        {
+
+            get_motor_measure(&motor_chassis[4], rx_data);
+            detect_hook(YAW_GIMBAL_MOTOR_TOE);
+            break;
+        }
+        case CAN_PIT_MOTOR_ID:
+        {
+            get_motor_measure(&motor_chassis[5], rx_data);
+            detect_hook(PITCH_GIMBAL_MOTOR_TOE);
             break;
         }
         default:
         {
             break;
+        }
         }
     }
-	}
-	else if(hcan==&hcan2)
-	{
-		switch (rx_header.StdId)
+    else if (hcan == &hcan2)
     {
-					case CAN_TRIGGER_MOTOR_ID:
-					{
-							get_motor_measure(&motor_tri, rx_data);
-							break;
-					}
-					case CAN_3508_S1_ID:
-					case CAN_3508_S2_ID:
-					{            
-						  static uint8_t j = 0;
-						  j = rx_header.StdId - CAN_3508_S1_ID;
-							get_motor_measure(&motor_shoot[j], rx_data);
-							break;
-					}
+        switch (rx_header.StdId)
+        {
+        case CAN_TRIGGER_MOTOR_ID:
+        {
+            get_motor_measure(&motor_tri, rx_data);
+            detect_hook(TRIGGER_MOTOR_TOE);
+            break;
+        }
+        case CAN_3508_S1_ID:
+        {
+            get_motor_measure(&motor_shoot[rx_header.StdId - CAN_3508_S1_ID], rx_data);
+            detect_hook(FRIC_LEFT_MOTOR_TOE );
+            break;
+        }
+        case CAN_3508_S2_ID:
+        {
+            get_motor_measure(&motor_shoot[rx_header.StdId - CAN_3508_S1_ID], rx_data);
+            detect_hook(FRIC_RIGHT_MOTOR_TOE );
+            break;
+        }
         default:
         {
             break;
         }
-     }
-   }
+        }
+    }
 }
-
 
 void CAN_cmd_shoot(int16_t fric1,int16_t fric2 ,int16_t shoot, int16_t rev)
 {

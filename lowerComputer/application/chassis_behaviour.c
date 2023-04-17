@@ -177,6 +177,12 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
         chassis_behaviour_mode = CHASSIS_NO_MOVE;
     }
 
+    //防止底盘跟随云台，云台掉电底盘移动，云台电机掉线,底盘不移动
+    if (toe_is_error(YAW_GIMBAL_MOTOR_TOE) && toe_is_error(PITCH_GIMBAL_MOTOR_TOE))
+    {
+        chassis_behaviour_mode = CHASSIS_NO_MOVE;
+    }
+
     //accord to beheviour mode, choose chassis control mode
     //根据行为模式选择一个底盘控制模式
     if (chassis_behaviour_mode == CHASSIS_ZERO_FORCE)

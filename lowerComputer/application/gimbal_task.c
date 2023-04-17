@@ -177,7 +177,12 @@ void gimbal_task(void const *pvParameters)
     //gimbal init
     //云台初始化
     gimbal_init(&gimbal_control);
-    // 循环
+    // 判断电机是否都上线
+    while (toe_is_error(YAW_GIMBAL_MOTOR_TOE) || toe_is_error(PITCH_GIMBAL_MOTOR_TOE))
+    {
+        vTaskDelay(GIMBAL_CONTROL_TIME);
+        gimbal_feedback_update(&gimbal_control); // 云台数据反馈
+    }
     while (1)
     {
         gimbal_set_mode(&gimbal_control);                    // 设置云台控制模式
@@ -186,7 +191,18 @@ void gimbal_task(void const *pvParameters)
         gimbal_set_control(&gimbal_control);                 // 设置云台控制量
         gimbal_control_loop(&gimbal_control);                // 云台控制计算
 
-        CAN_cmd_gimbal(gimbal_control.gimbal_yaw_motor.given_current, gimbal_control.gimbal_pitch_motor.given_current, 0);
+        if (!(toe_is_error(YAW_GIMBAL_MOTOR_TOE) && toe_is_error(PITCH_GIMBAL_MOTOR_TOE)))
+        {
+            if (toe_is_error(DBUS_TOE))
+            {
+                // 判断遥控器是否掉线
+                CAN_cmd_gimbal(0, 0, 0);
+            }
+            else
+            {
+                CAN_cmd_gimbal(gimbal_control.gimbal_yaw_motor.given_current, gimbal_control.gimbal_pitch_motor.given_current, 0);
+            }
+        }
         vTaskDelay(GIMBAL_CONTROL_TIME);
 #if INCLUDE_uxTaskGetStackHighWaterMark
         gimbal_high_water = uxTaskGetStackHighWaterMark(NULL);
