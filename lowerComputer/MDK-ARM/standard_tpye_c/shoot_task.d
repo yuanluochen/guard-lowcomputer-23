@@ -65,6 +65,7 @@ standard_tpye_c\shoot_task.o: ..\application\vision_task.h
 standard_tpye_c\shoot_task.o: ../Inc/usart.h
 standard_tpye_c\shoot_task.o: ../Inc/dma.h
 standard_tpye_c\shoot_task.o: ..\application\INS_task.h
+standard_tpye_c\shoot_task.o: ../bsp/boards/bsp_buzzer.h
 standard_tpye_c\shoot_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 standard_tpye_c\shoot_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 standard_tpye_c\shoot_task.o: ../Inc/FreeRTOSConfig.h

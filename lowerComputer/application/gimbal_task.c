@@ -313,8 +313,8 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_auto_scan.scan_yaw_period = YAW_SCAN_PERIOD;
 
     // 设置pitch轴相对角最大值
-    init->gimbal_pitch_motor.max_relative_angle = GIMBAL_PITCH_MAX_ENCODE * MOTOR_ECD_TO_RAD;
-    init->gimbal_pitch_motor.min_relative_angle = GIMBAL_PITCH_MIN_ENCODE * MOTOR_ECD_TO_RAD;
+    init->gimbal_pitch_motor.max_relative_angle = -motor_ecd_to_angle_change(GIMBAL_PITCH_MAX_ENCODE, init->gimbal_pitch_motor.offset_ecd);
+    init->gimbal_pitch_motor.min_relative_angle = -motor_ecd_to_angle_change(GIMBAL_PITCH_MIN_ENCODE, init->gimbal_pitch_motor.offset_ecd);
 }
 
 /**
@@ -493,7 +493,7 @@ static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add)
 {
     static fp32 angle_set_yaw = 0;
 
-    static fp32 angle_set_pitch = 0;
+    // static fp32 angle_set_pitch = 0;
     if (gimbal_motor == NULL)
     {
         return;
@@ -505,23 +505,47 @@ static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add)
     }
     else
     {
-        angle_set_pitch = gimbal_motor->absolute_angle_set;
-        // 超过云台设置最大的角度范围，设置数据不在增长
-        if (gimbal_motor->gimbal_motor_measure->ecd >= GIMBAL_PITCH_MAX_ENCODE)
+        // angle_set_pitch = gimbal_motor->absolute_angle_set;
+        // // 超过云台设置最大的角度范围，设置数据不在增长
+        // if (gimbal_motor->gimbal_motor_measure->ecd >= GIMBAL_PITCH_MAX_ENCODE)
+        // {
+        //     // 当前为相对角度最大，实际pitch轴绝对角最小，在该情况下，允许绝对角增大，不允许减小
+        //     gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + (add < 0 ? add : 0));
+        // }
+        // else if (gimbal_motor->gimbal_motor_measure->ecd <= GIMBAL_PITCH_MIN_ENCODE)
+        // {
+        //     // 当前为相对角度最小，实际pitch轴绝对角最大，在该情况下，由于c板安装问题，绝对角也是反的，允许绝对角增大，不允许减小
+        //     gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + (add > 0 ? add : 0));
+        // }
+        // // 未超过最大值，设置值增长
+        // else
+        // {
+        //     gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + add);
+        // }
+
+        //当前误差角度
+        static fp32 error_angle = 0;
+        static fp32 angle_set = 0;
+        error_angle = rad_format((-gimbal_motor->absolute_angle_set) - (-gimbal_motor->absolute_angle));
+        // 云台相对角度+ 误差角度 + 新增角度 如果大于 最大机械角度
+        if (gimbal_motor->relative_angle + error_angle + (-add) > gimbal_motor->max_relative_angle)
         {
-            // 当前为相对角度最大，实际pitch轴绝对角最小，在该情况下，允许绝对角增大，不允许减小
-            gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + (add < 0 ? add : 0));
+            // 如果是往最大机械角度控制方向
+            if ((-add) > 0.0f)
+            {
+                // 计算出一个最大的添加角度，
+                add = -(gimbal_motor->max_relative_angle - gimbal_motor->relative_angle - error_angle);
+            }
         }
-        else if (gimbal_motor->gimbal_motor_measure->ecd <= GIMBAL_PITCH_MIN_ENCODE)
+        else if (gimbal_motor->relative_angle + error_angle + (-add) < gimbal_motor->min_relative_angle)
         {
-            // 当前为相对角度最小，实际pitch轴绝对角最大，在该情况下，由于c板安装问题，绝对角也是反的，允许绝对角增大，不允许减小
-            gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + (add > 0 ? add : 0));
+            if ((-add) < 0.0f)
+            {
+                add = -(gimbal_motor->min_relative_angle - gimbal_motor->relative_angle - error_angle);
+            }
         }
-        // 未超过最大值，设置值增长
-        else
-        {
-            gimbal_motor->absolute_angle_set = rad_format(angle_set_pitch + add);
-        }
+        angle_set = gimbal_motor->absolute_angle_set;
+        gimbal_motor->absolute_angle_set = rad_format(angle_set + add);
     }
 }
 /**

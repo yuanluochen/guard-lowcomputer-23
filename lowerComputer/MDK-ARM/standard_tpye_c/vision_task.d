@@ -49,6 +49,7 @@ standard_tpye_c\vision_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal
 standard_tpye_c\vision_task.o: ../Inc/dma.h
 standard_tpye_c\vision_task.o: ..\application\INS_task.h
 standard_tpye_c\vision_task.o: ..\application\struct_typedef.h
+standard_tpye_c\vision_task.o: ../bsp/boards/bsp_buzzer.h
 standard_tpye_c\vision_task.o: ../components/algorithm/Include/arm_math.h
 standard_tpye_c\vision_task.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\vision_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\string.h

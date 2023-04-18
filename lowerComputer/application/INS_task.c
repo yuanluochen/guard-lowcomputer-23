@@ -97,6 +97,7 @@ static void imu_temp_control(fp32 temp);
 static void imu_cmd_spi_dma(void);
 
 
+void gyro_offset_calc(fp32 gyro_offset[3], fp32 gyro[3], uint16_t *offset_time_count);
 
 extern SPI_HandleTypeDef hspi1;
 
@@ -158,8 +159,11 @@ static fp32 INS_mag[3] = {0.0f, 0.0f, 0.0f};
 static fp32 INS_quat[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 fp32 INS_angle[3] = {0.0f, 0.0f, 0.0f};      //euler angle, unit rad.欧拉角 单位 rad
 
-
-
+/**
+ * @brief imu校准完毕标志位  校准完毕该位置1 
+ * 
+ */
+static bool_t imu_offset_calc_finish_flag = 0;
 
 
 /**
@@ -266,13 +270,33 @@ void INS_task(void const *pvParameters)
         AHRS_update(INS_quat, timing_time, INS_gyro, accel_fliter_3, INS_mag);
         get_angle(INS_quat, INS_angle + INS_YAW_ADDRESS_OFFSET, INS_angle + INS_ROLL_ADDRESS_OFFSET, INS_angle + INS_PITCH_ADDRESS_OFFSET);
 
-        
+        //imu判断进入imu校准模式
+        {
+            //校准时间
+            static uint16_t imu_cail_offset_time = 0;
+            
+            if (imu_cail_offset_time < IMU_CAIL_MAX_TIME)
+            {
+                //开始校准，蜂鸣器开
+                IMUWarnBuzzerOn();
+                //计算零漂
+                gyro_offset_calc(gyro_offset, INS_gyro, &imu_cail_offset_time);
+            }
+            else
+            {
+                //校准完毕，蜂鸣器关
+                IMUWarnBuzzerOFF();
+                //imu校准完毕标志位置1
+                imu_offset_calc_finish_flag = 1;
+            }
+        }
+
         //because no use ist8310 and save time, no use
         if(mag_update_flag &= 1 << IMU_DR_SHFITS)
         {
             mag_update_flag &= ~(1<< IMU_DR_SHFITS);
             mag_update_flag |= (1 << IMU_SPI_SHFITS);
-//            ist8310_read_mag(ist8310_real_data.mag);
+        //    ist8310_read_mag(ist8310_real_data.mag);
         }
 
     }
@@ -658,3 +682,7 @@ void DMA2_Stream2_IRQHandler(void)
     }
 }
 
+bool_t judge_imu_offset_calc_finish(void)
+{
+    return imu_offset_calc_finish_flag;
+}

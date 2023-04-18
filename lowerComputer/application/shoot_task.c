@@ -274,6 +274,12 @@ static void shoot_set_control_mode(fric_move_t *fric_set_control)
         shoot_control_mode = SHOOT_STOP_CONTROL;
     }
 
+    // 云台在某些模式下发射停止
+    if (gimbal_cmd_to_shoot_stop())
+    {
+        shoot_control_mode = SHOOT_STOP_CONTROL;
+    }
+
     // 判断进入初始化模式
     static shoot_control_mode_e last_shoot_control_mode = SHOOT_STOP_CONTROL;
     if (shoot_control_mode != SHOOT_STOP_CONTROL && last_shoot_control_mode == SHOOT_STOP_CONTROL)

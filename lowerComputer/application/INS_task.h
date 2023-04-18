@@ -24,12 +24,18 @@
 #ifndef INS_Task_H
 #define INS_Task_H
 #include "struct_typedef.h"
+#include "bsp_buzzer.h"
 
+#define IMUWarnBuzzerOn() buzzer_on(95, 10000) //开机陀螺仪校准蜂鸣器
+
+#define IMUWarnBuzzerOFF() buzzer_off() //开机陀螺仪校准蜂鸣器关闭
 
 #define SPI_DMA_GYRO_LENGHT       8
 #define SPI_DMA_ACCEL_LENGHT      9
 #define SPI_DMA_ACCEL_TEMP_LENGHT 4
 
+//imu校准最大时间
+#define IMU_CAIL_MAX_TIME 500
 
 #define IMU_DR_SHFITS        0
 #define IMU_SPI_SHFITS       1
@@ -176,5 +182,12 @@ extern const fp32 *get_accel_data_point(void);
   * @retval         INS_mag的指针
   */
 extern const fp32 *get_mag_data_point(void);
+
+/**
+ * @brief 判断imu是否校准完毕
+ * 
+ * @return 校准完毕返回1,未完毕返回0 
+ */
+bool_t judge_imu_offset_calc_finish(void);
 
 #endif

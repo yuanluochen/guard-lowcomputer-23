@@ -1,6 +1,7 @@
 standard_tpye_c\ins_task.o: ..\application\INS_task.c
 standard_tpye_c\ins_task.o: ..\application\INS_task.h
 standard_tpye_c\ins_task.o: ..\application\struct_typedef.h
+standard_tpye_c\ins_task.o: ../bsp/boards/bsp_buzzer.h
 standard_tpye_c\ins_task.o: ../Inc/main.h
 standard_tpye_c\ins_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 standard_tpye_c\ins_task.o: ../Inc/stm32f4xx_hal_conf.h

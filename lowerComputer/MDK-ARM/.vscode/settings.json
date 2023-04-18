@@ -20,6 +20,7 @@
         "usart.h": "c",
         "gpio.h": "c",
         "limits": "c",
-        "referee.h": "c"
+        "referee.h": "c",
+        "bsp_buzzer.h": "c"
     }
 }
