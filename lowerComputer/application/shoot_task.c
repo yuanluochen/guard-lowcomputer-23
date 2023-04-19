@@ -213,18 +213,19 @@ static void shoot_set_control_mode(fric_move_t *fric_set_control)
     if (shoot_control_mode == SHOOT_INIT_CONTROL)
     {
         static uint32_t init_time = 0;
-        // 判断是否初始化完成
-        if (shoot_init_state == SHOOT_INIT_UNFINISH)
+        // 判断拨杆是否拨到下档
+        if (switch_is_down(fric_set_control->shoot_rc->rc.s[SHOOT_CONTROL_CHANNEL]))
         {
-            // 初始化未完成
-            // 判断拨杆是否拨到下档
-            if (switch_is_down(fric_set_control->shoot_rc->rc.s[SHOOT_CONTROL_CHANNEL]))
+            // 拨到下档停止初始化
+            init_time = 0;
+        }
+        else
+        {
+            // 判断是否初始化完成
+            if (shoot_init_state == SHOOT_INIT_UNFINISH)
             {
-                // 拨到下档停止初始化,初始化状态为之前状态
-                init_time = 0;
-            }
-            else
-            {
+                // 初始化未完成
+
                 // 判断初始化时间是否过长
                 if (init_time >= SHOOT_TASK_S_TO_MS(SHOOT_TASK_MAX_INIT_TIME))
                 {
@@ -250,11 +251,11 @@ static void shoot_set_control_mode(fric_move_t *fric_set_control)
                     }
                 }
             }
-        }
-        else
-        {
-            // 进入其他模式
-            init_time = 0;
+            else
+            {
+                // 进入其他模式
+                init_time = 0;
+            }
         }
     }
     // 根据遥控器开关设置发射控制模式
