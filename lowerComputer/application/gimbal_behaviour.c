@@ -308,41 +308,31 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
         {
             // 初始化时间
             static int init_time = 0;
-            // 初始化停止时间
-            static int init_stop_time = 0;
             // static int init_finish_time = 0;
             init_time++; // 初始化时间增加
             // 是否初始化完成
-            if ((fabs(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) < GIMBAL_INIT_ANGLE_ERROR) &&
-                (fabs(gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_measure->ecd - gimbal_mode_set->gimbal_yaw_motor.frist_ecd) * MOTOR_ECD_TO_RAD < GIMBAL_INIT_ANGLE_ERROR))
+            if ((fabs(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR) &&
+                (fabs(gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_measure->ecd - gimbal_mode_set->gimbal_pitch_motor.frist_ecd) * MOTOR_ECD_TO_RAD > GIMBAL_INIT_ANGLE_ERROR))
             {
-                // 判断是否到达初始化停止时间
-                if (init_time < GIMBAL_INIT_STOP_TIME)
+                // 初始化未完成，判断初始化时间
+                if (init_time >= GIMBAL_INIT_TIME)
                 {
-                    // 初始化时间增加
-                    init_stop_time++;
+                    // 不进行任何行为，直接判断进入其他模式,计时归零
+                    init_time = 0;
+                }
+                else
+                {
+                    // 退出模式选择，依旧为初始化模式
+                    return;
                 }
             }
             else
             {
-                if (init_time < GIMBAL_INIT_TIME)
-                {
-                    init_time++;
-                }
-            }
-
-            // 超过初始化最大时间，或者已经稳定到中值一段时间，退出初始化状态开下档2，或者掉线
-            if (init_time < GIMBAL_INIT_TIME && init_stop_time < GIMBAL_INIT_STOP_TIME && !switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]) && !toe_is_error(DBUS_TOE))
-            {
-                return;
-            }
-            else
-            {
-                init_stop_time = 0;
+                // 初始化完成,计时归零,重新计时
                 init_time = 0;
+                // 标志初始化完成
                 gimbal_init_finish_flag = 1;
             }
-
             // 数值仅保存一次
             if (save_auto_scan_center_value_flag == 0)
             {
@@ -584,7 +574,7 @@ static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
         // pitch轴保持不变yaw轴回归中值
         *pitch = (INIT_PITCH_SET - gimbal_control_set->gimbal_pitch_motor.absolute_angle) * GIMBAL_INIT_PITCH_SPEED;
         // yaw轴绝对角计算控制yaw轴正方向
-        *yaw = (gimbal_control_set->gimbal_yaw_motor.frist_ecd - gimbal_control_set->gimbal_yaw_motor.gimbal_motor_measure->ecd) * MOTOR_ECD_TO_RAD * GIMBAL_INIT_YAW_SPEED;
+        *yaw = (gimbal_control_set->gimbal_yaw_motor.frist_ecd - gimbal_control_set->gimbal_yaw_motor.gimbal_motor_measure->ecd) * MOTOR_ECD_TO_RAD;
     }
 }
 

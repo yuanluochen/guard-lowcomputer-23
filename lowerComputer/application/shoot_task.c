@@ -104,6 +104,7 @@ void shoot_task(void const *pvParameters)
         Shoot_Feedback_Update();
         //射击控制循环
         shoot_control_loop();
+        //发送控制电流
         if (!(toe_is_error(TRIGGER_MOTOR_TOE) && !toe_is_error(FRIC_LEFT_MOTOR_TOE) && !toe_is_error(FRIC_RIGHT_MOTOR_TOE)))
         {
             if (toe_is_error(DBUS_TOE))
@@ -117,7 +118,6 @@ void shoot_task(void const *pvParameters)
                 CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
             }
         }
-        
         vTaskDelay(SHOOT_TASK_DELAY_TIME);
     }
 }
@@ -217,34 +217,43 @@ static void shoot_set_control_mode(fric_move_t *fric_set_control)
         if (shoot_init_state == SHOOT_INIT_UNFINISH)
         {
             // 初始化未完成
-            // 判断初始化时间是否过长
-            if (init_time >= SHOOT_TASK_S_TO_MS(SHOOT_TASK_MAX_INIT_TIME))
+            // 判断拨杆是否拨到下档
+            if (switch_is_down(fric_set_control->shoot_rc->rc.s[SHOOT_CONTROL_CHANNEL]))
             {
-                // 初始化时间过长不进行初始化，进入其他模式
+                // 拨到下档停止初始化,初始化状态为之前状态
                 init_time = 0;
             }
             else
             {
-                // 判断微动开关是否打开
-                if (BUTTEN_TRIG_PIN == PRESS)
+                // 判断初始化时间是否过长
+                if (init_time >= SHOOT_TASK_S_TO_MS(SHOOT_TASK_MAX_INIT_TIME))
                 {
-                    // 按下
-                    // 设置初始化完成
-                    shoot_init_state = SHOOT_INIT_FINISH;
+                    // 初始化时间过长不进行初始化，进入其他模式
                     init_time = 0;
-                    // 进入其他模式
                 }
                 else
                 {
-                    // 初始化模式保持原状，初始化时间增加
-                    init_time++;
-                    return;
+                    // 判断微动开关是否打开
+                    if (BUTTEN_TRIG_PIN == PRESS)
+                    {
+                        // 按下
+                        // 设置初始化完成
+                        shoot_init_state = SHOOT_INIT_FINISH;
+                        init_time = 0;
+                        // 进入其他模式
+                    }
+                    else
+                    {
+                        // 初始化模式保持原状，初始化时间增加
+                        init_time++;
+                        return;
+                    }
                 }
             }
         }
         else
         {
-            // 初始化完成，进入其他模式
+            // 进入其他模式
             init_time = 0;
         }
     }

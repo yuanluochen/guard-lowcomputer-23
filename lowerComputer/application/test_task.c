@@ -120,5 +120,3 @@ static void buzzer_warn_error(uint8_t num)
         }
     }
 }
-
-
