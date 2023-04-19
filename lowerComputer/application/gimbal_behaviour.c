@@ -317,8 +317,8 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
             {
                 init_time++; // 初始化时间增加
                 // 是否初始化完成
-                if ((fabs(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR) &&
-                    (fabs(gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_measure->ecd - gimbal_mode_set->gimbal_pitch_motor.frist_ecd) * MOTOR_ECD_TO_RAD > GIMBAL_INIT_ANGLE_ERROR))
+                if ((fabs(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR) ||
+                    (fabs(gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_measure->ecd - gimbal_mode_set->gimbal_yaw_motor.frist_ecd) * MOTOR_ECD_TO_RAD > GIMBAL_INIT_ANGLE_ERROR))
                 {
                     // 初始化未完成，判断初始化时间
                     if (init_time >= GIMBAL_INIT_TIME)
@@ -578,10 +578,12 @@ static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
     }
     else // yaw轴回归初始值
     {
+        static fp32 yaw_error = 0;
+        yaw_error = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
         // pitch轴保持不变yaw轴回归中值
         *pitch = (INIT_PITCH_SET - gimbal_control_set->gimbal_pitch_motor.absolute_angle) * GIMBAL_INIT_PITCH_SPEED;
         // yaw轴绝对角计算控制yaw轴正方向
-        *yaw = (gimbal_control_set->gimbal_yaw_motor.frist_ecd - gimbal_control_set->gimbal_yaw_motor.gimbal_motor_measure->ecd) * MOTOR_ECD_TO_RAD;
+        *yaw = (gimbal_control_set->gimbal_yaw_motor.frist_ecd - gimbal_control_set->gimbal_yaw_motor.gimbal_motor_measure->ecd) * MOTOR_ECD_TO_RAD - yaw_error;
     }
 }
 

@@ -21,6 +21,8 @@
         "gpio.h": "c",
         "limits": "c",
         "referee.h": "c",
-        "bsp_buzzer.h": "c"
+        "bsp_buzzer.h": "c",
+        "struct_typedef.h": "c",
+        "main.h": "c"
     }
 }
