@@ -221,7 +221,6 @@ void gimbal_behaviour_mode_set(gimbal_control_t *gimbal_mode_set)
  */
 void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control_t *gimbal_control_set)
 {
-    // 修改版的代码,pitch相对角度控制， yaw绝对角度控制
     if (add_yaw == NULL || add_pitch == NULL || gimbal_control_set == NULL)
     {
         return;

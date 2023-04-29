@@ -200,7 +200,8 @@ void gimbal_task(void const *pvParameters)
             }
             else
             {
-                CAN_cmd_gimbal(gimbal_control.gimbal_yaw_motor.given_current, gimbal_control.gimbal_pitch_motor.given_current, 0);
+                // 由于安装位置问题pitch轴电机控制值置负
+                CAN_cmd_gimbal(gimbal_control.gimbal_yaw_motor.given_current, -gimbal_control.gimbal_pitch_motor.given_current, 0);
             }
         }
         vTaskDelay(GIMBAL_CONTROL_TIME);
@@ -507,22 +508,22 @@ static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add)
         //当前误差角度
         static fp32 error_angle = 0;
         static fp32 angle_set = 0;
-        error_angle = rad_format((-gimbal_motor->absolute_angle_set) - (-gimbal_motor->absolute_angle));
+        error_angle = rad_format(gimbal_motor->absolute_angle_set - gimbal_motor->absolute_angle);
         // 云台相对角度+ 误差角度 + 新增角度 如果大于 最大机械角度
-        if (gimbal_motor->relative_angle + error_angle + (-add) > gimbal_motor->max_relative_angle)
+        if (gimbal_motor->relative_angle + error_angle + add > gimbal_motor->max_relative_angle)
         {
             // 如果是往最大机械角度控制方向
-            if ((-add) > 0.0f)
+            if (add > 0.0f)
             {
                 // 计算出一个最大的添加角度，
-                add = -(gimbal_motor->max_relative_angle - gimbal_motor->relative_angle - error_angle);
+                add = gimbal_motor->max_relative_angle - gimbal_motor->relative_angle - error_angle;
             }
         }
-        else if (gimbal_motor->relative_angle + error_angle + (-add) < gimbal_motor->min_relative_angle)
+        else if (gimbal_motor->relative_angle + error_angle + add < gimbal_motor->min_relative_angle)
         {
-            if ((-add) < 0.0f)
+            if (add < 0.0f)
             {
-                add = -(gimbal_motor->min_relative_angle - gimbal_motor->relative_angle - error_angle);
+                add = gimbal_motor->min_relative_angle - gimbal_motor->relative_angle - error_angle;
             }
         }
         angle_set = gimbal_motor->absolute_angle_set;

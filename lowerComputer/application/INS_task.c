@@ -40,9 +40,10 @@
 
 #define IMU_temp_PWM(pwm)  imu_pwm_set(pwm)                    //pwm给定
 
+//由于c板安装问题进行坐标系的旋转
 #define BMI088_BOARD_INSTALL_SPIN_MATRIX    \
-    {0.0f, 1.0f, 0.0f},                     \
     {-1.0f, 0.0f, 0.0f},                     \
+    {0.0f, -1.0f, 0.0f},                     \
     {0.0f, 0.0f, 1.0f}                      \
 
 
@@ -268,7 +269,7 @@ void INS_task(void const *pvParameters)
         accel_fliter_3[2] = accel_fliter_2[2] * fliter_num[0] + accel_fliter_1[2] * fliter_num[1] + INS_accel[2] * fliter_num[2];
 
         AHRS_update(INS_quat, timing_time, INS_gyro, accel_fliter_3, INS_mag);
-        get_angle(INS_quat, INS_angle + INS_YAW_ADDRESS_OFFSET, INS_angle + INS_ROLL_ADDRESS_OFFSET, INS_angle + INS_PITCH_ADDRESS_OFFSET);
+        get_angle(INS_quat, INS_angle + INS_YAW_ADDRESS_OFFSET, INS_angle + INS_PITCH_ADDRESS_OFFSET, INS_angle + INS_ROLL_ADDRESS_OFFSET);
 
         //imu判断进入imu校准模式
         {
