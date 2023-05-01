@@ -1,0 +1,7 @@
+{
+  "package_name": "livox_ros_driver2",
+  "non_idl_tuples": [
+    "/home/yuanluochen/code/guard/guard_ros/src/livox_ros_driver2:msg/CustomPoint.msg",
+    "/home/yuanluochen/code/guard/guard_ros/src/livox_ros_driver2:msg/CustomMsg.msg"
+  ]
+}

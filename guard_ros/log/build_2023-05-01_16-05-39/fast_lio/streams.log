@@ -1,0 +1,159 @@
+[0.008s] Invoking command in '/home/yuanluochen/code/guard/guard_ros/build/fast_lio': AMENT_PREFIX_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2:/opt/ros/humble LD_LIBRARY_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --build /home/yuanluochen/code/guard/guard_ros/build/fast_lio -- -j16 -l16
+[0.049s] [  8%] Built target fast_lio__rosidl_generator_c
+[0.050s] [ 11%] Built target fast_lio__cpp
+[0.059s] [ 11%] Built target ament_cmake_python_copy_fast_lio
+[0.066s] [ 20%] Built target fast_lio__rosidl_typesupport_introspection_c
+[0.067s] [ 28%] Built target fast_lio__rosidl_typesupport_c
+[0.067s] [ 42%] Built target fast_lio__rosidl_typesupport_cpp
+[0.067s] [ 45%] Built target fast_lio__rosidl_typesupport_fastrtps_c
+[0.067s] [ 54%] Built target fast_lio__rosidl_typesupport_introspection_cpp
+[0.070s] [ 62%] Built target fast_lio__rosidl_typesupport_fastrtps_cpp
+[0.085s] [ 62%] Built target fast_lio
+[0.100s] [ 65%] Built target fast_lio__py
+[0.103s] [ 77%] Built target fastlio_mapping
+[0.116s] [ 82%] Built target fast_lio__rosidl_generator_py
+[0.133s] [100%] Built target fast_lio__rosidl_typesupport_c__pyext
+[0.133s] [100%] Built target fast_lio__rosidl_typesupport_fastrtps_c__pyext
+[0.133s] [100%] Built target fast_lio__rosidl_typesupport_introspection_c__pyext
+[0.249s] running egg_info
+[0.250s] writing fast_lio.egg-info/PKG-INFO
+[0.250s] writing dependency_links to fast_lio.egg-info/dependency_links.txt
+[0.250s] writing top-level names to fast_lio.egg-info/top_level.txt
+[0.252s] reading manifest file 'fast_lio.egg-info/SOURCES.txt'
+[0.252s] writing manifest file 'fast_lio.egg-info/SOURCES.txt'
+[0.270s] [100%] Built target ament_cmake_python_build_fast_lio_egg
+[0.279s] Invoked command in '/home/yuanluochen/code/guard/guard_ros/build/fast_lio' returned '0': AMENT_PREFIX_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2:/opt/ros/humble LD_LIBRARY_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --build /home/yuanluochen/code/guard/guard_ros/build/fast_lio -- -j16 -l16
+[0.322s] Invoking command in '/home/yuanluochen/code/guard/guard_ros/build/fast_lio': AMENT_PREFIX_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2:/opt/ros/humble LD_LIBRARY_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --install /home/yuanluochen/code/guard/guard_ros/build/fast_lio
+[0.328s] -- Install configuration: "Release"
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/ament_index/resource_index/rosidl_interfaces/fast_lio
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/pose6_d.h
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/rosidl_generator_c__visibility_control.h
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__functions.c
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__struct.h
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__type_support.h
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__functions.h
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/environment/library_path.sh
+[0.329s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/environment/library_path.dsv
+[0.330s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/lib/libfast_lio__rosidl_generator_c.so
+[0.330s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio
+[0.330s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg
+[0.330s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[0.330s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail
+[0.330s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__rosidl_typesupport_fastrtps_c.h
+[0.330s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/lib/libfast_lio__rosidl_typesupport_fastrtps_c.so
+[0.330s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio
+[0.330s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg
+[0.330s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/pose6_d.hpp
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__struct.hpp
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__builder.hpp
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__traits.hpp
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__rosidl_typesupport_fastrtps_cpp.hpp
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/dds_fastrtps
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/lib/libfast_lio__rosidl_typesupport_fastrtps_cpp.so
+[0.331s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio
+[0.332s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg
+[0.332s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[0.332s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail
+[0.332s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__type_support.c
+[0.332s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__rosidl_typesupport_introspection_c.h
+[0.332s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/lib/libfast_lio__rosidl_typesupport_introspection_c.so
+[0.332s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/lib/libfast_lio__rosidl_typesupport_c.so
+[0.332s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio
+[0.332s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg
+[0.333s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail
+[0.333s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__rosidl_typesupport_introspection_cpp.hpp
+[0.333s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/include/fast_lio/fast_lio/msg/detail/pose6_d__type_support.cpp
+[0.333s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/lib/libfast_lio__rosidl_typesupport_introspection_cpp.so
+[0.333s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/lib/libfast_lio__rosidl_typesupport_cpp.so
+[0.333s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/environment/pythonpath.sh
+[0.333s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/environment/pythonpath.dsv
+[0.333s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio-0.0.0-py3.10.egg-info
+[0.333s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio-0.0.0-py3.10.egg-info/PKG-INFO
+[0.333s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio-0.0.0-py3.10.egg-info/top_level.txt
+[0.334s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio-0.0.0-py3.10.egg-info/SOURCES.txt
+[0.334s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio-0.0.0-py3.10.egg-info/dependency_links.txt
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/fast_lio_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/__init__.py
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/msg
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/msg/_pose6_d.py
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/msg/__init__.py
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/msg/_pose6_d_s.c
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/_fast_lio_s.ep.rosidl_typesupport_c.c
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/_fast_lio_s.ep.rosidl_typesupport_introspection_c.c
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/fast_lio_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/libfast_lio__rosidl_generator_py.so
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/fast_lio_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[0.334s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/_fast_lio_s.ep.rosidl_typesupport_fastrtps_c.c
+[0.355s] Listing '/home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio'...
+[0.355s] Listing '/home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/msg'...
+[0.358s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/fast_lio_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[0.358s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/fast_lio_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[0.358s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/local/lib/python3.10/dist-packages/fast_lio/fast_lio_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[0.359s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/lib/libfast_lio__rosidl_generator_py.so
+[0.359s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/msg/Pose6D.idl
+[0.359s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/msg/Pose6D.msg
+[0.359s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/lib/fast_lio/fastlio_mapping
+[0.359s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/config
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/config/velodyne.yaml
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/config/mid360.yaml
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/config/horizon.yaml
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/config/avia.yaml
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/config/ouster64.yaml
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/launch
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/launch/mapping_velodyne.launch
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/launch/mapping_avia.launch
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/launch/mapping.launch.py
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/launch/mapping_ouster64.launch
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/launch/gdb_debug_example.launch
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/launch/mapping_horizon.launch
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/rviz
+[0.360s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/rviz/fastlio.rviz
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/ament_index/resource_index/package_run_dependencies/fast_lio
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/ament_index/resource_index/parent_prefix_path/fast_lio
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/environment/ament_prefix_path.sh
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/environment/ament_prefix_path.dsv
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/environment/path.sh
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/environment/path.dsv
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/local_setup.bash
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/local_setup.sh
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/local_setup.zsh
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/local_setup.dsv
+[0.361s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/package.dsv
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/ament_index/resource_index/packages/fast_lio
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/export_fast_lio__rosidl_generator_cExport.cmake
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/export_fast_lio__rosidl_generator_cExport-release.cmake
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/export_fast_lio__rosidl_typesupport_fastrtps_cExport.cmake
+[0.361s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/export_fast_lio__rosidl_typesupport_fastrtps_cExport-release.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/export_fast_lio__rosidl_generator_cppExport.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/export_fast_lio__rosidl_typesupport_fastrtps_cppExport.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/export_fast_lio__rosidl_typesupport_fastrtps_cppExport-release.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/fast_lio__rosidl_typesupport_introspection_cExport.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/fast_lio__rosidl_typesupport_introspection_cExport-release.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/fast_lio__rosidl_typesupport_cExport.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/fast_lio__rosidl_typesupport_cExport-release.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/fast_lio__rosidl_typesupport_introspection_cppExport.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/fast_lio__rosidl_typesupport_introspection_cppExport-release.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/fast_lio__rosidl_typesupport_cppExport.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/fast_lio__rosidl_typesupport_cppExport-release.cmake
+[0.362s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/export_fast_lio__rosidl_generator_pyExport.cmake
+[0.363s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/export_fast_lio__rosidl_generator_pyExport-release.cmake
+[0.363s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/rosidl_cmake-extras.cmake
+[0.363s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/ament_cmake_export_include_directories-extras.cmake
+[0.363s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/ament_cmake_export_libraries-extras.cmake
+[0.363s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/ament_cmake_export_targets-extras.cmake
+[0.363s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[0.363s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/ament_cmake_export_dependencies-extras.cmake
+[0.363s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[0.363s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/fast_lioConfig.cmake
+[0.363s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/cmake/fast_lioConfig-version.cmake
+[0.363s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/fast_lio/share/fast_lio/package.xml
+[0.366s] Invoked command in '/home/yuanluochen/code/guard/guard_ros/build/fast_lio' returned '0': AMENT_PREFIX_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2:/opt/ros/humble LD_LIBRARY_PATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --install /home/yuanluochen/code/guard/guard_ros/build/fast_lio

@@ -1,0 +1,19 @@
+[0mCurrent CPU archtecture: x86_64[0m
+[0mProcesser number:  16[0m
+[0mcore for MP: 3[0m
+[33mCMake Warning (dev) at /opt/ros/humble/share/pcl_ros/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package):
+  Policy CMP0074 is not set: find_package uses <PackageName>_ROOT variables.
+  Run "cmake --help-policy CMP0074" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+
+  Environment variable PCL_ROOT is set to:
+
+    {CUSTOM_PCL_PATH}
+
+  For compatibility, CMake is ignoring the variable.
+Call Stack (most recent call first):
+  /opt/ros/humble/share/pcl_ros/cmake/pcl_rosConfig.cmake:41 (include)
+  CMakeLists.txt:60 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+[0m
+[0mEigen:/usr/include/eigen3[0m

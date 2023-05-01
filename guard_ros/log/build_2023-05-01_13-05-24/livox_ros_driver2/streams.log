@@ -1,0 +1,417 @@
+[0.015s] Invoking command in '/home/yuanluochen/code/guard/guard_ros/build/livox_ros_driver2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /home/yuanluochen/code/guard/guard_ros/src/livox_ros_driver2 -DROS_EDITION=ROS2 -DHUMBLE_ROS=humble -DCMAKE_INSTALL_PREFIX=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2
+[0.064s] -- The C compiler identification is GNU 11.3.0
+[0.103s] -- The CXX compiler identification is GNU 11.3.0
+[0.113s] -- Detecting C compiler ABI info
+[0.160s] -- Detecting C compiler ABI info - done
+[0.164s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.165s] -- Detecting C compile features
+[0.165s] -- Detecting C compile features - done
+[0.168s] -- Detecting CXX compiler ABI info
+[0.222s] -- Detecting CXX compiler ABI info - done
+[0.228s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.228s] -- Detecting CXX compile features
+[0.228s] -- Detecting CXX compile features - done
+[0.228s] -- livox_ros_driver2 version: 1.0.0
+[0.234s] -- Found ament_cmake_auto: 1.3.3 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+[0.350s] -- Found Python3: /usr/bin/python3.10 (found version "3.10.6") found components: Interpreter 
+[0.470s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.475s] -- Found rosidl_adapter: 3.1.4 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.510s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.614s] -- Found rmw_implementation_cmake: 6.1.1 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[0.616s] -- Found rmw_fastrtps_cpp: 6.2.2 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[0.696s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+[0.719s] -- Found FastRTPS: /opt/ros/humble/include  
+[0.760s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.770s] -- Looking for pthread.h
+[0.822s] -- Looking for pthread.h - found
+[0.823s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[0.870s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[0.871s] -- Found Threads: TRUE  
+[1.280s] -- Checking for module 'eigen3'
+[1.288s] --   Found eigen3, version 3.4.0
+[1.308s] -- Found Eigen: /usr/include/eigen3 (Required is at least version "3.1") 
+[1.308s] -- Eigen found (include: /usr/include/eigen3, version: 3.4.0)
+[1.324s] -- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found suitable version "1.74.0", minimum required is "1.65.0") found components: system filesystem date_time iostreams serialization 
+[1.336s] -- Checking for module 'flann'
+[1.345s] --   Found flann, version 1.9.1
+[1.370s] -- Found FLANN: /usr/lib/x86_64-linux-gnu/libflann_cpp.so  
+[1.370s] -- FLANN found (include: /usr/include, lib: /usr/lib/x86_64-linux-gnu/libflann_cpp.so)
+[1.396s] -- Found GLEW: /usr/lib/x86_64-linux-gnu/libGLEW.so  
+[1.401s] -- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so  found components: OpenGL GLX 
+[1.500s] -- Found MPI_C: /usr/lib/x86_64-linux-gnu/libmpi.so (found version "3.1") 
+[1.501s] -- Found MPI: TRUE (found version "3.1") found components: C 
+[1.503s] -- Found JsonCpp: /usr/lib/x86_64-linux-gnu/libjsoncpp.so (found suitable version "1.9.5", minimum required is "0.7.0") 
+[1.510s] -- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version "1.2.11") 
+[1.526s] -- Found PNG: /usr/lib/x86_64-linux-gnu/libpng.so (found version "1.6.37") 
+[1.542s] -- Found Eigen3: /usr/include/eigen3 (found version "3.4.0") 
+[1.608s] -- Found X11: /usr/include   
+[1.608s] -- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so
+[1.657s] -- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so - found
+[1.657s] -- Looking for gethostbyname
+[1.700s] -- Looking for gethostbyname - found
+[1.700s] -- Looking for connect
+[1.745s] -- Looking for connect - found
+[1.745s] -- Looking for remove
+[1.791s] -- Looking for remove - found
+[1.791s] -- Looking for shmat
+[1.835s] -- Looking for shmat - found
+[1.835s] -- Looking for IceConnectionNumber in ICE
+[1.881s] -- Looking for IceConnectionNumber in ICE - found
+[1.936s] -- Found EXPAT: /usr/lib/x86_64-linux-gnu/libexpat.so (found version "2.4.7") 
+[1.938s] -- Found double-conversion: /usr/lib/x86_64-linux-gnu/libdouble-conversion.so  
+[1.939s] -- Found LZ4: /usr/lib/x86_64-linux-gnu/liblz4.so (found version "1.9.3") 
+[1.941s] -- Found LZMA: /usr/lib/x86_64-linux-gnu/liblzma.so (found version "5.2.5") 
+[1.964s] -- Found JPEG: /usr/lib/x86_64-linux-gnu/libjpeg.so (found version "80") 
+[1.969s] -- Found TIFF: /usr/lib/x86_64-linux-gnu/libtiff.so (found version "4.3.0")  
+[1.971s] -- Found Freetype: /usr/lib/x86_64-linux-gnu/libfreetype.so (found version "2.11.1") 
+[1.976s] -- Found utf8cpp: /usr/include/utf8cpp  
+[2.033s] -- Checking for module 'libusb-1.0'
+[2.042s] --   Found libusb-1.0, version 1.0.25
+[2.064s] -- Found libusb: /usr/lib/x86_64-linux-gnu/libusb-1.0.so  
+[2.069s] -- Found OpenNI: /usr/lib/libOpenNI.so;libusb::libusb (found version "1.5.4.0") 
+[2.069s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[2.103s] -- Found OpenNI2: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb (found version "2.2.0.33") 
+[2.103s] -- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+[2.103s] [0m** WARNING ** io features related to pcap will be disabled[0m
+[2.231s] -- Eigen found (include: /usr/include/eigen3, version: 3.4.0)
+[2.236s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[2.240s] -- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+[2.362s] -- Found Qhull version 8.0.2
+[2.484s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[2.602s] -- looking for PCL_COMMON
+[2.603s] -- Found PCL_COMMON: /usr/lib/x86_64-linux-gnu/libpcl_common.so  
+[2.603s] -- looking for PCL_KDTREE
+[2.603s] -- Found PCL_KDTREE: /usr/lib/x86_64-linux-gnu/libpcl_kdtree.so  
+[2.603s] -- looking for PCL_OCTREE
+[2.604s] -- Found PCL_OCTREE: /usr/lib/x86_64-linux-gnu/libpcl_octree.so  
+[2.604s] -- looking for PCL_SEARCH
+[2.605s] -- Found PCL_SEARCH: /usr/lib/x86_64-linux-gnu/libpcl_search.so  
+[2.605s] -- looking for PCL_SAMPLE_CONSENSUS
+[2.606s] -- Found PCL_SAMPLE_CONSENSUS: /usr/lib/x86_64-linux-gnu/libpcl_sample_consensus.so  
+[2.606s] -- looking for PCL_FILTERS
+[2.607s] -- Found PCL_FILTERS: /usr/lib/x86_64-linux-gnu/libpcl_filters.so  
+[2.607s] -- looking for PCL_2D
+[2.607s] -- Found PCL_2D: /usr/include/pcl-1.12  
+[2.607s] -- looking for PCL_GEOMETRY
+[2.607s] -- Found PCL_GEOMETRY: /usr/include/pcl-1.12  
+[2.607s] -- looking for PCL_IO
+[2.608s] -- Found PCL_IO: /usr/lib/x86_64-linux-gnu/libpcl_io.so  
+[2.608s] -- looking for PCL_FEATURES
+[2.609s] -- Found PCL_FEATURES: /usr/lib/x86_64-linux-gnu/libpcl_features.so  
+[2.609s] -- looking for PCL_ML
+[2.610s] -- Found PCL_ML: /usr/lib/x86_64-linux-gnu/libpcl_ml.so  
+[2.610s] -- looking for PCL_SEGMENTATION
+[2.610s] -- Found PCL_SEGMENTATION: /usr/lib/x86_64-linux-gnu/libpcl_segmentation.so  
+[2.611s] -- looking for PCL_VISUALIZATION
+[2.611s] -- Found PCL_VISUALIZATION: /usr/lib/x86_64-linux-gnu/libpcl_visualization.so  
+[2.612s] -- looking for PCL_SURFACE
+[2.612s] -- Found PCL_SURFACE: /usr/lib/x86_64-linux-gnu/libpcl_surface.so  
+[2.612s] -- looking for PCL_REGISTRATION
+[2.613s] -- Found PCL_REGISTRATION: /usr/lib/x86_64-linux-gnu/libpcl_registration.so  
+[2.613s] -- looking for PCL_KEYPOINTS
+[2.614s] -- Found PCL_KEYPOINTS: /usr/lib/x86_64-linux-gnu/libpcl_keypoints.so  
+[2.614s] -- looking for PCL_TRACKING
+[2.615s] -- Found PCL_TRACKING: /usr/lib/x86_64-linux-gnu/libpcl_tracking.so  
+[2.615s] -- looking for PCL_RECOGNITION
+[2.616s] -- Found PCL_RECOGNITION: /usr/lib/x86_64-linux-gnu/libpcl_recognition.so  
+[2.616s] -- looking for PCL_STEREO
+[2.617s] -- Found PCL_STEREO: /usr/lib/x86_64-linux-gnu/libpcl_stereo.so  
+[2.617s] -- looking for PCL_APPS
+[2.618s] -- Found PCL_APPS: /usr/lib/x86_64-linux-gnu/libpcl_apps.so  
+[2.618s] -- looking for PCL_IN_HAND_SCANNER
+[2.618s] -- Found PCL_IN_HAND_SCANNER: /usr/include/pcl-1.12  
+[2.618s] -- looking for PCL_MODELER
+[2.619s] -- Found PCL_MODELER: /usr/include/pcl-1.12  
+[2.619s] -- looking for PCL_POINT_CLOUD_EDITOR
+[2.619s] -- Found PCL_POINT_CLOUD_EDITOR: /usr/include/pcl-1.12  
+[2.619s] -- looking for PCL_OUTOFCORE
+[2.620s] -- Found PCL_OUTOFCORE: /usr/lib/x86_64-linux-gnu/libpcl_outofcore.so  
+[2.620s] -- looking for PCL_PEOPLE
+[2.621s] -- Found PCL_PEOPLE: /usr/lib/x86_64-linux-gnu/libpcl_people.so  
+[2.621s] -- Found PCL: pcl_common;pcl_kdtree;pcl_octree;pcl_search;pcl_sample_consensus;pcl_filters;pcl_io;pcl_features;pcl_ml;pcl_segmentation;pcl_visualization;pcl_surface;pcl_registration;pcl_keypoints;pcl_tracking;pcl_recognition;pcl_stereo;pcl_apps;pcl_outofcore;pcl_people;Boost::system;Boost::filesystem;Boost::date_time;Boost::iostreams;Boost::serialization;/usr/lib/libOpenNI.so;libusb::libusb;/usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb;VTK::ChartsCore;VTK::CommonColor;VTK::CommonComputationalGeometry;VTK::CommonCore;VTK::CommonDataModel;VTK::CommonExecutionModel;VTK::CommonMath;VTK::CommonMisc;VTK::CommonTransforms;VTK::FiltersCore;VTK::FiltersExtraction;VTK::FiltersGeneral;VTK::FiltersGeometry;VTK::FiltersModeling;VTK::FiltersSources;VTK::ImagingCore;VTK::ImagingSources;VTK::InteractionImage;VTK::InteractionStyle;VTK::InteractionWidgets;VTK::IOCore;VTK::IOGeometry;VTK::IOImage;VTK::IOLegacy;VTK::IOPLY;VTK::RenderingAnnotation;VTK::RenderingCore;VTK::RenderingContext2D;VTK::RenderingLOD;VTK::RenderingFreeType;VTK::ViewsCore;VTK::ViewsContext2D;VTK::RenderingOpenGL2;VTK::GUISupportQt;FLANN::FLANN;QHULL::QHULL  
+[2.626s] -- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.2") 
+[2.627s] -- Checking for module 'apr-1'
+[2.629s] --   No package 'apr-1' found
+[2.778s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[2.927s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[3.123s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[3.138s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.6", minimum required is "3.6") 
+[3.140s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[3.159s] -- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.10.so (found suitable version "3.10.6", minimum required is "3.5") 
+[3.159s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[3.159s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[3.159s] -- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+[3.175s] -- Found PythonExtra: .so  
+[3.274s] -- Found ament_lint_auto: 0.12.5 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[3.294s] -- Added test 'copyright' to check source files copyright and LICENSE
+[3.298s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[3.299s] -- Configured cppcheck include dirs: /home/yuanluochen/code/guard/guard_ros/src/livox_ros_driver2/3rdparty;/home/yuanluochen/code/guard/guard_ros/src/livox_ros_driver2/src
+[3.299s] -- Configured cppcheck exclude dirs and/or files: 
+[3.302s] -- Added test 'cpplint' to check C / C++ code against the Google style
+[3.302s] -- Configured cpplint exclude dirs and/or files: 
+[3.303s] -- Added test 'flake8' to check Python code syntax and style conventions
+[3.304s] -- Added test 'lint_cmake' to check CMake code style
+[3.305s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[3.308s] -- Added test 'uncrustify' to check C / C++ code style
+[3.308s] -- Configured uncrustify additional arguments: 
+[3.309s] -- Added test 'xmllint' to check XML markup files
+[3.311s] -- Configuring done
+[3.370s] -- Generating done
+[3.373s] -- Build files have been written to: /home/yuanluochen/code/guard/guard_ros/build/livox_ros_driver2
+[3.390s] Invoked command in '/home/yuanluochen/code/guard/guard_ros/build/livox_ros_driver2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /home/yuanluochen/code/guard/guard_ros/src/livox_ros_driver2 -DROS_EDITION=ROS2 -DHUMBLE_ROS=humble -DCMAKE_INSTALL_PREFIX=/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2
+[3.392s] Invoking command in '/home/yuanluochen/code/guard/guard_ros/build/livox_ros_driver2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/yuanluochen/code/guard/guard_ros/build/livox_ros_driver2 -- -j16 -l16
+[3.420s] [  1%] [34m[1mGenerating C code for ROS interfaces[0m
+[3.427s] [  5%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[3.427s] [  5%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2_node.dir/rclcpp_components/node_main_livox_ros_driver2_node.cpp.o[0m
+[3.432s] [  5%] Built target ament_cmake_python_copy_livox_ros_driver2
+[3.673s] running egg_info
+[3.674s] creating livox_ros_driver2.egg-info
+[3.674s] writing livox_ros_driver2.egg-info/PKG-INFO
+[3.674s] writing dependency_links to livox_ros_driver2.egg-info/dependency_links.txt
+[3.674s] writing top-level names to livox_ros_driver2.egg-info/top_level.txt
+[3.674s] writing manifest file 'livox_ros_driver2.egg-info/SOURCES.txt'
+[3.676s] reading manifest file 'livox_ros_driver2.egg-info/SOURCES.txt'
+[3.677s] writing manifest file 'livox_ros_driver2.egg-info/SOURCES.txt'
+[3.702s] [  5%] Built target ament_cmake_python_build_livox_ros_driver2_egg
+[3.824s] [  5%] Built target livox_interfaces2__cpp
+[3.834s] [ 10%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[3.834s] [ 10%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[3.834s] [ 10%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[3.853s] [ 14%] [32mBuilding C object CMakeFiles/livox_interfaces2__rosidl_generator_c.dir/rosidl_generator_c/livox_ros_driver2/msg/detail/custom_point__functions.c.o[0m
+[3.853s] [ 14%] [32mBuilding C object CMakeFiles/livox_interfaces2__rosidl_generator_c.dir/rosidl_generator_c/livox_ros_driver2/msg/detail/custom_msg__functions.c.o[0m
+[3.896s] [ 15%] [32m[1mLinking C shared library liblivox_ros_driver2__rosidl_generator_c.so[0m
+[3.930s] [ 15%] Built target livox_interfaces2__rosidl_generator_c
+[3.938s] [ 19%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[3.939s] [ 19%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[3.939s] [ 21%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[4.259s] [ 22%] [32mBuilding CXX object CMakeFiles/livox_interfaces2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/livox_ros_driver2/msg/custom_point__type_support.cpp.o[0m
+[4.262s] [ 24%] [32mBuilding CXX object CMakeFiles/livox_interfaces2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/livox_ros_driver2/msg/custom_msg__type_support.cpp.o[0m
+[4.289s] [ 26%] [32mBuilding CXX object CMakeFiles/livox_interfaces2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/livox_ros_driver2/msg/detail/dds_fastrtps/custom_point__type_support.cpp.o[0m
+[4.292s] [ 28%] [32mBuilding CXX object CMakeFiles/livox_interfaces2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/livox_ros_driver2/msg/detail/dds_fastrtps/custom_msg__type_support.cpp.o[0m
+[4.379s] [ 29%] [32mBuilding CXX object CMakeFiles/livox_interfaces2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/livox_ros_driver2/msg/detail/custom_point__type_support.cpp.o[0m
+[4.382s] [ 31%] [32mBuilding CXX object CMakeFiles/livox_interfaces2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/livox_ros_driver2/msg/detail/custom_msg__type_support.cpp.o[0m
+[4.403s] [ 33%] [32mBuilding CXX object CMakeFiles/livox_interfaces2__rosidl_typesupport_c.dir/rosidl_typesupport_c/livox_ros_driver2/msg/custom_point__type_support.cpp.o[0m
+[4.407s] [ 35%] [32mBuilding CXX object CMakeFiles/livox_interfaces2__rosidl_typesupport_c.dir/rosidl_typesupport_c/livox_ros_driver2/msg/custom_msg__type_support.cpp.o[0m
+[4.455s] [ 36%] [32m[1mLinking CXX shared library liblivox_ros_driver2__rosidl_typesupport_c.so[0m
+[4.505s] [ 36%] Built target livox_interfaces2__rosidl_typesupport_c
+[4.534s] [ 38%] [32mBuilding C object CMakeFiles/livox_interfaces2__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/livox_ros_driver2/msg/detail/custom_msg__type_support.c.o[0m
+[4.535s] [ 40%] [32mBuilding C object CMakeFiles/livox_interfaces2__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/livox_ros_driver2/msg/detail/custom_point__type_support.c.o[0m
+[4.560s] [ 42%] [32mBuilding CXX object CMakeFiles/livox_interfaces2__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/livox_ros_driver2/msg/detail/custom_msg__type_support_c.cpp.o[0m
+[4.563s] [ 43%] [32mBuilding CXX object CMakeFiles/livox_interfaces2__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/livox_ros_driver2/msg/detail/custom_point__type_support_c.cpp.o[0m
+[4.600s] [ 45%] [32m[1mLinking C shared library liblivox_ros_driver2__rosidl_typesupport_introspection_c.so[0m
+[4.636s] [ 45%] Built target livox_interfaces2__rosidl_typesupport_introspection_c
+[4.660s] [ 47%] [32m[1mLinking CXX shared library liblivox_ros_driver2__rosidl_typesupport_cpp.so[0m
+[4.698s] [ 47%] Built target livox_interfaces2__rosidl_typesupport_cpp
+[4.721s] [ 50%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/lddc.cpp.o[0m
+[4.721s] [ 52%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/livox_ros_driver2.cpp.o[0m
+[4.721s] [ 54%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/driver_node.cpp.o[0m
+[4.721s] [ 56%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/comm/ldq.cpp.o[0m
+[4.722s] [ 59%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/comm/semaphore.cpp.o[0m
+[4.722s] [ 57%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/lds_lidar.cpp.o[0m
+[4.722s] [ 61%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/lds.cpp.o[0m
+[4.722s] [ 61%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/comm/comm.cpp.o[0m
+[4.726s] [ 63%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/comm/lidar_imu_data_queue.cpp.o[0m
+[4.742s] [ 64%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/comm/cache_index.cpp.o[0m
+[4.884s] [ 66%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/comm/pub_handler.cpp.o[0m
+[4.952s] [ 68%] [32m[1mLinking CXX shared library liblivox_ros_driver2__rosidl_typesupport_fastrtps_cpp.so[0m
+[5.059s] [ 70%] [32m[1mLinking CXX shared library liblivox_ros_driver2__rosidl_typesupport_introspection_cpp.so[0m
+[5.135s] [ 71%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/parse_cfg_file/parse_cfg_file.cpp.o[0m
+[5.145s] [ 71%] Built target livox_interfaces2__rosidl_typesupport_fastrtps_cpp
+[5.150s] [ 73%] [32m[1mLinking CXX shared library liblivox_ros_driver2__rosidl_typesupport_fastrtps_c.so[0m
+[5.180s] [ 75%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/parse_cfg_file/parse_livox_lidar_cfg.cpp.o[0m
+[5.231s] [ 75%] Built target livox_interfaces2__rosidl_typesupport_introspection_cpp
+[5.247s] [ 77%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/call_back/lidar_common_callback.cpp.o[0m
+[5.339s] [ 77%] Built target livox_interfaces2__rosidl_typesupport_fastrtps_c
+[5.363s] [ 78%] [32mBuilding CXX object CMakeFiles/livox_ros_driver2.dir/src/call_back/livox_lidar_callback.cpp.o[0m
+[5.390s] [ 78%] Built target livox_interfaces2
+[5.437s] [ 80%] [34m[1mGenerating Python code for ROS interfaces[0m
+[6.491s] [ 80%] Built target livox_interfaces2__py
+[6.512s] [ 84%] [32mBuilding C object CMakeFiles/livox_interfaces2__rosidl_generator_py.dir/rosidl_generator_py/livox_ros_driver2/msg/_custom_msg_s.c.o[0m
+[6.512s] [ 84%] [32mBuilding C object CMakeFiles/livox_interfaces2__rosidl_generator_py.dir/rosidl_generator_py/livox_ros_driver2/msg/_custom_point_s.c.o[0m
+[6.670s] [ 85%] [32m[1mLinking C shared library rosidl_generator_py/livox_ros_driver2/liblivox_interfaces2__rosidl_generator_py.so[0m
+[6.711s] [ 85%] Built target livox_interfaces2__rosidl_generator_py
+[6.735s] [ 87%] [32mBuilding C object CMakeFiles/livox_ros_driver2__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/livox_ros_driver2/_livox_ros_driver2_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[6.735s] [ 89%] [32mBuilding C object CMakeFiles/livox_ros_driver2__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/livox_ros_driver2/_livox_ros_driver2_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[6.741s] [ 91%] [32mBuilding C object CMakeFiles/livox_ros_driver2__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/livox_ros_driver2/_livox_ros_driver2_s.ep.rosidl_typesupport_c.c.o[0m
+[6.870s] [ 92%] [32m[1mLinking C shared library rosidl_generator_py/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so[0m
+[6.870s] [ 94%] [32m[1mLinking C shared library rosidl_generator_py/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so[0m
+[6.912s] [ 94%] Built target livox_ros_driver2__rosidl_typesupport_introspection_c__pyext
+[6.913s] [ 94%] Built target livox_ros_driver2__rosidl_typesupport_fastrtps_c__pyext
+[6.921s] [ 96%] [32m[1mLinking C shared library rosidl_generator_py/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so[0m
+[6.961s] [ 96%] Built target livox_ros_driver2__rosidl_typesupport_c__pyext
+[7.677s] [ 98%] [32m[1mLinking CXX executable livox_ros_driver2_node[0m
+[7.804s] [ 98%] Built target livox_ros_driver2_node
+[13.298s] [100%] [32m[1mLinking CXX shared library liblivox_ros_driver2.so[0m
+[13.878s] [100%] Built target livox_ros_driver2
+[13.887s] Invoked command in '/home/yuanluochen/code/guard/guard_ros/build/livox_ros_driver2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/yuanluochen/code/guard/guard_ros/build/livox_ros_driver2 -- -j16 -l16
+[13.970s] Invoking command in '/home/yuanluochen/code/guard/guard_ros/build/livox_ros_driver2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/yuanluochen/code/guard/guard_ros/build/livox_ros_driver2
+[13.976s] -- Install configuration: ""
+[13.976s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/ament_index/resource_index/rosidl_interfaces/livox_ros_driver2
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/custom_point.h
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/custom_msg.h
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/rosidl_generator_c__visibility_control.h
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__functions.h
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__functions.c
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__functions.c
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__type_support.h
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__struct.h
+[13.977s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__struct.h
+[13.978s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__functions.h
+[13.978s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__type_support.h
+[13.978s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/environment/library_path.sh
+[13.978s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/environment/library_path.dsv
+[13.978s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_generator_c.so
+[13.978s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_generator_c.so" to ""
+[13.978s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2
+[13.978s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg
+[13.978s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[13.978s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail
+[13.978s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__rosidl_typesupport_fastrtps_c.h
+[13.979s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__rosidl_typesupport_fastrtps_c.h
+[13.979s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_fastrtps_c.so
+[13.979s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_fastrtps_c.so" to ""
+[13.979s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2
+[13.979s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg
+[13.979s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[13.979s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail
+[13.979s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__rosidl_typesupport_introspection_c.h
+[13.979s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__rosidl_typesupport_introspection_c.h
+[13.979s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__type_support.c
+[13.979s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__type_support.c
+[13.979s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_introspection_c.so
+[13.979s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_introspection_c.so" to ""
+[13.979s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_c.so
+[13.979s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_c.so" to ""
+[13.979s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2
+[13.979s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg
+[13.979s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/custom_point.hpp
+[13.979s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/custom_msg.hpp
+[13.980s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__builder.hpp
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__builder.hpp
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__struct.hpp
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__traits.hpp
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__struct.hpp
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__traits.hpp
+[13.980s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2
+[13.980s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[13.980s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__rosidl_typesupport_fastrtps_cpp.hpp
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__rosidl_typesupport_fastrtps_cpp.hpp
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/dds_fastrtps
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_fastrtps_cpp.so
+[13.980s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_fastrtps_cpp.so" to ""
+[13.980s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2
+[13.980s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg
+[13.980s] -- Up-to-date: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__type_support.cpp
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__type_support.cpp
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_point__rosidl_typesupport_introspection_cpp.hpp
+[13.980s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/include/livox_ros_driver2/livox_ros_driver2/msg/detail/custom_msg__rosidl_typesupport_introspection_cpp.hpp
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_introspection_cpp.so
+[13.981s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_introspection_cpp.so" to ""
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_cpp.so
+[13.981s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2__rosidl_typesupport_cpp.so" to ""
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/environment/pythonpath.sh
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/environment/pythonpath.dsv
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2-1.0.0-py3.10.egg-info
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2-1.0.0-py3.10.egg-info/PKG-INFO
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2-1.0.0-py3.10.egg-info/top_level.txt
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2-1.0.0-py3.10.egg-info/SOURCES.txt
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2-1.0.0-py3.10.egg-info/dependency_links.txt
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[13.981s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/_livox_ros_driver2_s.ep.rosidl_typesupport_fastrtps_c.c
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/_livox_ros_driver2_s.ep.rosidl_typesupport_introspection_c.c
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/liblivox_interfaces2__rosidl_generator_py.so
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/__init__.py
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/msg
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/msg/_custom_msg.py
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/msg/_custom_point.py
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/msg/__init__.py
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/msg/_custom_point_s.c
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/msg/_custom_msg_s.c
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[13.982s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/_livox_ros_driver2_s.ep.rosidl_typesupport_c.c
+[14.016s] Listing '/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2'...
+[14.016s] Compiling '/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/__init__.py'...
+[14.017s] Listing '/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/msg'...
+[14.017s] Compiling '/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/msg/__init__.py'...
+[14.017s] Compiling '/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/msg/_custom_msg.py'...
+[14.017s] Compiling '/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/msg/_custom_point.py'...
+[14.019s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[14.020s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so" to ""
+[14.020s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[14.020s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so" to ""
+[14.020s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[14.020s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/local/lib/python3.10/dist-packages/livox_ros_driver2/livox_ros_driver2_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so" to ""
+[14.020s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_interfaces2__rosidl_generator_py.so
+[14.020s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_interfaces2__rosidl_generator_py.so" to ""
+[14.020s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/msg/CustomPoint.idl
+[14.020s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/msg/CustomMsg.idl
+[14.020s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/msg/CustomPoint.msg
+[14.021s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/msg/CustomMsg.msg
+[14.021s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node
+[14.021s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/livox_ros_driver2/livox_ros_driver2_node" to ""
+[14.021s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2.so
+[14.024s] -- Set runtime path of "/home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/lib/liblivox_ros_driver2.so" to ""
+[14.024s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/config
+[14.024s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/config/MID360_config.json
+[14.024s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/config/display_point_cloud_ROS2.rviz
+[14.025s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/config/mixed_HAP_MID360_config.json
+[14.025s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/config/HAP_config.json
+[14.025s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/config/display_point_cloud_ROS1.rviz
+[14.025s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/launch_ROS2
+[14.025s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/launch_ROS2/rviz_MID360_launch.py
+[14.025s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/launch_ROS2/msg_MID360_launch.py
+[14.025s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/launch_ROS2/__pycache__
+[14.026s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/launch_ROS2/__pycache__/msg_MID360_launch.cpython-310.pyc
+[14.026s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/launch_ROS2/rviz_HAP_launch.py
+[14.026s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/launch_ROS2/rviz_mixed.py
+[14.026s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/launch_ROS2/msg_HAP_launch.py
+[14.026s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/ament_index/resource_index/package_run_dependencies/livox_ros_driver2
+[14.026s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/ament_index/resource_index/parent_prefix_path/livox_ros_driver2
+[14.026s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/environment/ament_prefix_path.sh
+[14.026s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/environment/ament_prefix_path.dsv
+[14.026s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/environment/path.sh
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/environment/path.dsv
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/local_setup.bash
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/local_setup.sh
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/local_setup.zsh
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/local_setup.dsv
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/package.dsv
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/ament_index/resource_index/packages/livox_ros_driver2
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/export_livox_interfaces2__rosidl_generator_cExport.cmake
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/export_livox_interfaces2__rosidl_generator_cExport-noconfig.cmake
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/export_livox_interfaces2__rosidl_typesupport_fastrtps_cExport.cmake
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/export_livox_interfaces2__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/livox_interfaces2__rosidl_typesupport_introspection_cExport.cmake
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/livox_interfaces2__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/livox_interfaces2__rosidl_typesupport_cExport.cmake
+[14.027s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/livox_interfaces2__rosidl_typesupport_cExport-noconfig.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/export_livox_interfaces2__rosidl_generator_cppExport.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/export_livox_interfaces2__rosidl_typesupport_fastrtps_cppExport.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/export_livox_interfaces2__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/livox_interfaces2__rosidl_typesupport_introspection_cppExport.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/livox_interfaces2__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/livox_interfaces2__rosidl_typesupport_cppExport.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/livox_interfaces2__rosidl_typesupport_cppExport-noconfig.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/export_livox_interfaces2__rosidl_generator_pyExport.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/export_livox_interfaces2__rosidl_generator_pyExport-noconfig.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/ament_index/resource_index/rclcpp_components/livox_ros_driver2
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/rosidl_cmake-extras.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/ament_cmake_export_dependencies-extras.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/ament_cmake_export_include_directories-extras.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/ament_cmake_export_libraries-extras.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/ament_cmake_export_targets-extras.cmake
+[14.028s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[14.029s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[14.029s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/livox_ros_driver2Config.cmake
+[14.029s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/cmake/livox_ros_driver2Config-version.cmake
+[14.029s] -- Installing: /home/yuanluochen/code/guard/guard_ros/install/livox_ros_driver2/share/livox_ros_driver2/package.xml
+[14.031s] Invoked command in '/home/yuanluochen/code/guard/guard_ros/build/livox_ros_driver2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/yuanluochen/code/guard/guard_ros/build/livox_ros_driver2
