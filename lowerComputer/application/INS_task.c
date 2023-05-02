@@ -278,15 +278,15 @@ void INS_task(void const *pvParameters)
             
             if (imu_cail_offset_time < IMU_CAIL_MAX_TIME)
             {
-                //开始校准，蜂鸣器开
-                IMUWarnBuzzerOn();
+                // //开始校准，蜂鸣器开
+                // IMUWarnBuzzerOn();
                 //计算零漂
                 gyro_offset_calc(gyro_offset, INS_gyro, &imu_cail_offset_time);
             }
             else
             {
-                //校准完毕，蜂鸣器关
-                IMUWarnBuzzerOFF();
+                // //校准完毕，蜂鸣器关
+                // IMUWarnBuzzerOFF();
                 //imu校准完毕标志位置1
                 imu_offset_calc_finish_flag = 1;
             }

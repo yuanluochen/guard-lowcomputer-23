@@ -18,52 +18,6 @@
 #include "arm_math.h"
 #include "rm_usart.h"
 
-//外部变量
-extern DMA_HandleTypeDef hdma_usart1_tx;
-
-// /**
-//  * @brief kalman filter 类型
-//  *        0 为二阶
-//  *        1 为一阶 
-//  * 
-//  */
-// #define KALMAN_FILTER_TYPE 1
-
-//运算时间差
-#define DT 2
-//矩阵大小
-#define MATRIX_SIZE 4
-//状态矩阵大小
-#define STATUS_MATRIX_SIZE 2
-//H矩阵
-#define H_MATRIX_SIZE 2
-
-//pitch轴位移方差
-#define PITCH_DP 1
-//pitch轴速度方差
-#define PITCH_DV 1
-//pitch轴加速度方差
-#define PITCH_DA 1
-
-//yaw轴位移方差
-#define YAW_DP 1
-//yaw轴速度方差
-#define YAW_DV 1
-//yaw轴加速度方差
-#define YAW_DA 1
-
-//滤波后的角度偏移量
-#define GIMBAL_ANGLE_ADDRESS_OFFSET 0
-
-
-//一阶kalman filter参数
-#define GIMBAL_YAW_MOTOR_KALMAN_Q 400
-#define GIMBAL_YAW_MOTOR_KALMAN_R 400
-
-#define GIMBAL_PITCH_MOTOR_KALMAN_Q 200
-#define GIMBAL_PITCH_MOTOR_KALMAN_R 400
-
-
 //允许发弹角度误差
 #define ALLOW_ATTACK_ERROR 7
 
@@ -75,43 +29,18 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 //延时等待
 #define VISION_SEND_TASK_INIT_TIME 401
 //系统延时时间
-#define VISION_SEND_CONTROL_TIME_MS 10
+#define VISION_SEND_CONTROL_TIME_MS 2
 
 //延时等待
 #define VISION_TASK_INIT_TIME 450
 //系统延时时间
 #define VISION_CONTROL_TIME_MS 2
 
-//串口发送数据大小
-#define SERIAL_SEND_MESSAGE_SIZE 28
 //加倍
 #define DOUBLE_ 10000
-//上位机串口结构体
-#define VISION_USART huart1
-//上位机串口dma结构体
-#define VISION_TX_DMA hdma_usart1_tx
-//串口阻塞时间
-#define VISION_USART_TIME_OUT 1000
 //弧度制转角度制
 #define RADIAN_TO_ANGLE (360 / (2 * PI))
 
-#define HEAD1_DATA 0x34
-#define HEAD2_DATA 0X43
-
-//起始位1偏移量
-#define HEAD1_ADDRESS_OFFSET 0
-//起始位2偏移量
-#define HEAD2_ADDRESS_OFFSET 1
-//yaw轴偏移量
-#define YAW_ADDRESS_OFFSET 2
-//pitch轴偏移量
-#define PITCH_ADDRESS_OFFSET 3
-//roll轴偏移量
-#define ROLL_ADDRESS_OFFSET 4
-//模式转换偏移量
-#define SWITCH_ADDRESS_OFFSET 5
-//结尾数据偏移量
-#define END_ADDRESS_OFFSET 6
 
 //数据分离uint8_t的数组的大小
 #define UINT8_T_DATA_SIZE 4
@@ -122,22 +51,58 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 //最大未接受到上位机数据的时间
 #define MAX_UNRX_TIME 400
 
+//发送尾帧数据
+#define END_DATA 0x0A
+
+//数据起始帧类型
+typedef enum
+{
+    //下位机发送到上位机
+    LOWER_TO_HIGH_HEAD = 0x34,
+    //上位机发送到下位机
+    HIGH_TO_LOWER_HEAD = 0X44,
+}data_head_type_e;
+
+
 //上位机模式,包括装甲板模式,能量机关模式,前哨站模式
 typedef enum
 {
-    ARMOURED_PLATE = 1, //装甲板模式
-    ENERGY_ORGAN = 2,   //能量机关
-    OUTPOST = 3,        //前哨站
-}vision_mode_e;
+    ARMOURED_PLATE_MODE = 1, //装甲板模式
+    ENERGY_ORGAN_MODE = 2,   //能量机关
+    OUTPOST_MODE = 3,        //前哨站
+}highcomputer_mode_e;
 
-//32位数据转8位数据
-typedef union 
+//发送数据偏移量
+enum
 {
-    float fp32_val;
-    uint32_t uint32_val;
-    uint8_t uin8_value[UINT8_T_DATA_SIZE];
-    
-}date32_to_date8_t;
+    HEAD_ADDRESS_OFFSET = 0,                                                   // 起始帧
+    DATA_QUAT_REAL_ADDRESS_OFFSET,                                             // 数据段 四元数实部
+    DATA_QUAT_X_ADDRESS_OFFSET = DATA_QUAT_REAL_ADDRESS_OFFSET + sizeof(fp32), // 数据段 四元数x轴虚部
+    DATA_QUAT_Y_ADDRESS_OFFSET = DATA_QUAT_X_ADDRESS_OFFSET + sizeof(fp32),    // 数据段 四元数y轴虚部
+    DATA_QUAT_Z_ADDRESS_OFFSET = DATA_QUAT_Y_ADDRESS_OFFSET + sizeof(fp32),    // 数据段 四元数z轴虚部
+    MODE_SWITCH_ADDRESS_OFFSET = DATA_QUAT_Z_ADDRESS_OFFSET + sizeof(fp32),    // 模式切换段
+    CHECK_BIT_ADDRESS_OFFSET,                                                  // 校验段
+    END_ADDRESS_OFFSET,                                                        // 尾帧
+    SUM_SEND_MESSAGE,                                                          // 总值
+};
+
+
+
+//上下位机通信数据
+typedef struct 
+{
+    //起始帧
+    uint8_t head;
+    //数据段-四元数段
+    fp32 quat[4];
+    //模式切换段
+    uint8_t mode_change;
+    //校验段
+    uint8_t check;
+    //尾
+    uint8_t end;
+}communication_data_t;
+
 
 typedef struct 
 {
@@ -145,7 +110,6 @@ typedef struct
     fp32 pitch;
     fp32 roll;
 }eular_angle_t;
-
 
 //哨兵云台电机运动命令,经滤波处理后的数值
 typedef struct 
@@ -171,8 +135,6 @@ typedef struct
     shoot_command_e shoot_command;
 }shoot_vision_control_t;
 
-
-
 //视觉任务结构体
 typedef struct
 {
@@ -196,21 +158,22 @@ typedef struct
 //视觉发送任务结构体
 typedef struct
 {
-    
-    // 自身绝对角指针
-    const fp32 *vision_angle_point;
-    // 绝对角
-    eular_angle_t absolution_angle;
-    // 发送的绝对角数据，为消除负号对原始数据做加pi处理
-    eular_angle_t send_absolution_angle;
+    // 四元数指针
+    const fp32* vision_quat_point;
+    //发送数据结构体
+    communication_data_t send_msg_struct;
     // 配置串口发送数据
-    uint8 send_message[SERIAL_SEND_MESSAGE_SIZE];
-    // 配置串口名称(该为地址)
-    UART_HandleTypeDef *send_message_usart;
-    // 配置串口发送dma
-    DMA_HandleTypeDef *send_message_dma;
+    uint8 send_message[SUM_SEND_MESSAGE];
+} vision_send_t;
 
-}vision_send_t;
+//视觉接收任务结构体
+typedef struct 
+{
+    //接收数据结构体
+    communication_data_t receive_msg_struct;
+    //接收到数据标志位
+    bool_t rx_flag;
+}vision_receive_t;
 
 
 //视觉通信任务
@@ -218,6 +181,9 @@ void vision_send_task(void const *pvParameters);
 
 //视觉数据处理任务
 void vision_task(void const* pvParameters);
+
+//上位机原始数据解码
+void highcomputer_rx_decode(uint8_t* rx_Buf, uint32_t* rx_buf_Len);
 
 // 获取上位机云台命令
 gimbal_vision_control_t* get_vision_gimbal_point(void);

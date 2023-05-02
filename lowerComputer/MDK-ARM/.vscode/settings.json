@@ -23,6 +23,7 @@
         "referee.h": "c",
         "bsp_buzzer.h": "c",
         "struct_typedef.h": "c",
-        "main.h": "c"
+        "main.h": "c",
+        "usb_task.h": "c"
     }
 }

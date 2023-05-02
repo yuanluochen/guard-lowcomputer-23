@@ -102,7 +102,6 @@ standard_tpye_c\main.o: ../application/detect_task.h
 standard_tpye_c\main.o: ../application/led_flow_task.h
 standard_tpye_c\main.o: ../application/oled_task.h
 standard_tpye_c\main.o: ../application/referee_usart_task.h
-standard_tpye_c\main.o: ../application/usb_task.h
 standard_tpye_c\main.o: ../application/voltage_task.h
 standard_tpye_c\main.o: ../stm32/stm32.h
 standard_tpye_c\main.o: ../stm32/STM32_Config.h

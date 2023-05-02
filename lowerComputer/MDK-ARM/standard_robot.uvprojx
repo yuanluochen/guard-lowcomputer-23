@@ -655,11 +655,6 @@
               <FilePath>..\application\test_task.c</FilePath>
             </File>
             <File>
-              <FileName>usb_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\usb_task.c</FilePath>
-            </File>
-            <File>
               <FileName>CAN_receive.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\CAN_receive.c</FilePath>

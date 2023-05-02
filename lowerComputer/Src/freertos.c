@@ -36,7 +36,6 @@
 #include "led_flow_task.h"
 #include "oled_task.h"
 #include "referee_usart_task.h"
-#include "usb_task.h"
 #include "voltage_task.h"
 #include "vision_task.h"
 /* USER CODE END Includes */
@@ -51,7 +50,6 @@ osThreadId imuTaskHandle;
 osThreadId led_RGB_flow_handle;
 osThreadId oled_handle;
 osThreadId referee_usart_task_handle;
-osThreadId usb_task_handle;
 osThreadId battery_voltage_handle;
 osThreadId shoot_task_handle;
 osThreadId vision_send_task_handle;
@@ -68,7 +66,7 @@ osThreadId vision_task_handle;
 
 /* USER CODE END PM */
 
-/* Private variables ---------------------------------------------------------*/
+/* Private variables -------------------------------    --------------------------*/
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
@@ -167,17 +165,11 @@ void MX_FREERTOS_Init(void) {
     osThreadDef(led, led_RGB_flow_task, osPriorityNormal, 0, 256);
     led_RGB_flow_handle = osThreadCreate(osThread(led), NULL);
 
-
     osThreadDef(OLED, oled_task, osPriorityLow, 0, 256);
     oled_handle = osThreadCreate(osThread(OLED), NULL);
 
-
     osThreadDef(REFEREE, referee_usart_task, osPriorityNormal, 0, 128);
     referee_usart_task_handle = osThreadCreate(osThread(REFEREE), NULL);
-
-
-    osThreadDef(USBTask, usb_task, osPriorityNormal, 0, 128);
-    usb_task_handle = osThreadCreate(osThread(USBTask), NULL);
 
     osThreadDef(BATTERY_VOLTAGE, battery_voltage_task, osPriorityNormal, 0, 128);
     battery_voltage_handle = osThreadCreate(osThread(BATTERY_VOLTAGE), NULL);
@@ -190,8 +182,6 @@ void MX_FREERTOS_Init(void) {
 
     osThreadDef(VISION, vision_task, osPriorityNormal, 0, 512);
     vision_task_handle = osThreadCreate(osThread(VISION), NULL);
-
-
 
   /* USER CODE END RTOS_THREADS */
 

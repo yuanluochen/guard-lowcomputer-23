@@ -49,7 +49,6 @@
 "standard_tpye_c\referee_usart_task.o"
 "standard_tpye_c\remote_control.o"
 "standard_tpye_c\test_task.o"
-"standard_tpye_c\usb_task.o"
 "standard_tpye_c\can_receive.o"
 "standard_tpye_c\voltage_task.o"
 "standard_tpye_c\led_flow_task.o"

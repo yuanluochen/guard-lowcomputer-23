@@ -49,7 +49,6 @@
 #include "led_flow_task.h"
 #include "oled_task.h"
 #include "referee_usart_task.h"
-#include "usb_task.h"
 #include "voltage_task.h"
 #include "stm32.h"
 #include "stm32_private.h"
@@ -142,6 +141,7 @@ int main(void)
   MX_TIM10_Init();
   MX_USART1_UART_Init();
   MX_USART6_UART_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   can_filter_init();
   delay_init();

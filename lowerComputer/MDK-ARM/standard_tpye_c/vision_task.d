@@ -76,3 +76,11 @@ standard_tpye_c\vision_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdlib.h
 standard_tpye_c\vision_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdio.h
 standard_tpye_c\vision_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdbool.h
 standard_tpye_c\vision_task.o: ..\application\gimbal_behaviour.h
+standard_tpye_c\vision_task.o: ../Inc/usbd_cdc_if.h
+standard_tpye_c\vision_task.o: ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h
+standard_tpye_c\vision_task.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
+standard_tpye_c\vision_task.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h
+standard_tpye_c\vision_task.o: ../Inc/usbd_conf.h
+standard_tpye_c\vision_task.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
+standard_tpye_c\vision_task.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
+standard_tpye_c\vision_task.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h

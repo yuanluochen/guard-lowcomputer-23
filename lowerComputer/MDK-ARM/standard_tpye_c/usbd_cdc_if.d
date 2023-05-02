@@ -55,3 +55,13 @@ standard_tpye_c\usbd_cdc_if.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal
 standard_tpye_c\usbd_cdc_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 standard_tpye_c\usbd_cdc_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 standard_tpye_c\usbd_cdc_if.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
+standard_tpye_c\usbd_cdc_if.o: ../application/vision_task.h
+standard_tpye_c\usbd_cdc_if.o: ../Inc/usart.h
+standard_tpye_c\usbd_cdc_if.o: ../Inc/dma.h
+standard_tpye_c\usbd_cdc_if.o: ../application/INS_task.h
+standard_tpye_c\usbd_cdc_if.o: ../application/struct_typedef.h
+standard_tpye_c\usbd_cdc_if.o: ../bsp/boards/bsp_buzzer.h
+standard_tpye_c\usbd_cdc_if.o: ../components/algorithm/Include/arm_math.h
+standard_tpye_c\usbd_cdc_if.o: ../Drivers/CMSIS/Include/core_cm4.h
+standard_tpye_c\usbd_cdc_if.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
+standard_tpye_c\usbd_cdc_if.o: ../application/rm_usart.h
