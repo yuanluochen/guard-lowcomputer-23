@@ -29,12 +29,12 @@
 
 #include "bsp_imu_pwm.h"
 #include "bsp_spi.h"
+#include "bsp_adc.h"
 #include "bmi088driver.h"
 #include "ist8310driver.h"
 #include "pid.h"
 #include "ahrs.h"
 
-#include "calibrate_task.h"
 #include "detect_task.h"
 
 
@@ -100,6 +100,9 @@ static void imu_cmd_spi_dma(void);
 
 void gyro_offset_calc(fp32 gyro_offset[3], fp32 gyro[3], uint16_t *offset_time_count);
 
+
+void set_gyro_offset(fp32 gyro_offset[3], fp32 set_gyro_offset_1, fp32 set_gyro_offset_2, fp32 set_gyro_offset_3);
+
 extern SPI_HandleTypeDef hspi1;
 
 
@@ -159,6 +162,21 @@ static fp32 INS_accel[3] = {0.0f, 0.0f, 0.0f};
 static fp32 INS_mag[3] = {0.0f, 0.0f, 0.0f};
 static fp32 INS_quat[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 fp32 INS_angle[3] = {0.0f, 0.0f, 0.0f};      //euler angle, unit rad.欧拉角 单位 rad
+
+/**
+ * @brief 开启imu校准模式， 该位为1 上电校准，该位为零，上电不校准
+ * 
+ */
+bool_t start_imu_cali_flag = 0;
+
+
+/**
+  * @brief          获取imu控制温度, 单位℃
+  * @param[in]      none
+  * @retval         imu控制温度
+  */
+static int8_t get_control_temperature(void);
+
 
 /**
  * @brief imu校准完毕标志位  校准完毕该位置1 
@@ -272,24 +290,28 @@ void INS_task(void const *pvParameters)
         get_angle(INS_quat, INS_angle + INS_YAW_ADDRESS_OFFSET, INS_angle + INS_PITCH_ADDRESS_OFFSET, INS_angle + INS_ROLL_ADDRESS_OFFSET);
 
         //imu判断进入imu校准模式
+        if (start_imu_cali_flag)
         {
             //校准时间
             static uint16_t imu_cail_offset_time = 0;
             
             if (imu_cail_offset_time < IMU_CAIL_MAX_TIME)
             {
-                // //开始校准，蜂鸣器开
-                // IMUWarnBuzzerOn();
                 //计算零漂
                 gyro_offset_calc(gyro_offset, INS_gyro, &imu_cail_offset_time);
             }
             else
             {
-                // //校准完毕，蜂鸣器关
-                // IMUWarnBuzzerOFF();
                 //imu校准完毕标志位置1
                 imu_offset_calc_finish_flag = 1;
             }
+        }
+        else
+        {
+            //上电不校准设置校准值
+            set_gyro_offset(gyro_offset, GYRO_OFFSET_1, GYRO_OFFSET_2, GYRO_OFFSET_3);
+            //设置校准完毕
+            imu_offset_calc_finish_flag = 1;
         }
 
         //because no use ist8310 and save time, no use
@@ -379,6 +401,19 @@ static void imu_temp_control(fp32 temp)
     }
 }
 
+
+static int8_t get_control_temperature(void)
+{
+    //提升控制温度
+    int8_t temp = get_temprate() + 10;
+    if (temp > GYRO_CONST_MAX_TEMP)
+    {
+        //判断控制温度是否到达最终目标控制温度
+        temp = GYRO_CONST_MAX_TEMP;
+    }
+    return temp;
+}
+
 /**
   * @brief          calculate gyro zero drift
   * @param[out]     gyro_offset:zero drift
@@ -406,6 +441,20 @@ void gyro_offset_calc(fp32 gyro_offset[3], fp32 gyro[3], uint16_t *offset_time_c
         (*offset_time_count)++;
 }
 
+/**
+ * @brief 设置陀螺仪校准值
+ *
+ * @param gyro_offset 校准零漂数组
+ * @param set_gyro_offset_1 设置陀螺仪零漂1
+ * @param set_gyro_offset_2 设置陀螺仪零漂2
+ * @param set_gyro_offset_3 设置陀螺仪零漂3
+ */
+void set_gyro_offset(fp32 gyro_offset[3], fp32 set_gyro_offset_1, fp32 set_gyro_offset_2, fp32 set_gyro_offset_3)
+{
+    gyro_offset[0] = set_gyro_offset_1;
+    gyro_offset[1] = set_gyro_offset_2;
+    gyro_offset[2] = set_gyro_offset_3;
+}
 /**
   * @brief          calculate gyro zero drift
   * @param[out]     cali_scale:scale, default 1.0
@@ -686,4 +735,17 @@ void DMA2_Stream2_IRQHandler(void)
 bool_t judge_imu_offset_calc_finish(void)
 {
     return imu_offset_calc_finish_flag;
+}
+
+
+void set_imu_cali(bool_t imu_cail_request)
+{
+    if (imu_cail_request == 1)
+    {
+        start_imu_cali_flag = 1;
+    }
+    else
+    {
+        start_imu_cali_flag = 0;
+    }
 }

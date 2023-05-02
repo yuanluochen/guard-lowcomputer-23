@@ -58,9 +58,8 @@ standard_tpye_c\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/t
 standard_tpye_c\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 standard_tpye_c\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 standard_tpye_c\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-standard_tpye_c\freertos.o: ../application/calibrate_task.h
-standard_tpye_c\freertos.o: ../application/struct_typedef.h
 standard_tpye_c\freertos.o: ../application/chassis_task.h
+standard_tpye_c\freertos.o: ../application/struct_typedef.h
 standard_tpye_c\freertos.o: ../application/CAN_receive.h
 standard_tpye_c\freertos.o: ../application/gimbal_task.h
 standard_tpye_c\freertos.o: ../components/controller/pid.h

@@ -27,7 +27,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "calibrate_task.h"
 #include "chassis_task.h"
 #include "detect_task.h"
 #include "gimbal_task.h"
@@ -42,7 +41,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-osThreadId calibrate_tast_handle;
 osThreadId chassisTaskHandle;
 osThreadId detect_handle;
 osThreadId gimbalTaskHandle;
@@ -147,9 +145,6 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-//    osThreadDef(cali, calibrate_task, osPriorityNormal, 0, 512);
-//    calibrate_tast_handle = osThreadCreate(osThread(cali), NULL);
-
     osThreadDef(ChassisTask, chassis_task, osPriorityAboveNormal, 0, 512);
     chassisTaskHandle = osThreadCreate(osThread(ChassisTask), NULL);
 

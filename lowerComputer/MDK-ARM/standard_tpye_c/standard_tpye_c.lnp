@@ -36,7 +36,6 @@
 "standard_tpye_c\bsp_spi.o"
 "standard_tpye_c\bsp_usart.o"
 "standard_tpye_c\bsp_servo_pwm.o"
-"standard_tpye_c\calibrate_task.o"
 "standard_tpye_c\chassis_behaviour.o"
 "standard_tpye_c\chassis_power_control.o"
 "standard_tpye_c\chassis_task.o"

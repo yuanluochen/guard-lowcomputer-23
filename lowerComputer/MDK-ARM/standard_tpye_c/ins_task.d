@@ -63,10 +63,10 @@ standard_tpye_c\ins_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/s
 standard_tpye_c\ins_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 standard_tpye_c\ins_task.o: ../bsp/boards/bsp_imu_pwm.h
 standard_tpye_c\ins_task.o: ../bsp/boards/bsp_spi.h
+standard_tpye_c\ins_task.o: ../bsp/boards/bsp_adc.h
 standard_tpye_c\ins_task.o: ../components/devices/bmi088driver.h
 standard_tpye_c\ins_task.o: ../components/devices/ist8310driver.h
 standard_tpye_c\ins_task.o: ../components/controller/pid.h
 standard_tpye_c\ins_task.o: ../components/algorithm/ahrs.h
 standard_tpye_c\ins_task.o: ../components/algorithm/AHRS_MiddleWare.h
-standard_tpye_c\ins_task.o: ..\application\calibrate_task.h
 standard_tpye_c\ins_task.o: ..\application\detect_task.h

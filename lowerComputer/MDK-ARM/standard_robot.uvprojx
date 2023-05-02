@@ -590,11 +590,6 @@
           <GroupName>applications</GroupName>
           <Files>
             <File>
-              <FileName>calibrate_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\calibrate_task.c</FilePath>
-            </File>
-            <File>
               <FileName>chassis_behaviour.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\chassis_behaviour.c</FilePath>
