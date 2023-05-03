@@ -605,13 +605,13 @@ static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
     }
     if (gimbal_motor == &gimbal_control.gimbal_yaw_motor)
     {
-        stm32_step_yaw(gimbal_motor->absolute_angle_set, gimbal_motor->absolute_angle, 0);
+        stm32_step_yaw(gimbal_motor->absolute_angle_set, gimbal_motor->absolute_angle, gimbal_motor->motor_gyro);
         gimbal_motor->current_set = stm32_Y_yaw.Out1;
         gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
     }
     else if (gimbal_motor == &gimbal_control.gimbal_pitch_motor)
     {
-        stm32_step_pitch(gimbal_motor->absolute_angle_set, gimbal_motor->absolute_angle, 0);
+        stm32_step_pitch(gimbal_motor->absolute_angle_set, gimbal_motor->absolute_angle, gimbal_motor->motor_gyro);
         gimbal_motor->current_set = stm32_Y_pitch.Out1;
         gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
     }
