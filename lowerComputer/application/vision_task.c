@@ -15,40 +15,37 @@
 #include "task.h"
 #include "shoot_task.h"
 #include "gimbal_behaviour.h"
-
+#include "CRC8_CRC16.h"
 #include "usbd_cdc_if.h"
+
 
 
 //视觉发送任务结构体初始化
 static void vision_send_task_init(vision_send_t* init);
-//视觉任务初始化
-static void vision_task_init(vision_control_t* init);
 //视觉发送任务数据更新
 static void vision_send_task_feedback_update(vision_send_t* update);
-//设置自瞄模式
-static void vision_set_mode(vision_send_t* vision_mode);
-//视觉人物数据更新
+//配置发送数据包
+static void set_vision_send_packet(vision_send_t* set_send_packet);
+//发送数据包
+static void send_packet(vision_send_t* send);
+
+
+//视觉任务初始化
+static void vision_task_init(vision_control_t* init);
+//视觉任务数据更新
 static void vision_task_feedback_update(vision_control_t* update);
-//数据编码
-static void vision_tx_encode(vision_send_t* vision_tx_data_encode);
 //设置yaw轴pitch轴增量
 static void vision_analysis_date(vision_control_t* vision_set);
-/**
- * @brief 分析视觉原始增加数据，根据原始数据，判断是否要进行发射
- * 
- * @param shoot_judge 视觉结构体
- * @param vision_begin_add_yaw_angle 上位机视觉yuw轴原始增加角度
- * @param vision_begin_add_pitch_angle 上位机视觉pitch轴原始增加角度
- */
-static void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw_angle, fp32 vision_begin_add_pitch_angle);
-
+//获取接收数据包指针
+static const receive_packet_t* get_receive_packet_point(void);
 
 //视觉任务结构体
 vision_control_t vision_control = { 0 };
-//视觉发送任务结构体
+//视觉发送结构体
 vision_send_t vision_send = { 0 };
 //视觉接收结构体
 vision_receive_t vision_receive = { 0 };
+
 
 //未接收到视觉数据标志位，该位为1 则未接收
 bool_t not_rx_vision_data_flag = 1;
@@ -64,18 +61,77 @@ void vision_send_task(void const *pvParameters)
     {
         // 数据更新
         vision_send_task_feedback_update(&vision_send);
-        // 配置自瞄模式
-        vision_set_mode(&vision_send);
-        // 配置串口发送数据,编码
-        vision_tx_encode(&vision_send);
-
-        //发送数据
-        CDC_Transmit_FS(vision_send.send_message, SUM_SEND_MESSAGE);
+        // 配置发送数据包
+        set_vision_send_packet(&vision_send);
+        //发送数据包
+        send_packet(&vision_send);
         //系统延时
         vTaskDelay(VISION_SEND_CONTROL_TIME_MS);
     }
 }
 
+static void vision_send_task_init(vision_send_t* init)
+{
+    //获取陀螺仪绝对角指针
+    init->INS_angle_point = get_INS_angle_point();
+    // 数据更新
+    vision_send_task_feedback_update(init);
+}
+
+static void vision_send_task_feedback_update(vision_send_t* update)
+{
+    update->eular_angle.yaw = *(update->INS_angle_point + INS_YAW_ADDRESS_OFFSET) * RADIAN_TO_ANGLE; 
+    update->eular_angle.pitch = *(update->INS_angle_point + INS_PITCH_ADDRESS_OFFSET) * RADIAN_TO_ANGLE; 
+    update->eular_angle.roll = *(update->INS_angle_point + INS_ROLL_ADDRESS_OFFSET) *RADIAN_TO_ANGLE; 
+}
+
+static void set_vision_send_packet(vision_send_t* set_send_packet)
+{
+    set_send_packet->send_packet.header = LOWER_TO_HIGH_HEAD;
+    set_send_packet->send_packet.robot_color = 0;
+    set_send_packet->send_packet.task_mode = 0;
+    set_send_packet->send_packet.reserved = 0;
+    set_send_packet->send_packet.pitch = set_send_packet->eular_angle.pitch;
+    set_send_packet->send_packet.yaw = set_send_packet->eular_angle.yaw;
+    set_send_packet->send_packet.aim_x = 1;
+    set_send_packet->send_packet.aim_y = 2;
+    set_send_packet->send_packet.aim_z = 3;
+}
+
+static void send_packet(vision_send_t* send)
+{
+    if (send == NULL)
+    {
+        return;
+    }
+    //添加CRC16到结尾
+    append_CRC16_check_sum((uint8_t*)&send->send_packet, sizeof(send->send_packet));
+    //发送数据
+    CDC_Transmit_FS((uint8_t*)&send->send_packet, sizeof(send->send_packet));
+}
+
+
+void receive_decode(uint8_t* buf, uint32_t len)
+{
+    if (buf == NULL || len < 2)
+    {
+        return;
+    }
+    //CRC校验
+    if (verify_CRC16_check_sum(buf, len))
+    {
+        receive_packet_t temp_packet = {0};
+        // 拷贝接收到的数据到临时内存中
+        memcpy(&temp_packet, buf, sizeof(temp_packet));
+        if (temp_packet.header == HIGH_TO_LOWER_HEAD)
+        {
+            //数据正确，将临时数据拷贝到接收数据包中
+            memcpy(&vision_receive.receive_packet, &temp_packet, sizeof(receive_packet_t));
+            //接收数据位置1
+            vision_receive.rx_flag = 1;
+        }
+    }
+}
 
 void vision_task(void const* pvParameters)
 {
@@ -102,35 +158,21 @@ void vision_task(void const* pvParameters)
     }
 }
 
-static void vision_send_task_init(vision_send_t* init)
-{
-    //获取陀螺仪绝对角指针                                                                                                                                                                                                                                                                                                                                                           init->vision_angle_point = get_INS_angle_point();
-    init->vision_quat_point = get_INS_quat_point();
-    //初始化发送数据结构体的头帧尾帧
-    init->send_msg_struct.head = LOWER_TO_HIGH_HEAD;
-    init->send_msg_struct.end = END_DATA;
-    // 数据更新
-    vision_send_task_feedback_update(init);
-}
+
 
 static void vision_task_init(vision_control_t* init)
 {
     // 获取陀螺仪绝对角指针                                                                                                                                                                                                                                                                                                                                                           init->vision_angle_point = get_INS_angle_point();
     init->vision_angle_point = get_INS_angle_point();
+    // 获取接收数据包指针
+    init->receive_packet_point = get_receive_packet_point();
 	
-    // 获取上位机视觉指针
-    init->vision_rxfifo = get_vision_rxfifo_point();
     //初始化发射模式为停止袭击
     init->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
 
+    //更新数据
     vision_task_feedback_update(init);
  
-}
-
-static void vision_send_task_feedback_update(vision_send_t* update)
-{
-    //获取四元数数值
-    memcpy(update->send_msg_struct.quat, update->vision_quat_point, 4 * sizeof(fp32));
 }
 
 static void vision_task_feedback_update(vision_control_t* update)
@@ -140,27 +182,6 @@ static void vision_task_feedback_update(vision_control_t* update)
     update->absolution_angle.pitch = *(update->vision_angle_point + INS_PITCH_ADDRESS_OFFSET) * RADIAN_TO_ANGLE;
     update->absolution_angle.roll = *(update->vision_angle_point + INS_ROLL_ADDRESS_OFFSET) * RADIAN_TO_ANGLE;
 
-}
-
-
-static void vision_set_mode(vision_send_t* vision_mode)
-{
-    //设置自瞄模式为装甲板模式
-    vision_mode->send_msg_struct.mode_change = ARMOURED_PLATE_MODE;
-}
-
-static void vision_tx_encode(vision_send_t* vision_tx_data_encode)
-{
-    //头
-    memcpy((void*)(vision_tx_data_encode->send_message + (int)HEAD_ADDRESS_OFFSET), (void*)&vision_tx_data_encode->send_msg_struct.head, DATA_QUAT_REAL_ADDRESS_OFFSET - HEAD_ADDRESS_OFFSET);
-    //数据段 四元数
-    memcpy((void*)(vision_tx_data_encode->send_message + (int)DATA_QUAT_REAL_ADDRESS_OFFSET), (void*)vision_tx_data_encode->send_msg_struct.quat, MODE_SWITCH_ADDRESS_OFFSET - DATA_QUAT_REAL_ADDRESS_OFFSET);
-    //数据段模式转换
-    memcpy((void*)(vision_tx_data_encode->send_message + (int)MODE_SWITCH_ADDRESS_OFFSET), (void*)&vision_tx_data_encode->send_msg_struct.mode_change, CHECK_BIT_ADDRESS_OFFSET - MODE_SWITCH_ADDRESS_OFFSET);
-    //校验位
-    memcpy((void*)(vision_tx_data_encode->send_message + (int)CHECK_BIT_ADDRESS_OFFSET), (void*)&vision_tx_data_encode->send_msg_struct.check, END_ADDRESS_OFFSET - CHECK_BIT_ADDRESS_OFFSET);
-    //尾
-    memcpy((void*)(vision_tx_data_encode->send_message + (int)END_ADDRESS_OFFSET), (void*)&vision_tx_data_encode->send_msg_struct.end, SUM_SEND_MESSAGE - END_ADDRESS_OFFSET);
 }
 
 static void vision_analysis_date(vision_control_t *vision_set)
@@ -175,30 +196,30 @@ static void vision_analysis_date(vision_control_t *vision_set)
     // 判断当前云台模式为自瞄模式
     if (judge_gimbal_mode_is_auto_mode())
     {
-        // 是自瞄模式，设置角度为上位机设置角度
+        // 自瞄模式，设置角度为上位机设置角度
 
-        // 判断是否接收到上位机数据
-        if (vision_set->vision_rxfifo->rx_flag) // 识别到目标
-        {
-            // 接收到数据标志位为0
-            not_rx_vision_data_flag = 0;
+        // // 判断是否接收到上位机数据
+        // if (vision_set->vision_rxfifo->rx_flag) // 识别到目标
+        // {
+        //     // 接收到数据标志位为0
+        //     not_rx_vision_data_flag = 0;
 
-            unrx_time = 0;
-            // 接收到上位机数据
-            // 接收标志位 置零
-            vision_set->vision_rxfifo->rx_flag = 0;
+        //     unrx_time = 0;
+        //     // 接收到上位机数据
+        //     // 接收标志位 置零
+        //     vision_set->vision_rxfifo->rx_flag = 0;
 
-            // 获取上位机视觉数据
-            vision_gimbal_pitch = vision_set->vision_rxfifo->pitch_fifo;
-            vision_gimbal_yaw = vision_set->vision_rxfifo->yaw_fifo;
+        //     // 获取上位机视觉数据
+        //     vision_gimbal_pitch = vision_set->vision_rxfifo->pitch_fifo;
+        //     vision_gimbal_yaw = vision_set->vision_rxfifo->yaw_fifo;
 
-            // 判断发射
-            vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
-        }
-        else
-        {
-            unrx_time++;
-        }
+        //     // 判断发射
+        //     vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
+        // }
+        // else
+        // {
+        //     unrx_time++;
+        // }
 
         // 判断上位机视觉停止发送指令
         if (unrx_time >= MAX_UNRX_TIME)
@@ -236,7 +257,7 @@ static void vision_analysis_date(vision_control_t *vision_set)
  * @param vision_begin_add_yaw_angle 上位机视觉yuw轴原始增加角度
  * @param vision_begin_add_pitch_angle 上位机视觉pitch轴原始增加角度
  */
-static void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw_angle, fp32 vision_begin_add_pitch_angle)
+void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw_angle, fp32 vision_begin_add_pitch_angle)
 {
     // 判断击打计数
     static int attack_count = 0;
@@ -283,26 +304,14 @@ static void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_
             // 计数值增加
             stop_attack_count ++;
         }
-
-        
     }
 }
 
-
-void highcomputer_rx_decode(uint8_t* rx_Buf, uint32_t* rx_buf_Len)
+static const receive_packet_t* get_receive_packet_point(void)
 {
-    // 串口数据解码
-    //头
-    memcpy((void *)vision_receive.receive_msg_struct.head, (void *)(rx_Buf + (int)HEAD_ADDRESS_OFFSET), (DATA_QUAT_REAL_ADDRESS_OFFSET - HEAD_ADDRESS_OFFSET));
-    // 数据段
-    memcpy((void *)&vision_receive.receive_msg_struct.quat, (void *)(rx_Buf + (int)DATA_QUAT_REAL_ADDRESS_OFFSET), (MODE_SWITCH_ADDRESS_OFFSET - DATA_QUAT_REAL_ADDRESS_OFFSET));
-    // 模式转化位
-    memcpy((void *)&vision_receive.receive_msg_struct.mode_change, (void *)(rx_Buf + (int)MODE_SWITCH_ADDRESS_OFFSET), (CHECK_BIT_ADDRESS_OFFSET - MODE_SWITCH_ADDRESS_OFFSET));
-    // 校验位
-    memcpy((void *)&vision_receive.receive_msg_struct.check, (void *)(rx_Buf + (int)CHECK_BIT_ADDRESS_OFFSET), (END_ADDRESS_OFFSET - CHECK_BIT_ADDRESS_OFFSET));
-    // 尾
-    memcpy((void *)&vision_receive.receive_msg_struct.end, (void *)(rx_Buf + (int)END_ADDRESS_OFFSET), (SUM_SEND_MESSAGE - END_ADDRESS_OFFSET));
+    return &vision_receive.receive_packet;
 }
+
 
 bool_t judge_not_rx_vision_data(void)
 {

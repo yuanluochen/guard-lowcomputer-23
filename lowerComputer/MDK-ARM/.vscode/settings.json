@@ -24,6 +24,9 @@
         "bsp_buzzer.h": "c",
         "struct_typedef.h": "c",
         "main.h": "c",
-        "usb_task.h": "c"
+        "usb_task.h": "c",
+        "crc8_crc16.h": "c",
+        "usbd_cdc_if.h": "c",
+        "usb_device.h": "c"
     }
 }

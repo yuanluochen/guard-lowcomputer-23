@@ -80,12 +80,15 @@
 
 #define GYRO_CONST_MAX_TEMP     45.0f               //max control temperature of gyro,最大陀螺仪控制温度
 
+//上电是否校准宏定义 为1 校准; 为0 不校准
+#define IMU_OFFSET_CALI 0
 
+#if !IMU_OFFSET_CALI
 //陀螺仪零漂
 #define GYRO_OFFSET_1 -2.6715104e-6
 #define GYRO_OFFSET_2 0.000133123511
 #define GYRO_OFFSET_3 -0.000268165284
-
+#endif
 /**
   * @brief          imu task, init bmi088, ist8310, calculate the euler angle
   * @param[in]      pvParameters: NULL
@@ -197,12 +200,5 @@ extern const fp32 *get_mag_data_point(void);
  * @return 校准完毕返回1,未完毕返回0 
  */
 bool_t judge_imu_offset_calc_finish(void);
-
-/**
- * @brief Set the imu cali object
- * 
- * @param imu_cail_request 该位为1 上电校准，该位为0 上电不校准
- */
-void set_imu_cali(bool_t imu_cail_request);
 
 #endif

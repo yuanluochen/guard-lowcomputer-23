@@ -66,7 +66,6 @@ standard_tpye_c\freertos.o: ../components/controller/pid.h
 standard_tpye_c\freertos.o: ../application/remote_control.h
 standard_tpye_c\freertos.o: ../bsp/boards/bsp_rc.h
 standard_tpye_c\freertos.o: ../components/algorithm/user_lib.h
-standard_tpye_c\freertos.o: ../application/rm_usart.h
 standard_tpye_c\freertos.o: ../kalman/kalman.h
 standard_tpye_c\freertos.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdlib.h
 standard_tpye_c\freertos.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdio.h

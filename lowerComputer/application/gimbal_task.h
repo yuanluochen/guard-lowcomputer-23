@@ -27,7 +27,6 @@
 #include "pid.h"
 #include "remote_control.h"
 #include "user_lib.h"
-#include "rm_usart.h"
 #include "kalman.h"
 #include "vision_task.h"
 
@@ -189,11 +188,11 @@
 
 
 //云台pitch轴最大值相对角度
-#define GIMBAL_PITCH_MAX_ENCODE 6424
+#define GIMBAL_PITCH_MAX_ENCODE 618
 //云台pitch轴最小相对角
-#define GIMBAL_PITCH_MIN_ENCODE 7361
+#define GIMBAL_PITCH_MIN_ENCODE 1876
 //云台pitch轴中值
-#define GIMBAL_PITCH_OFFSET_ENCODE 6800
+#define GIMBAL_PITCH_OFFSET_ENCODE 1482
 //云台yaw轴中值
 #define GIMBAL_YAW_OFFSET_ENCODE 3432
 //yaw轴后侧中值

@@ -51,7 +51,6 @@
 #include "voltage_task.h"
 #include "stm32.h"
 #include "stm32_private.h"
-#include "rm_usart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -112,7 +111,6 @@ int main(void)
     SystemClock_Config();
 
     /* USER CODE BEGIN SysInit */
-
     /* USER CODE END SysInit */
 
     /* Initialize all configured peripherals */
@@ -144,14 +142,7 @@ int main(void)
     can_filter_init();
     delay_init();
     remote_control_init();
-    // 上位机数据处理
-    vision_init();
-    usart1_tx_dma_init();
-    usart1_tx_dma_enable(arxbuffer, 20);
 
-    //设置不校准
-    set_imu_cali(false);
-    // usart1_tx_dma_init();
     /* USER CODE END 2 */
 
     /* Call init function for freertos objects (in freertos.c) */
