@@ -20,23 +20,23 @@ ExtY_stm32 stm32_Y_pitch;
 void stm32_pid_init_yaw(void) // yaw
 {
     stm32_U_yaw.P_P = 1400;
-    stm32_U_yaw.P_I = 1;
-    stm32_U_yaw.P_D = 10;
+    stm32_U_yaw.P_I = 25;
+    stm32_U_yaw.P_D = 50;
     stm32_U_yaw.P_N = 100;
     stm32_U_yaw.S_P = 100;
-    stm32_U_yaw.S_I = 2;
-    stm32_U_yaw.S_D = 5;
+    stm32_U_yaw.S_I = 10;
+    stm32_U_yaw.S_D = 4;
     stm32_U_yaw.S_N = 40;
 }
 
 void stm32_pid_init_pitch(void) // pitch
 {
-    stm32_U_pitch.P_P = 1200;
-    stm32_U_pitch.P_I = 1;
-    stm32_U_pitch.P_D = 40;
+    stm32_U_pitch.P_P = 1300;
+    stm32_U_pitch.P_I = 25;
+    stm32_U_pitch.P_D = 50;
     stm32_U_pitch.P_N = 35;
     stm32_U_pitch.S_P = 120;
-    stm32_U_pitch.S_I = 1;
+    stm32_U_pitch.S_I = 10;
     stm32_U_pitch.S_D = 4;
     stm32_U_pitch.S_N = 45;
 }

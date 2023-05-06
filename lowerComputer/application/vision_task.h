@@ -67,8 +67,16 @@ typedef struct
     fp32 roll;
 } eular_angle_t;
 
-// 发送数据包(紧凑模式下的结构体，防止因数据对齐引发的数据错位)
-typedef struct __attribute__((packed))
+//向量结构体
+typedef struct
+{
+    fp32 x;
+    fp32 y;
+    fp32 z;
+} vector_t;
+
+    // 发送数据包(紧凑模式下的结构体，防止因数据对齐引发的数据错位)
+    typedef struct __attribute__((packed))
 {
     uint8_t header;
     uint8_t robot_color : 1;
@@ -106,8 +114,12 @@ typedef struct
 {
     //陀螺仪绝对角指针
     const fp32* INS_angle_point;
+
     // 欧拉角
     eular_angle_t eular_angle;
+    //瞄准位置
+    vector_t aim_position;
+
     // 发送数据包
     send_packet_t send_packet;
 } vision_send_t;
@@ -144,11 +156,16 @@ typedef struct
     // 自身绝对角指针
     const fp32 *vision_angle_point;
 
-    // 绝对角
-    eular_angle_t absolution_angle;
+    // 自身imu绝对角
+    eular_angle_t imu_absolution_angle;
+    // 视觉解算的绝对角
+    eular_angle_t vision_absolution_angle;
+
+    // 目标装甲板地球坐标系下空间坐标点
+    vector_t target_earth_vector;
 
     //接收的数据包指针
-    const receive_packet_t* receive_packet_point; 
+    vision_receive_t* vision_receive_point; 
 
     // 云台电机运动命令
     gimbal_vision_control_t gimbal_vision_control;
@@ -193,5 +210,12 @@ void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw
  * @param len 接收到的数据长度
  */
 void receive_decode(uint8_t* buf, uint32_t len);
+
+//相对坐标系下的空间向量转化为世界坐标系下的空间向量
+void relativeFrame_to_earthFrame(const float *vecRF, float *vecEF, float *q);
+//世界坐标系下的空间向量转化为相对坐标系下的空间向量
+void earthFrame_to_relativeFrame(const float *vecEF, float *vecRF, float *q);
+
+
 
 #endif // !VISION_TASK_H

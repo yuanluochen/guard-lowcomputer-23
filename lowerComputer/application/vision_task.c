@@ -17,6 +17,7 @@
 #include "gimbal_behaviour.h"
 #include "CRC8_CRC16.h"
 #include "usbd_cdc_if.h"
+#include "arm_math.h"
 
 
 
@@ -29,15 +30,17 @@ static void set_vision_send_packet(vision_send_t* set_send_packet);
 //发送数据包
 static void send_packet(vision_send_t* send);
 
-
 //视觉任务初始化
 static void vision_task_init(vision_control_t* init);
 //视觉任务数据更新
 static void vision_task_feedback_update(vision_control_t* update);
+//处理视觉数据包
+static void vision_data_process(vision_control_t* vision_data);
 //设置yaw轴pitch轴增量
 static void vision_analysis_date(vision_control_t* vision_set);
+
 //获取接收数据包指针
-static const receive_packet_t* get_receive_packet_point(void);
+static vision_receive_t* get_vision_receive_point(void);
 
 //视觉任务结构体
 vision_control_t vision_control = { 0 };
@@ -80,9 +83,15 @@ static void vision_send_task_init(vision_send_t* init)
 
 static void vision_send_task_feedback_update(vision_send_t* update)
 {
-    update->eular_angle.yaw = *(update->INS_angle_point + INS_YAW_ADDRESS_OFFSET) * RADIAN_TO_ANGLE; 
-    update->eular_angle.pitch = *(update->INS_angle_point + INS_PITCH_ADDRESS_OFFSET) * RADIAN_TO_ANGLE; 
-    update->eular_angle.roll = *(update->INS_angle_point + INS_ROLL_ADDRESS_OFFSET) *RADIAN_TO_ANGLE; 
+    //更新自身欧拉角
+    update->eular_angle.yaw = *(update->INS_angle_point + INS_YAW_ADDRESS_OFFSET); 
+    update->eular_angle.pitch = *(update->INS_angle_point + INS_PITCH_ADDRESS_OFFSET); 
+    update->eular_angle.roll = *(update->INS_angle_point + INS_ROLL_ADDRESS_OFFSET); 
+    //更新瞄准位置
+    update->aim_position.x = vision_control.target_earth_vector.x;
+    update->aim_position.y = vision_control.target_earth_vector.y;
+    update->aim_position.z = vision_control.target_earth_vector.z;
+    
 }
 
 static void set_vision_send_packet(vision_send_t* set_send_packet)
@@ -93,9 +102,9 @@ static void set_vision_send_packet(vision_send_t* set_send_packet)
     set_send_packet->send_packet.reserved = 0;
     set_send_packet->send_packet.pitch = set_send_packet->eular_angle.pitch;
     set_send_packet->send_packet.yaw = set_send_packet->eular_angle.yaw;
-    set_send_packet->send_packet.aim_x = 1;
-    set_send_packet->send_packet.aim_y = 2;
-    set_send_packet->send_packet.aim_z = 3;
+    set_send_packet->send_packet.aim_x = set_send_packet->aim_position.x;
+    set_send_packet->send_packet.aim_y = set_send_packet->aim_position.y;
+    set_send_packet->send_packet.aim_z = set_send_packet->aim_position.z;
 }
 
 static void send_packet(vision_send_t* send)
@@ -146,6 +155,8 @@ void vision_task(void const* pvParameters)
         {
             // 更新数据
             vision_task_feedback_update(&vision_control);
+            // 处理上位机数据
+            vision_data_process(&vision_control);
             // 解析上位机数据,配置yaw轴pitch轴增量,以及判断是否发射
             vision_analysis_date(&vision_control);
         }
@@ -165,8 +176,7 @@ static void vision_task_init(vision_control_t* init)
     // 获取陀螺仪绝对角指针                                                                                                                                                                                                                                                                                                                                                           init->vision_angle_point = get_INS_angle_point();
     init->vision_angle_point = get_INS_angle_point();
     // 获取接收数据包指针
-    init->receive_packet_point = get_receive_packet_point();
-	
+    init->vision_receive_point = get_vision_receive_point();
     //初始化发射模式为停止袭击
     init->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
 
@@ -177,17 +187,19 @@ static void vision_task_init(vision_control_t* init)
 
 static void vision_task_feedback_update(vision_control_t* update)
 {
-    // 获取原始数据并转化为角度制
-    update->absolution_angle.yaw = *(update->vision_angle_point + INS_YAW_ADDRESS_OFFSET) * RADIAN_TO_ANGLE;
-    update->absolution_angle.pitch = *(update->vision_angle_point + INS_PITCH_ADDRESS_OFFSET) * RADIAN_TO_ANGLE;
-    update->absolution_angle.roll = *(update->vision_angle_point + INS_ROLL_ADDRESS_OFFSET) * RADIAN_TO_ANGLE;
-
+    // 获取云台位姿数据
+    update->imu_absolution_angle.yaw = *(update->vision_angle_point + INS_YAW_ADDRESS_OFFSET);
+    update->imu_absolution_angle.pitch = *(update->vision_angle_point + INS_PITCH_ADDRESS_OFFSET);
+    update->imu_absolution_angle.roll = *(update->vision_angle_point + INS_ROLL_ADDRESS_OFFSET);
+    
+    //获取目标地球坐标系下的空间坐标点
+    update->target_earth_vector.x = update->vision_receive_point->receive_packet.x;
+    update->target_earth_vector.y = update->vision_receive_point->receive_packet.y;
+    update->target_earth_vector.z = update->vision_receive_point->receive_packet.z;
 }
 
 static void vision_analysis_date(vision_control_t *vision_set)
 {
-
-    // 上位机视觉版本
     static fp32 vision_gimbal_yaw = 0;   // yaw轴绝对角
     static fp32 vision_gimbal_pitch = 0; // pitch轴绝对角
     // 未接收到上位机的时间
@@ -198,28 +210,28 @@ static void vision_analysis_date(vision_control_t *vision_set)
     {
         // 自瞄模式，设置角度为上位机设置角度
 
-        // // 判断是否接收到上位机数据
-        // if (vision_set->vision_rxfifo->rx_flag) // 识别到目标
-        // {
-        //     // 接收到数据标志位为0
-        //     not_rx_vision_data_flag = 0;
+        // 判断是否接收到上位机数据
+        if (vision_set->vision_receive_point->rx_flag) // 识别到目标
+        {
+            // 接收到数据标志位为0
+            not_rx_vision_data_flag = 0;
 
-        //     unrx_time = 0;
-        //     // 接收到上位机数据
-        //     // 接收标志位 置零
-        //     vision_set->vision_rxfifo->rx_flag = 0;
+            unrx_time = 0;
+            // 接收到上位机数据
+            // 接收标志位 置零
+            vision_set->vision_receive_point->rx_flag = 0;
 
-        //     // 获取上位机视觉数据
-        //     vision_gimbal_pitch = vision_set->vision_rxfifo->pitch_fifo;
-        //     vision_gimbal_yaw = vision_set->vision_rxfifo->yaw_fifo;
+            // 获取上位机视觉数据
+            vision_gimbal_pitch = vision_set->vision_absolution_angle.pitch;
+            vision_gimbal_yaw = vision_set->vision_absolution_angle.yaw;
 
-        //     // 判断发射
-        //     vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->absolution_angle.yaw), (vision_gimbal_pitch - vision_set->absolution_angle.pitch));
-        // }
-        // else
-        // {
-        //     unrx_time++;
-        // }
+            // 判断发射
+            vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->imu_absolution_angle.yaw), (vision_gimbal_pitch - vision_set->imu_absolution_angle.pitch));
+        }
+        else
+        {
+            unrx_time++;
+        }
 
         // 判断上位机视觉停止发送指令
         if (unrx_time >= MAX_UNRX_TIME)
@@ -238,8 +250,8 @@ static void vision_analysis_date(vision_control_t *vision_set)
     {
 
         // 未赋值依旧为当前值
-        vision_set->gimbal_vision_control.gimbal_pitch = vision_set->absolution_angle.pitch;
-        vision_set->gimbal_vision_control.gimbal_yaw = vision_set->absolution_angle.yaw;
+        vision_set->gimbal_vision_control.gimbal_pitch = vision_set->imu_absolution_angle.pitch;
+        vision_set->gimbal_vision_control.gimbal_yaw = vision_set->imu_absolution_angle.yaw;
     }
     else
     {
@@ -249,6 +261,12 @@ static void vision_analysis_date(vision_control_t *vision_set)
     }
 }
 
+static void vision_data_process(vision_control_t* vision_data)
+{
+    //由地球坐标系下的空间坐标点反解pitch轴角度
+    vision_data->vision_absolution_angle.pitch = atan2(vision_data->target_earth_vector.x, vision_data->target_earth_vector.z);
+    vision_data->vision_absolution_angle.yaw = vision_data->vision_receive_point->receive_packet.yaw;
+}
 
 /**
  * @brief 分析视觉原始增加数据，根据原始数据，判断是否要进行发射，判断yaw轴pitch的角度，如果在一定范围内，则计算值增加，增加到一定数值则判断发射，如果yaw轴pitch轴角度大于该范围，则计数归零
@@ -307,11 +325,55 @@ void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw
     }
 }
 
-static const receive_packet_t* get_receive_packet_point(void)
+
+static vision_receive_t* get_vision_receive_point(void)
 {
-    return &vision_receive.receive_packet;
+    return &vision_receive;
 }
 
+/**
+ * @brief 相对坐标系转世界坐标系 
+ * 
+ * @param vecRF 相对坐标系下的空间向量
+ * @param vecEF 世界坐标系下的空间向量
+ * @param q 四元数
+ */
+void relativeFrame_to_earthFrame(const float *vecRF, float *vecEF, float *q)
+{
+    vecEF[0] = 2.0f * ((0.5f - q[2] * q[2] - q[3] * q[3]) * vecRF[0] +
+                       (q[1] * q[2] - q[0] * q[3]) * vecRF[1] +
+                       (q[1] * q[3] + q[0] * q[2]) * vecRF[2]);
+
+    vecEF[1] = 2.0f * ((q[1] * q[2] + q[0] * q[3]) * vecRF[0] +
+                       (0.5f - q[1] * q[1] - q[3] * q[3]) * vecRF[1] +
+                       (q[2] * q[3] - q[0] * q[1]) * vecRF[2]);
+
+    vecEF[2] = 2.0f * ((q[1] * q[3] - q[0] * q[2]) * vecRF[0] +
+                       (q[2] * q[3] + q[0] * q[1]) * vecRF[1] +
+                       (0.5f - q[1] * q[1] - q[2] * q[2]) * vecRF[2]);
+}
+
+/**
+ * @brief 世界坐标系转相对坐标系 
+ *  
+ * @param vecEF 世界坐标系下的空间向量
+ * @param vecRF 相对坐标系下的空间向量
+ * @param q 四元数
+ */
+void earthFrame_to_relativeFrame(const float *vecEF, float *vecRF, float *q)
+{
+    vecRF[0] = 2.0f * ((0.5f - q[2] * q[2] - q[3] * q[3]) * vecEF[0] +
+                       (q[1] * q[2] + q[0] * q[3]) * vecEF[1] +
+                       (q[1] * q[3] - q[0] * q[2]) * vecEF[2]);
+
+    vecRF[1] = 2.0f * ((q[1] * q[2] - q[0] * q[3]) * vecEF[0] +
+                       (0.5f - q[1] * q[1] - q[3] * q[3]) * vecEF[1] +
+                       (q[2] * q[3] + q[0] * q[1]) * vecEF[2]);
+
+    vecRF[2] = 2.0f * ((q[1] * q[3] + q[0] * q[2]) * vecEF[0] +
+                       (q[2] * q[3] - q[0] * q[1]) * vecEF[1] +
+                       (0.5f - q[1] * q[1] - q[2] * q[2]) * vecEF[2]);
+}
 
 bool_t judge_not_rx_vision_data(void)
 {
