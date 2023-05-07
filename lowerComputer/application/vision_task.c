@@ -1,8 +1,7 @@
 /**
  * @file vision_task.c
  * @author yuanluochen
- * @brief 发送自身yaw轴pitch轴roll轴绝对角度给上位机视觉，并解算视觉接收数据，由于hal库自身原因对全双工串口通信支持不是特别好，
- *        为处理这个问题将串口数据分析，与串口发送分离，并延长串口发送时间
+ * @brief 
  * @version 0.1
  * @date 2023-03-11
  * 
@@ -38,6 +37,9 @@ static void vision_task_feedback_update(vision_control_t* update);
 static void vision_data_process(vision_control_t* vision_data);
 //设置yaw轴pitch轴增量
 static void vision_analysis_date(vision_control_t* vision_set);
+
+//惯性系下，机器人中心坐标转装甲板坐标
+// static void robot_center_vector_to_armor_vector()
 
 //获取接收数据包指针
 static vision_receive_t* get_vision_receive_point(void);
@@ -88,9 +90,9 @@ static void vision_send_task_feedback_update(vision_send_t* update)
     update->eular_angle.pitch = *(update->INS_angle_point + INS_PITCH_ADDRESS_OFFSET); 
     update->eular_angle.roll = *(update->INS_angle_point + INS_ROLL_ADDRESS_OFFSET); 
     //更新瞄准位置
-    update->aim_position.x = vision_control.target_earth_vector.x;
-    update->aim_position.y = vision_control.target_earth_vector.y;
-    update->aim_position.z = vision_control.target_earth_vector.z;
+    update->aim_position.x = vision_control.target_robot_vector.x;
+    update->aim_position.y = vision_control.target_robot_vector.y;
+    update->aim_position.z = vision_control.target_robot_vector.z;
     
 }
 
@@ -151,7 +153,7 @@ void vision_task(void const* pvParameters)
     while (1)
     {
         // 等待预装弹完毕，以及云台底盘初始化完毕，判断任务是否进行
-        if (shoot_control_vision_task() && gimbal_control_vision_task())
+        if (shoot_control_vision_task() /*&& gimbal_control_vision_task()*/)
         {
             // 更新数据
             vision_task_feedback_update(&vision_control);
@@ -193,9 +195,27 @@ static void vision_task_feedback_update(vision_control_t* update)
     update->imu_absolution_angle.roll = *(update->vision_angle_point + INS_ROLL_ADDRESS_OFFSET);
     
     //获取目标地球坐标系下的空间坐标点
-    update->target_earth_vector.x = update->vision_receive_point->receive_packet.x;
-    update->target_earth_vector.y = update->vision_receive_point->receive_packet.y;
-    update->target_earth_vector.z = update->vision_receive_point->receive_packet.z;
+    update->target_robot_vector.x = update->vision_receive_point->receive_packet.x;
+    update->target_robot_vector.y = update->vision_receive_point->receive_packet.y;
+    update->target_robot_vector.z = update->vision_receive_point->receive_packet.z;
+}
+
+static void vision_data_process(vision_control_t* vision_data)
+{
+    //获取当前临时数据
+    receive_packet_t robot_temp;
+    memcpy(&robot_temp, &vision_data->vision_receive_point->receive_packet, sizeof(robot_temp));
+    //惯性系下机器人中心的空间坐标转装甲板空间坐标
+    vision_data->target_armor_vector.x = robot_temp.x - robot_temp.r1 * cosf(robot_temp.yaw);
+    vision_data->target_armor_vector.y = robot_temp.y - robot_temp.r1 * sinf(robot_temp.yaw);
+    vision_data->target_armor_vector.z = robot_temp.z;
+    //反解欧拉角
+    vision_data->vision_absolution_angle.yaw = atan2(vision_data->target_armor_vector.y, vision_data->target_armor_vector.x);
+    // vision_data->vision_absolution_angle.yaw = 0;
+    // vision_data->vision_absolution_angle.pitch = atan2(vision_data->target_armor_vector.z, sqrt(vision_data->target_armor_vector.x * vision_data->target_armor_vector.x + vision_data->target_armor_vector.y * vision_data->target_armor_vector.y));   
+    vision_data->vision_absolution_angle.pitch = atan2(vision_data->target_armor_vector.z, vision_data->target_armor_vector.x);   
+    // vision_data->vision_absolution_angle.pitch = atan2(vision_data->target_armor_vector.z, vision_data->target_armor_vector.x);   
+    // vision_data->vision_absolution_angle.pitch = 0;        
 }
 
 static void vision_analysis_date(vision_control_t *vision_set)
@@ -261,12 +281,7 @@ static void vision_analysis_date(vision_control_t *vision_set)
     }
 }
 
-static void vision_data_process(vision_control_t* vision_data)
-{
-    //由地球坐标系下的空间坐标点反解pitch轴角度
-    vision_data->vision_absolution_angle.pitch = atan2(vision_data->target_earth_vector.x, vision_data->target_earth_vector.z);
-    vision_data->vision_absolution_angle.yaw = vision_data->vision_receive_point->receive_packet.yaw;
-}
+
 
 /**
  * @brief 分析视觉原始增加数据，根据原始数据，判断是否要进行发射，判断yaw轴pitch的角度，如果在一定范围内，则计算值增加，增加到一定数值则判断发射，如果yaw轴pitch轴角度大于该范围，则计数归零

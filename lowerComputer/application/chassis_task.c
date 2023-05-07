@@ -155,9 +155,9 @@ void chassis_task(void const *pvParameters)
             }
             else
             {
-                //发送控制电流
-                CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
-                                chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+                // //发送控制电流
+                // CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
+                //                 chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
             }
         }
         //os delay

@@ -18,7 +18,7 @@
 #include "arm_math.h"
 
 //允许发弹角度误差
-#define ALLOW_ATTACK_ERROR 1
+#define ALLOW_ATTACK_ERROR 0.02
 
 //发弹判断计数次数
 #define JUDGE_ATTACK_COUNT 2
@@ -28,7 +28,7 @@
 //延时等待
 #define VISION_SEND_TASK_INIT_TIME 401
 //系统延时时间
-#define VISION_SEND_CONTROL_TIME_MS 2
+#define VISION_SEND_CONTROL_TIME_MS 1
 
 //延时等待
 #define VISION_TASK_INIT_TIME 450
@@ -161,8 +161,10 @@ typedef struct
     // 视觉解算的绝对角
     eular_angle_t vision_absolution_angle;
 
+    // 目标机器人在惯性坐标系下的空间坐标
+    vector_t target_robot_vector;
     // 目标装甲板地球坐标系下空间坐标点
-    vector_t target_earth_vector;
+    vector_t target_armor_vector;
 
     //接收的数据包指针
     vision_receive_t* vision_receive_point; 
