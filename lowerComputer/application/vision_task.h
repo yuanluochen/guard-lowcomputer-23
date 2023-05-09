@@ -33,13 +33,36 @@
 //延时等待
 #define VISION_TASK_INIT_TIME 450
 //系统延时时间
-#define VISION_CONTROL_TIME_MS 2
+#define VISION_CONTROL_TIME_MS 1
 
 //弧度制转角度制
 #define RADIAN_TO_ANGLE (360 / (2 * PI))
 
 //最大未接受到上位机数据的时间
 #define MAX_UNRX_TIME 400
+
+//IMU 到 枪口之间的竖直距离
+#define IMU_TO_GUMPOINT_DISTANCE 0.1
+
+//弹速
+#define BULLET_SPEED 21.5f
+
+//空气阻力系数 K1 = (0.5 * density * C * S) / m
+#define AIR_K1 0.2210f
+//初始子弹飞行迭代数值
+#define T_0 0.0f
+//迭代精度
+#define PRECISION 0.000001f
+//最小迭代差值
+#define MIN_DELTAT 0.001f
+//最大迭代次数
+#define MAX_ITERATE_COUNT 20
+
+//比例补偿器比例系数
+#define ITERATE_SCALE_FACTOR 0.3f
+//重力加速度
+#define G 9.8f
+
 
 
 //数据起始帧类型
@@ -67,7 +90,7 @@ typedef struct
     fp32 roll;
 } eular_angle_t;
 
-//向量结构体
+//向量结构体 
 typedef struct
 {
     fp32 x;
@@ -76,7 +99,7 @@ typedef struct
 } vector_t;
 
     // 发送数据包(紧凑模式下的结构体，防止因数据对齐引发的数据错位)
-    typedef struct __attribute__((packed))
+typedef struct __attribute__((packed))
 {
     uint8_t header;
     uint8_t robot_color : 1;
@@ -109,21 +132,6 @@ typedef struct __attribute__((packed))
     uint16_t checksum;
 } receive_packet_t;
 
-// 视觉发送结构体
-typedef struct
-{
-    //陀螺仪绝对角指针
-    const fp32* INS_angle_point;
-
-    // 欧拉角
-    eular_angle_t eular_angle;
-    //瞄准位置
-    vector_t aim_position;
-
-    // 发送数据包
-    send_packet_t send_packet;
-} vision_send_t;
-
 // 视觉接收结构体
 typedef struct
 {
@@ -149,25 +157,31 @@ typedef struct
     shoot_command_e shoot_command;
 } shoot_vision_control_t;
 
+
 // 视觉任务结构体
 typedef struct
 {
-
-    // 自身绝对角指针
-    const fp32 *vision_angle_point;
+    // 绝对角指针
+    const fp32* vision_angle_point;
+    // 四元数指针
+    const fp32* vision_quat_point; 
 
     // 自身imu绝对角
     eular_angle_t imu_absolution_angle;
     // 视觉解算的绝对角
     eular_angle_t vision_absolution_angle;
+    // 四元数
+    fp32 quat[4];
 
-    // 目标机器人在惯性坐标系下的空间坐标
-    vector_t target_robot_vector;
     // 目标装甲板地球坐标系下空间坐标点
     vector_t target_armor_vector;
+    // 机器人云台瞄准位置向量
+    vector_t robot_gimbal_aim_vector;
 
     //接收的数据包指针
     vision_receive_t* vision_receive_point; 
+    //发送数据包
+    send_packet_t send_packet;
 
     // 云台电机运动命令
     gimbal_vision_control_t gimbal_vision_control;
@@ -176,9 +190,6 @@ typedef struct
     shoot_vision_control_t shoot_vision_control;
 
 } vision_control_t;
-
-// 视觉通信任务
-void vision_send_task(void const *pvParameters);
 
 // 视觉数据处理任务
 void vision_task(void const *pvParameters);
@@ -213,11 +224,17 @@ void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw
  */
 void receive_decode(uint8_t* buf, uint32_t len);
 
-//相对坐标系下的空间向量转化为世界坐标系下的空间向量
-void relativeFrame_to_earthFrame(const float *vecRF, float *vecEF, float *q);
+/**
+ * @brief 将数据包通过usb发送到nuc
+ * 
+ * @param send 发送数据包
+ */
+void send_packet(vision_control_t* send);
+
+
 //世界坐标系下的空间向量转化为相对坐标系下的空间向量
-void earthFrame_to_relativeFrame(const float *vecEF, float *vecRF, float *q);
-
-
+void earthFrame_to_relativeFrame(vector_t* vector, const float* q);
+//相对坐标系下的空间向量转化为世界坐标系下的空间向量
+void relativeFrame_to_earthFrame(vector_t* vector, const float* q);
 
 #endif // !VISION_TASK_H

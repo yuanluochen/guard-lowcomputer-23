@@ -324,13 +324,6 @@ typedef struct
     // ÂË²¨Êý¾Ý¡ª¡ª>¼üÅÌ
     first_order_filter_type_t gimbal_cmd_slow_set_vx;
     first_order_filter_type_t gimbal_cmd_slow_set_vy;
-    first_order_filter_type_t gimbal_cmd_slow_set_vz;
-    first_order_filter_type_t gimbal_cmd_slow_set_vy_gyro;
-    first_order_filter_type_t gimbal_cmd_slow_set_vx_auto;
-    first_order_filter_type_t gimbal_cmd_slow_set_vy_auto;
-
-    first_order_filter_type_t gimbal_vision_control_pitch; 
-    first_order_filter_type_t gimbal_vision_control_yaw; 
 
 } gimbal_control_t;
 

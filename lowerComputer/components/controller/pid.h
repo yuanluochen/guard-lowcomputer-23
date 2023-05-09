@@ -19,12 +19,12 @@
 #include "struct_typedef.h"
 //前馈控制
 typedef struct{
-		float K1;			
-	  float K2;
-	  float Last_DeltIn;
-	  float Now_DeltIn;
-	  float Out;
-	  float OutMax;
+    float K1;
+    float K2;
+    float Last_DeltIn;
+    float Now_DeltIn;
+    float Out;
+    float OutMax;
 }FeedForward_Typedef;
 //普通PID部分
 enum PID_MODE
