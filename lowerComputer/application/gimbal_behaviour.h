@@ -133,5 +133,18 @@ bool_t judge_other_mode_transform_auto_mode(void);
  */
 bool_t gimbal_control_vision_task(void);
 
+/**
+ * @brief 设置单轴自动扫描,根据当前角度设置控制值，主要用于设置云台浮动值
+ * 
+ * @param gimbal_set 云台设置值，角度未绝对角(这个变脸要为一个常变量)
+ * @param range 从中心点到最大扫描值的幅度值
+ * @param period 云台单次扫描的周期
+ * @param run_time 扫描运行时间
+ * @param wall_proportion 墙壁时间比例
+ * @param open_proportion 空地时间比例
+ */
+void scan_control_set(fp32* gimbal_set, fp32 range, fp32 period, fp32 run_time);
+
+
 
 #endif

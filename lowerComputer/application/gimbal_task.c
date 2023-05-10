@@ -663,4 +663,5 @@ static void J_scope_gimbal_test(void)
     pitch_relative_set_1000 = (int32_t)(gimbal_control.gimbal_pitch_motor.relative_angle_set * 1000);
 }
 
+
 #endif

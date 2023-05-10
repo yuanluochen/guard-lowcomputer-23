@@ -134,18 +134,6 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
  */
 static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set);
 
-/**
- * @brief 设置单轴自动扫描,根据当前角度设置控制值，主要用于设置云台浮动值
- * 
- * @param gimbal_set 云台设置值，角度未绝对角(这个变脸要为一个常变量)
- * @param range 从中心点到最大扫描值的幅度值
- * @param period 云台单次扫描的周期
- * @param run_time 扫描运行时间
- * @param wall_proportion 墙壁时间比例
- * @param open_proportion 空地时间比例
- */
-static void scan_control_set(fp32* gimbal_set, fp32 range, fp32 period, fp32 run_time);
-
 /*----------------------------------结构体---------------------------*/
 //云台行为状态机
 static gimbal_behaviour_e gimbal_behaviour = GIMBAL_ZERO_FORCE;
@@ -580,7 +568,7 @@ static void gimbal_init_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
 
 
 
-static void scan_control_set(fp32* gimbal_set, fp32 range, fp32 period, fp32 run_time)
+void scan_control_set(fp32* gimbal_set, fp32 range, fp32 period, fp32 run_time)
 {
     // 计算单次运行的步长
     fp32 step = 4.0f * range / period;

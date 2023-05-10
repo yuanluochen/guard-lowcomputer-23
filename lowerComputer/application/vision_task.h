@@ -45,10 +45,10 @@
 #define IMU_TO_GUMPOINT_DISTANCE 0.1
 
 //弹速
-#define BULLET_SPEED 21.5f
+#define BULLET_SPEED 22.5f
 
 //空气阻力系数 K1 = (0.5 * density * C * S) / m
-#define AIR_K1 0.2210f
+#define AIR_K1 0.25f
 //初始子弹飞行迭代数值
 #define T_0 0.0f
 //迭代精度
@@ -57,6 +57,8 @@
 #define MIN_DELTAT 0.001f
 //最大迭代次数
 #define MAX_ITERATE_COUNT 20
+//视觉计算时间
+#define VISION_CALC_TIME 0.03f
 
 //比例补偿器比例系数
 #define ITERATE_SCALE_FACTOR 0.3f

@@ -2,6 +2,6 @@
 Build target 'standard_robot'
 compiling vision_task.c...
 linking...
-Program Size: Code=102336 RO-data=13500 RW-data=1184 ZI-data=57984  
+Program Size: Code=102188 RO-data=13496 RW-data=1184 ZI-data=57984  
 "standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 0 Warning(s).
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:02
