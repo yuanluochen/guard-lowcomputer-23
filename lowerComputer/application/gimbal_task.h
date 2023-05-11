@@ -97,7 +97,7 @@
 #define TEST_KEYBOARD KEY_PRESSED_OFFSET_R
 //rocker value deadband
 //遥控器输入死区，因为遥控器存在差异，摇杆在中间，其值不一定为零
-#define RC_DEADBAND   10
+#define RC_DEADBAND   15
 
 
 #define YAW_RC_SEN    -0.000005f
@@ -318,12 +318,6 @@ typedef struct
     gimbal_motor_t gimbal_yaw_motor;
     gimbal_motor_t gimbal_pitch_motor;
     gimbal_step_cali_t gimbal_cali;
-    // 滤波数据——>遥控器
-    first_order_filter_type_t gimbal_cmd_slow_set_vx_RC;
-    first_order_filter_type_t gimbal_cmd_slow_set_vy_RC;
-    // 滤波数据——>键盘
-    first_order_filter_type_t gimbal_cmd_slow_set_vx;
-    first_order_filter_type_t gimbal_cmd_slow_set_vy;
 
 } gimbal_control_t;
 

@@ -1,7 +1,7 @@
 /**
  * @file vision_task.c
  * @author yuanluochen
- * @brief 
+ * @brief 解析视觉数据包，处理视觉观测数据，预测装甲板位置，以及计算弹道轨迹，进行弹道补偿
  * @version 0.1
  * @date 2023-03-11
  * 
@@ -197,6 +197,7 @@ static void calc_gimbal_aim_target_vector(vector_t* armor_target_vector, vector_
     fp32 armor_distance = sqrt(pow(armor_target_vector->x, 2) + pow(armor_target_vector->y, 2)) * (armor_target_vector->x / fabs(armor_target_vector->x));
     //计算装甲板空间移动速度向量
     fp32 armor_distance_speed = sqrt(pow(observe_vx, 2) + pow(observe_vy, 2)) * (observe_vx / fabs(observe_vx));
+    
     //估计子弹飞行时间
     fp32 bullet_flight_time = newton_iterate_to_calc_bullet_flight_time(T_0, PRECISION, MIN_DELTAT, MAX_ITERATE_COUNT, armor_distance, armor_distance_speed, BULLET_SPEED);
     

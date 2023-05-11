@@ -1,18 +1,13 @@
 /**
-  ****************************(C) COPYRIGHT 2019 DJI****************************
-  * @file       shoot_task.c/h
-  * @brief      射击功能.
-  * @note
-  * @history
-  *  Version    Date            Author          Modification
-  *  V1.0.0     Dec-21-2022     LYH              1. 完成
-  @verbatim
-  ==============================================================================
-
-  ==============================================================================
-  @endverbatim
-  */
-
+ * @file shoot_task.c
+ * @author yuanluochen 
+ * @brief 哨兵发弹任务，接收视觉任务指令发送弹丸
+ * @version 0.1
+ * @date 2023-05-11
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #include "shoot_task.h"
 #include "main.h"
 #include "cmsis_os.h"

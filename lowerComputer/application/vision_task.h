@@ -1,14 +1,15 @@
 /**
  * @file vision_task.h
  * @author yuanluochen
- * @brief 发送自身yaw轴pitch轴roll轴绝对角度给上位机视觉，并解算视觉接收数据，由于hal库自身原因对全双工串口通信支持不是特别好，
- *        为处理这个问题将串口数据分析，与串口发送分离，并延长串口发送时间
+ * @brief 解析视觉数据包，处理视觉观测数据，预测装甲板位置，以及计算弹道轨迹，进行弹道补偿
  * @version 0.1
  * @date 2023-03-11
  * 
  * @copyright Copyright (c) 2023
  * 
  */
+
+
 #ifndef VISION_TASK_H
 #define VISION_TASK_H
 
@@ -100,7 +101,7 @@ typedef struct
     fp32 z;
 } vector_t;
 
-    // 发送数据包(紧凑模式下的结构体，防止因数据对齐引发的数据错位)
+// 发送数据包(紧凑模式下的结构体，防止因数据对齐引发的数据错位)
 typedef struct __attribute__((packed))
 {
     uint8_t header;

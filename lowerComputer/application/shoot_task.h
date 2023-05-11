@@ -1,3 +1,13 @@
+/**
+ * @file shoot_task.h
+ * @author yuanluochen 
+ * @brief 哨兵发弹任务接收视觉任务指令发送弹丸
+ * @version 0.1
+ * @date 2023-05-11
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #ifndef SHOOT_TASK_H
 #define SHOOT_TASK_H
 

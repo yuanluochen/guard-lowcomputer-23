@@ -93,7 +93,6 @@ int x_flag = 0; // 两个标志位，用在角度处理
 int X_FLAG = 0;
 fp32 K;
 fp32 speed_set_x,speed_set_y=0; //键盘运动时速度设置
-fp32 w_set;
 chassis_move_t chassis_move;       // 底盘运动数据
 fp32 kx = 1.f, ky = 1.f, kw = 1.f; // 速度转换的几个系数
 /*----------------------------------外部变量---------------------------*/
@@ -106,11 +105,10 @@ extern gimbal_control_t gimbal_control;
   */
 void chassis_task(void const *pvParameters)
 {
-    w_set = 7.5;
     speed_set_x = 2.1f;
     speed_set_y = 1.82f;
-    K=105.f;
-    chassis_move.power_control.POWER_MAX = 90;
+    K = 105.f;
+    chassis_move.power_control.POWER_MAX = 145;
     //wait a time 
     //空闲一段时间
     vTaskDelay(CHASSIS_TASK_INIT_TIME);

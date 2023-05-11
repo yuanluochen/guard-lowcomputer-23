@@ -91,10 +91,6 @@
 
 
 /**
-  * @brief          pitch轴滤波.
-  */
-void Fiter(fp32 pitch);   
-/**
   * @brief          云台行为状态机设置.
   * @param[in]      gimbal_mode_set: 云台数据指针
   * @retval         none
@@ -403,76 +399,15 @@ static void gimbal_zero_force_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
 
 static void gimbal_RC_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
 {
-    static fp32 rc_add_yaw, rc_add_pit;
-    static fp32 rc_add_yaw_RC, rc_add_pit_RC;
-    volatile fp32 rc_add_z = 0;
-    static int16_t yaw_channel = 0, pitch_channel = 0;
     static int16_t yaw_channel_RC;
     static int16_t pitch_channel_RC;
-    fp32 yaw_turn = 0;
-    fp32 yaw_turn1 = 0;
-    fp32 pitch_turn = 0;
-    if (yaw_flag == 0)
-    {
-        if (gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_X)
-        {
-            yaw_turn = 3.1415926f;
-            yaw_flag = 1;
-        }
-    }
-    if ((gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_X) == 0)
-    {
-        yaw_flag = 0;
-    }
-    if (gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_Q)
-    {
-        yaw_turn1 = 0.0025f;
-    }
-    else if (gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_E)
-    {
-        yaw_turn1 = -0.0025f;
-    }
-    // 遥控器控制
-    rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel_RC, 15);
-    rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[PITCH_CHANNEL], pitch_channel_RC, 15);
-
-    rc_add_yaw_RC = yaw_channel_RC * YAW_RC_SEN;
-    rc_add_pit_RC = pitch_channel_RC * PITCH_RC_SEN;
     
-    // 一阶低通滤波代替斜波作为输入
-    first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vx_RC, rc_add_yaw_RC);
-    first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vy_RC, rc_add_pit_RC);
+    // 遥控器控制
+    rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel_RC, RC_DEADBAND);
+    rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[PITCH_CHANNEL], pitch_channel_RC, RC_DEADBAND);
 
-    // 键盘控制
-    rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->mouse.x, yaw_channel, 5);
-    rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->mouse.y, pitch_channel, 5);
-
-    rc_add_yaw = -yaw_channel * Yaw_Mouse_Sen;
-    rc_add_pit = -pitch_channel * Pitch_Mouse_Sen;
-
-    // 一阶低通滤波代替斜波作为输入
-    first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vx, rc_add_yaw);
-    first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vy, rc_add_pit);
-
-    if (gimbal_control_set->gimbal_cmd_slow_set_vx.out > 2.f)
-        gimbal_control_set->gimbal_cmd_slow_set_vx.out = 2.f;
-    else if (gimbal_control_set->gimbal_cmd_slow_set_vx.out < -2.f)
-        gimbal_control_set->gimbal_cmd_slow_set_vx.out = -2.f;
-
-    *yaw = gimbal_control_set->gimbal_cmd_slow_set_vx.out + yaw_turn + yaw_turn1 + gimbal_control_set->gimbal_cmd_slow_set_vx_RC.out;
-    *pitch = gimbal_control_set->gimbal_cmd_slow_set_vy.out + pitch_turn + gimbal_control_set->gimbal_cmd_slow_set_vy_RC.out;
-}
-
-void Fiter(fp32 pitch)
-{
-    Pitch_Set[7] = Pitch_Set[6];
-    Pitch_Set[6] = Pitch_Set[5];
-    Pitch_Set[5] = Pitch_Set[4];
-    Pitch_Set[4] = Pitch_Set[3];
-    Pitch_Set[3] = Pitch_Set[2];
-    Pitch_Set[2] = Pitch_Set[1];
-    Pitch_Set[1] = Pitch_Set[0];
-    Pitch_Set[0] = pitch;
+    *yaw = yaw_channel_RC * YAW_RC_SEN;
+    *pitch = pitch_channel_RC * PITCH_RC_SEN;
 }
 
 /**
