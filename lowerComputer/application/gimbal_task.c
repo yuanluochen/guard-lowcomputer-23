@@ -152,7 +152,6 @@ extern ExtY_stm32 stm32_Y_pitch;
  * @param[in]      pvParameters: 空
  * @retval         none
  */
-
 void gimbal_task(void const *pvParameters)
 {
     // 等待陀螺仪任务更新陀螺仪数据
@@ -662,6 +661,7 @@ static void J_scope_gimbal_test(void)
     pitch_relative_angle_1000 = (int32_t)(gimbal_control.gimbal_pitch_motor.relative_angle * 1000);
     pitch_relative_set_1000 = (int32_t)(gimbal_control.gimbal_pitch_motor.relative_angle_set * 1000);
 }
+
 
 
 #endif

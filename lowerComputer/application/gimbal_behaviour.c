@@ -438,6 +438,7 @@ static void gimbal_RC_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_c
 
     rc_add_yaw_RC = yaw_channel_RC * YAW_RC_SEN;
     rc_add_pit_RC = pitch_channel_RC * PITCH_RC_SEN;
+    
     // 一阶低通滤波代替斜波作为输入
     first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vx_RC, rc_add_yaw_RC);
     first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vy_RC, rc_add_pit_RC);
@@ -448,9 +449,7 @@ static void gimbal_RC_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_c
 
     rc_add_yaw = -yaw_channel * Yaw_Mouse_Sen;
     rc_add_pit = -pitch_channel * Pitch_Mouse_Sen;
-    // 滑动滤波
-    Fiter(rc_add_pit);
-    rc_add_pit = (rc_add_pit * 8 + Pitch_Set[1] - Pitch_Set[7]) / 8;
+
     // 一阶低通滤波代替斜波作为输入
     first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vx, rc_add_yaw);
     first_order_filter_cali(&gimbal_control_set->gimbal_cmd_slow_set_vy, rc_add_pit);

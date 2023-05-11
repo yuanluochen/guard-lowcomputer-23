@@ -42,6 +42,7 @@ static void set_vision_send_packet(vision_control_t* set_send_packet);
 //获取接收数据包指针
 static vision_receive_t* get_vision_receive_point(void);
 
+
 /**
  * @brief 牛顿迭代法求解子弹飞行时间
  * 
@@ -49,47 +50,47 @@ static vision_receive_t* get_vision_receive_point(void);
  * @param precision 迭代精度
  * @param min_deltat 最小迭代差值
  * @param max_iterate_count 最大迭代次数 
- * @param target_x 目标的x轴水平距离
- * @param target_vx 目标x轴观测速度
+ * @param target_distance 目标的水平距离
+ * @param target_distance_speed 目标的水平距离观测速度
  * @param bullet_speed 弹速
  * @return 迭代最终值，子弹飞行时间 
  */
 static float newton_iterate_to_calc_bullet_flight_time(float t_0, float precision, float min_deltat, int max_iterate_count,
-                                           float target_x, float target_vx, float bullet_speed);
+                                                       float target_distance, float target_distance_speed, float bullet_speed);
 
 /**
  * @brief 子弹函数
  * 
  * @param t 飞行时间
- * @param target_x 水平位移
- * @param target_vx 水平速度
+ * @param target_distance 水平位移
+ * @param target_distance_speed 水平速度
  * @param bullet_speed 子弹弹速
  * @return float
  */
-static float bullet_flight_function(float t, float target_x, float target_vx, float bullet_speed);
+static float bullet_flight_function(float t, float target_distance, float target_distance_speed, float bullet_speed);
 
 /**
  * @brief 子弹微分函数
  * 
  * @param t 飞行时间
- * @param target_vx 水平速度
+ * @param target_distance_speed 水平速度
  * @param bullet_speed 子弹弹速
  * @return float
  */
-static float bullet_flight_diff_function(float t, float target_vx, float bullet_speed);
+static float bullet_flight_diff_function(float t, float target_distance_spped, float bullet_speed);
 
 /**
  * @brief 弹道补偿 比例迭代器进行迭代
- * 
+ *
  * @param bullet_flight_time 子弹飞行时间
- * @param armor_position_x 装甲板空间x距离
- * @param armor_position_z 装甲板空间y轴距离
+ * @param armor_position_distance 装甲板空间x距离
+ * @param armor_position_vertical 装甲板空间y轴距离
  * @param bullet_speed 弹速
  * @param precision 迭代精度
  * @param max_iterate_count 最大迭代次数
- * @return z轴补偿瞄准位置 
+ * @return z轴补偿瞄准位置
  */
-static float calc_gimbal_aim_z_compensation(float bullet_flight_time, float armor_position_x, float armor_position_z, float bullet_speed, float precision, float max_iterate_count);
+static float calc_gimbal_aim_z_compensation(float bullet_flight_time, float armor_position_distance, float armor_position_vertical, float bullet_speed, float precision, float max_iterate_count);
 
 //视觉任务结构体
 vision_control_t vision_control = { 0 };
@@ -99,6 +100,7 @@ vision_receive_t vision_receive = { 0 };
 //未接收到视觉数据标志位，该位为1 则未接收
 bool_t not_rx_vision_data_flag = 1;
 
+fp32 dt = VISION_CALC_TIME;
 void vision_task(void const* pvParameters)
 {
     // 延时等待，等待上位机发送数据成功
@@ -169,7 +171,7 @@ static void vision_data_process(vision_control_t* vision_data)
 
     //反解欧拉角
     vision_data->vision_absolution_angle.yaw = atan2(vision_data->robot_gimbal_aim_vector.y, vision_data->robot_gimbal_aim_vector.x);
-    vision_data->vision_absolution_angle.pitch = atan2(vision_data->robot_gimbal_aim_vector.z, vision_data->robot_gimbal_aim_vector.x);   
+    vision_data->vision_absolution_angle.pitch = atan2(vision_data->robot_gimbal_aim_vector.z, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)));   
 }
 
 static void robot_center_vector_to_armor_center_vetcor(fp32 robot_center_x, fp32 robot_center_y, fp32 robot_center_z, 
@@ -191,11 +193,15 @@ static void robot_center_vector_to_armor_center_vetcor(fp32 robot_center_x, fp32
 
 static void calc_gimbal_aim_target_vector(vector_t* armor_target_vector, vector_t* aim_vector, fp32 observe_vx, fp32 observe_vy, fp32 observe_vz, fp32 angle_speed, fp32 robot_r, fp32 bullet_speed)
 {
+    //计算装甲板空间距离向量发射坐标系下
+    fp32 armor_distance = sqrt(pow(armor_target_vector->x, 2) + pow(armor_target_vector->y, 2)) * (armor_target_vector->x / fabs(armor_target_vector->x));
+    //计算装甲板空间移动速度向量
+    fp32 armor_distance_speed = sqrt(pow(observe_vx, 2) + pow(observe_vy, 2)) * (observe_vx / fabs(observe_vx));
     //估计子弹飞行时间
-    fp32 bullet_flight_time = newton_iterate_to_calc_bullet_flight_time(T_0, PRECISION, MIN_DELTAT, MAX_ITERATE_COUNT, armor_target_vector->x, observe_vx, BULLET_SPEED);
-
+    fp32 bullet_flight_time = newton_iterate_to_calc_bullet_flight_time(T_0, PRECISION, MIN_DELTAT, MAX_ITERATE_COUNT, armor_distance, armor_distance_speed, BULLET_SPEED);
+    
     //计算间隔 = 飞行时间 + 视觉计算时间
-    fp32 time = bullet_flight_time + VISION_CALC_TIME;
+    fp32 time = bullet_flight_time + dt;
 
     //计算瞄准位置
     aim_vector->x = armor_target_vector->x + observe_vx * time + robot_r * (1 - cosf(angle_speed * time)); // 水平分量加旋转分量
@@ -203,7 +209,7 @@ static void calc_gimbal_aim_target_vector(vector_t* armor_target_vector, vector_
     aim_vector->z = armor_target_vector->z + observe_vz * time;
 
     //计算弹道补偿
-    aim_vector->z = calc_gimbal_aim_z_compensation(bullet_flight_time, armor_target_vector->x, armor_target_vector->z, bullet_speed, PRECISION, MAX_ITERATE_COUNT);
+    aim_vector->z = calc_gimbal_aim_z_compensation(bullet_flight_time, armor_distance, armor_target_vector->z, bullet_speed, PRECISION, MAX_ITERATE_COUNT);
 
 }
 
@@ -438,13 +444,13 @@ void earthFrame_to_relativeFrame(vector_t* vector, const float* q)
  * @param precision 迭代精度
  * @param min_deltat 最小迭代差值
  * @param max_iterate_count 最大迭代次数 
- * @param target_x 目标的x轴水平距离
- * @param target_vx 目标x轴观测速度
+ * @param target_distance 目标的水平距离
+ * @param target_distance_speed 目标的水平距离观测速度
  * @param bullet_speed 弹速
  * @return 迭代最终值，子弹飞行时间 
  */
 static float newton_iterate_to_calc_bullet_flight_time(float t_0, float precision, float min_deltat, int max_iterate_count,
-                                                       float target_x, float target_vx, float bullet_speed)
+                                                       float target_distance, float target_distance_speed, float bullet_speed)
 {
     //当前解
     float t_n = t_0;
@@ -466,8 +472,8 @@ static float newton_iterate_to_calc_bullet_flight_time(float t_0, float precisio
         t_n = t_n1;
 
         //更新函数值
-        f_n = bullet_flight_function(t_n, target_x, target_vx, bullet_speed);
-        diff_f_n = bullet_flight_diff_function(t_n, target_vx, bullet_speed);
+        f_n = bullet_flight_function(t_n, target_distance, target_distance_speed, bullet_speed);
+        diff_f_n = bullet_flight_diff_function(t_n, target_distance_speed, bullet_speed);
 
         //判断微分值是否合法
         if (diff_f_n < 1e-6f)
@@ -484,7 +490,7 @@ static float newton_iterate_to_calc_bullet_flight_time(float t_0, float precisio
         //迭代
         t_n1 = t_n - (f_n / diff_f_n);
 
-        f_n1 = bullet_flight_function(t_n1, target_x, target_vx, bullet_speed);
+        f_n1 = bullet_flight_function(t_n1, target_distance, target_distance_speed, bullet_speed);
 
         deltat = fabs(t_n1 - t_n);
 
@@ -497,45 +503,45 @@ static float newton_iterate_to_calc_bullet_flight_time(float t_0, float precisio
  * @brief 子弹函数
  * 
  * @param t 飞行时间
- * @param target_x 水平位移
- * @param target_vx 水平速度
+ * @param target_distance 水平位移
+ * @param target_distance_speed 水平速度
  * @param bullet_speed 子弹弹速
  * @return float
  */
-static float bullet_flight_function(float t, float target_x, float target_vx, float bullet_speed)
+static float bullet_flight_function(float t, float target_distance, float target_distance_speed, float bullet_speed)
 {
-    return ((1.0f / AIR_K1) * log(AIR_K1 * bullet_speed * t + 1.0f) - target_x - target_vx * t);
+    return ((1.0f / AIR_K1) * log(AIR_K1 * bullet_speed * t + 1.0f) - target_distance - target_distance_speed * t);
 }
 /**
  * @brief 子弹微分函数
  * 
  * @param t 飞行时间
- * @param target_vx 水平速度
+ * @param target_distance_speed 水平速度
  * @param bullet_speed 子弹弹速
  * @return float
  */
-static float bullet_flight_diff_function(float t, float target_vx, float bullet_speed)
+static float bullet_flight_diff_function(float t, float target_distance_spped, float bullet_speed)
 {
-    return ((bullet_speed / (AIR_K1 * bullet_speed * t + 1.0f)) - target_vx);
+    return ((bullet_speed / (AIR_K1 * bullet_speed * t + 1.0f)) - target_distance_spped);
 }
 
 /**
  * @brief 弹道补偿 比例迭代器进行迭代
  *
  * @param bullet_flight_time 子弹飞行时间
- * @param armor_position_x 装甲板空间x距离
- * @param armor_position_z 装甲板空间y轴距离
+ * @param armor_position_distance 装甲板空间x距离
+ * @param armor_position_vertical 装甲板空间y轴距离
  * @param bullet_speed 弹速
  * @param precision 迭代精度
  * @param max_iterate_count 最大迭代次数
  * @return z轴补偿瞄准位置
  */
-static float calc_gimbal_aim_z_compensation(float bullet_flight_time, float armor_position_x, float armor_position_z, float bullet_speed, float precision, float max_iterate_count)
+static float calc_gimbal_aim_z_compensation(float bullet_flight_time, float armor_position_distance, float armor_position_vertical, float bullet_speed, float precision, float max_iterate_count)
 {
     // 计算落点高度
-    float bullet_drop_z = armor_position_z;
+    float bullet_drop_z = armor_position_vertical;
     // 瞄准高度
-    float aim_z = armor_position_z;
+    float aim_z = armor_position_vertical;
     // 仰角
     float pitch = 0;
     // 计算值与真实值之间的误差
@@ -544,11 +550,11 @@ static float calc_gimbal_aim_z_compensation(float bullet_flight_time, float armo
     for (int i = 0; i < max_iterate_count; i++)
     {
         // 计算仰角
-        pitch = atan2(aim_z, armor_position_x);
+        pitch = atan2(aim_z, armor_position_distance);
         // 计算子弹落点高度
         bullet_drop_z = bullet_speed * sin(pitch) * bullet_flight_time - 0.5f * G * pow(bullet_flight_time, 2);
         // 计算误差
-        calc_and_actual_error = armor_position_z - bullet_drop_z;
+        calc_and_actual_error = armor_position_vertical - bullet_drop_z;
         // 对瞄准高度进行补偿
         aim_z += calc_and_actual_error * ITERATE_SCALE_FACTOR;
         // 判断误差是否符合精度要求
