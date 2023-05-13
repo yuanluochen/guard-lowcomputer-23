@@ -26,6 +26,7 @@ typedef struct{
     float Out;
     float OutMax;
 }FeedForward_Typedef;
+
 //∆’Õ®PID≤ø∑÷
 enum PID_MODE
 {

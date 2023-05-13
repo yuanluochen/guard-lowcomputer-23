@@ -80,6 +80,9 @@ shoot_control_mode_e shoot_control_mode = SHOOT_STOP_CONTROL;     // Éä»÷¿ØÖÆÄ£Ê
 shoot_init_state_e shoot_init_state = SHOOT_INIT_UNFINISH;        // Éä»÷³õÊ¼»¯Ã¶¾ÙÌå
 shoot_motor_control_mode_e fric_motor_mode = SHOOT_MOTOR_STOP;    // Ä¦²ÁÂÖµç»ú
 shoot_motor_control_mode_e trigger_motor_mode = SHOOT_MOTOR_STOP; // ²¦µ¯ÅÌµç»ú
+
+
+int flag = 0;
 /**
  * @brief          Éä»÷ÈÎÎñ£¬¼ä¸ô GIMBAL_CONTROL_TIME 1ms
  * @param[in]      pvParameters: ¿Õ
@@ -91,6 +94,7 @@ void shoot_task(void const *pvParameters)
     shoot_init();
     while (1)
     {
+        flag = BUTTEN_TRIG_PIN;
         //ÉèÖÃ·¢ÉäÄ£Ê½
         Shoot_Set_Mode();
         // Ä£Ê½ÇÐ»»Êý¾Ý¹ý¶É,Ö÷ÒªPIDÇå³ý
@@ -99,20 +103,20 @@ void shoot_task(void const *pvParameters)
         Shoot_Feedback_Update();
         //Éä»÷¿ØÖÆÑ­»·
         shoot_control_loop();
-        //·¢ËÍ¿ØÖÆµçÁ÷
-        if (!(toe_is_error(TRIGGER_MOTOR_TOE) && !toe_is_error(FRIC_LEFT_MOTOR_TOE) && !toe_is_error(FRIC_RIGHT_MOTOR_TOE)))
-        {
-            if (toe_is_error(DBUS_TOE))
-            {
-                // Ò£¿ØÆ÷±¨´í£¬Í£Ö¹ÔËÐÐ
-                CAN_cmd_shoot(0, 0, 0, 0);
-            }
-            else
-            {
-                // ·¢ËÍ¿ØÖÆÖ¸Áî
-                CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
-            }
-        }
+        // //·¢ËÍ¿ØÖÆµçÁ÷
+        // if (!(toe_is_error(TRIGGER_MOTOR_TOE) && !toe_is_error(FRIC_LEFT_MOTOR_TOE) && !toe_is_error(FRIC_RIGHT_MOTOR_TOE)))
+        // {
+        //     if (toe_is_error(DBUS_TOE))
+        //     {
+        //         // Ò£¿ØÆ÷±¨´í£¬Í£Ö¹ÔËÐÐ
+        //         CAN_cmd_shoot(0, 0, 0, 0);
+        //     }
+        //     else
+        //     {
+        //         // ·¢ËÍ¿ØÖÆÖ¸Áî
+        //         CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
+        //     }
+        // }
         vTaskDelay(SHOOT_TASK_DELAY_TIME);
     }
 }
@@ -249,7 +253,7 @@ static void shoot_set_control_mode(fric_move_t *fric_set_control)
             else
             {
                 // ½øÈëÆäËûÄ£Ê½
-                init_time = 0;
+                         init_time = 0;
             }
         }
     }

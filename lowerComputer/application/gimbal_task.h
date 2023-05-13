@@ -198,6 +198,7 @@
 //yaw轴后侧中值
 #define GIMBAL_YAW_LAST_OFFSET_ENCODE (((GIMBAL_YAW_OFFSET_ENCODE + HALF_ECD_RANGE) > ECD_RANGE) ? (GIMBAL_YAW_OFFSET_ENCODE + HALF_ECD_RANGE - ECD_RANGE) : (GIMBAL_YAW_OFFSET_ENCODE + HALF_ECD_RANGE))
 //云台yaw轴陀螺仪误差
+
 #define INS_YAW_ERROR 0
 
 //角度制转化未弧度制
@@ -216,7 +217,7 @@
 //云台yaw轴运动步长(单位为rad)
 #define GIMBAL_YAW_SWING_STEP 0.01f;
 //云台pitch轴运动步长(单位为rad)
-#define GIMBAL_PITCH_SWING_STEP 0.01
+#define GIMBAL_PITCH_SWING_STEP 0.01f
 //云台yaw轴pitch轴设置最大时间
 #define GIMBAL_SWING_STOP_COUNT 1000
 
@@ -226,9 +227,28 @@
 #define PITCH_SCAN_RANGE 6
 
 //yaw轴扫描周期
-#define YAW_SCAN_PERIOD 5.5
+#define YAW_SCAN_PERIOD 5.5f
 //pitch轴扫描周期
 #define PITCH_SCAN_PERIOD 0.5f
+
+
+//线性控制器前馈系数
+#define YAW_FEED_FORWARD 0.9f
+#define PITCH_FEED_FORWARD -0.95f
+
+//角度误差项系数
+#define K_YAW_ANGLE_ERROR 140000.0f
+#define K_PITCH_ANGLE_ERROR 300000.0f
+
+//速度项系数
+#define K_YAW_ANGLE_SPEED 4500.0f
+#define K_PITCH_ANGLE_SPEED 4300.0f
+
+//最大最小输出
+#define YAW_MAX_OUT 32000.0f
+#define YAW_MIX_OUT -32000.0f
+#define PITCH_MAX_OUT 30000.0f
+#define PITCH_MIX_OUT -30000.0f
 
 typedef enum
 {
@@ -263,9 +283,41 @@ typedef struct
 
 } scan_t;
 
+//云台电机二阶线性控制器
+typedef struct 
+{
+    //设定值
+    fp32 set_angle;
+    //当前角度   一阶状态
+    fp32 cur_angle;
+    //当前角速度 二阶状态
+    fp32 cur_angle_speed;
+    //角度误差项 一阶状态误差
+    fp32 angle_error;
+    //前馈项，用于消除系统固有扰动
+    fp32 feed_forward;
+    //输出值
+    fp32 output;
+    //最大输出值
+    fp32 max_out;
+    //最小输出值
+    fp32 min_out;
+
+    //前馈项系数
+    fp32 k_feed_forward;
+    //误差项系数
+    fp32 k_angle_error;
+    //二阶角速度项系数
+    fp32 k_angle_speed;
+
+}gimbal_motor_second_order_linear_controller_t;
+
 typedef struct
 {
     const motor_measure_t *gimbal_motor_measure;
+
+    //二阶线性控制器
+    gimbal_motor_second_order_linear_controller_t gimbal_motor_second_order_linear_controller;
   
     gimbal_motor_mode_e gimbal_motor_mode;
     gimbal_motor_mode_e last_gimbal_motor_mode;
@@ -320,6 +372,7 @@ typedef struct
     gimbal_step_cali_t gimbal_cali;
 
 } gimbal_control_t;
+
 
 /**
   * @brief          返回yaw 电机数据指针

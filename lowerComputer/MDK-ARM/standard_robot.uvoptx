@@ -228,147 +228,57 @@
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal_control</ItemText>
+          <ItemText>p_obj,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>vision_control</ItemText>
+          <ItemText>calc_time</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>game_robot_HP_t</ItemText>
+          <ItemText>vision_send</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>fric_move</ItemText>
+          <ItemText>imu_temp_pid</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>p_obj,0x0A</ItemText>
+          <ItemText>gimbal_behaviour</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>power_heat_data_t,0x0A</ItemText>
+          <ItemText>k1</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>usart6_buf,0x0A</ItemText>
+          <ItemText>time</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>referee_fifo,0x0A</ItemText>
+          <ItemText>flag</ItemText>
         </Ww>
         <Ww>
           <count>22</count>
           <WinNumber>1</WinNumber>
-          <ItemText>referee_receive_header,0x0A</ItemText>
+          <ItemText>gimbal_control</ItemText>
         </Ww>
         <Ww>
           <count>23</count>
           <WinNumber>1</WinNumber>
-          <ItemText>power_heat_data_t</ItemText>
+          <ItemText>stm32_U_pitch</ItemText>
         </Ww>
         <Ww>
           <count>24</count>
           <WinNumber>1</WinNumber>
-          <ItemText>robot_hurt_t</ItemText>
-        </Ww>
-        <Ww>
-          <count>25</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>game_robot_HP_t</ItemText>
-        </Ww>
-        <Ww>
-          <count>26</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>robot_state,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>27</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbal_control</ItemText>
-        </Ww>
-        <Ww>
-          <count>28</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>calc_time</ItemText>
-        </Ww>
-        <Ww>
-          <count>29</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>fric_move</ItemText>
-        </Ww>
-        <Ww>
-          <count>30</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>stm32_DW_shoot_0</ItemText>
-        </Ww>
-        <Ww>
-          <count>31</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>vision_send</ItemText>
-        </Ww>
-        <Ww>
-          <count>32</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>imu_temp_pid</ItemText>
-        </Ww>
-        <Ww>
-          <count>33</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>bmi088_real_data</ItemText>
-        </Ww>
-        <Ww>
-          <count>34</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gyro_offset[0]</ItemText>
-        </Ww>
-        <Ww>
-          <count>35</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>stm32_U_pitch</ItemText>
-        </Ww>
-        <Ww>
-          <count>36</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>stm32_U_yaw</ItemText>
-        </Ww>
-        <Ww>
-          <count>37</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>vision_receive</ItemText>
-        </Ww>
-        <Ww>
-          <count>38</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbal_behaviour</ItemText>
-        </Ww>
-        <Ww>
-          <count>39</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>chassis_move</ItemText>
-        </Ww>
-        <Ww>
-          <count>40</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>k1</ItemText>
-        </Ww>
-        <Ww>
-          <count>41</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>time</ItemText>
-        </Ww>
-        <Ww>
-          <count>42</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>dt</ItemText>
+          <ItemText>stm32_U_yaw,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
@@ -406,11 +316,6 @@
           <count>6</count>
           <WinNumber>2</WinNumber>
           <ItemText>trigger_control_loop</ItemText>
-        </Ww>
-        <Ww>
-          <count>7</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>gimbal_control</ItemText>
         </Ww>
       </WatchWindow2>
       <Tracepoint>
@@ -1297,7 +1202,7 @@
 
   <Group>
     <GroupName>support</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1341,7 +1246,7 @@
 
   <Group>
     <GroupName>controller</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
