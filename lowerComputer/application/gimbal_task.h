@@ -109,16 +109,7 @@
 #define YAW_ENCODE_SEN    0.01f
 #define PITCH_ENCODE_SEN  0.01f
 
-//yaw,pitch角度和鼠标输入的比例
-#define Yaw_Mouse_Sen   0.000050f   //80
-#define Pitch_Mouse_Sen  0.000035f  //35
-#define Z_Mouse_Sen       0.00010f  //10
-
 #define GIMBAL_CONTROL_TIME 1
-
-//test mode, 0 close, 1 open
-//云台测试模式 宏定义 0 为不使用测试模式
-#define GIMBAL_TEST_MODE 0
 
 #define PITCH_TURN  1
 #define YAW_TURN    0
@@ -158,33 +149,7 @@
 //电机编码值转化成角度值
 #ifndef MOTOR_ECD_TO_RAD
 #define MOTOR_ECD_TO_RAD 0.000766990394f //      2*  PI  /8192
-#define GIMBAL_ACCEL_X_NUM  170.6f
-#define GIMBAL_ACCEL_Y_NUM 133.3f
-#define GIMBAL_ACCEL_Y_GYRO_NUM 170.3f
-#define GIMBAL_ACCEL_Z_NUM 170.3f
 #endif
-
-#define GIMBAL_VISION_PITCH_NUM 133.0f
-#define GIMBAL_VISION_YAW_NUM 133.3f
-
-//自动扫描滤波系数
-#define GIMBAL_AUTO_SCAN_PITCH_NUM 133.3f
-#define GIMBAL_AUTO_SCAN_yaw_NUM 133.3f
-
-//云台自瞄模式
-#define GIMBAL_AUTO_MODE 1//若该自瞄模式不需要了，则将该位置0即可
- //使能编译云台自瞄模式
-
-/**kalman filter  Q R 的数值
- * R固定，Q越大，代表越信任侧量值，Q无穷代表只用测量值,反之，Q越小代表越信任模型预测值，Q为零则是只用模型预测
- */
-// yaw 轴的
-#define GIMBAL_YAW_KALMAN_FILTER_Q 400
-#define GIMBAL_YAW_KALMAN_FILTER_R 400
-// pitch 轴
-#define GIMBAL_PITCH_KALMAN_FILTER_Q 200
-#define GIMBAL_PITCH_KALMAN_FILTER_R 400
-
 
 
 //云台pitch轴最大值相对角度
@@ -205,7 +170,6 @@
 #define ANGLE_TO_RADIAN ((2 * PI) / 360)
 
 
-/***用于摇摆运动***/
 //云台初始化计数最大值
 #define INIT_STOP_COUNT  200
 //云台摇摆yaw轴摇摆运动限幅,该数据为yaw轴中值到两边极限的角度范围,该角为绝对角
@@ -332,30 +296,17 @@ typedef struct
 
     fp32 motor_gyro;         //rad/s
     fp32 motor_gyro_set;
-    fp32 motor_speed;
     fp32 raw_cmd_current;
     fp32 current_set;
     int16_t given_current;
 	int frist_ecd;
-	int ZERO_ECD_flag;
-	int LAST_ZERO_ECD;
+	int zero_ecd_flag;
+	int last_zero_ecd;
 } gimbal_motor_t;
 
 typedef struct
 {
-    fp32 max_yaw;
-    fp32 min_yaw;
-    fp32 max_pitch;
-    fp32 min_pitch;
-    uint16_t max_yaw_ecd;
-    uint16_t min_yaw_ecd;
-    uint16_t max_pitch_ecd;
-    uint16_t min_pitch_ecd;
-    uint8_t step;
-} gimbal_step_cali_t;
-
-typedef struct
-{
+    //远程遥控器指针
     const RC_ctrl_t *gimbal_rc_ctrl;
 
     //获取视觉上位机数据
@@ -369,7 +320,6 @@ typedef struct
 
     gimbal_motor_t gimbal_yaw_motor;
     gimbal_motor_t gimbal_pitch_motor;
-    gimbal_step_cali_t gimbal_cali;
 
 } gimbal_control_t;
 

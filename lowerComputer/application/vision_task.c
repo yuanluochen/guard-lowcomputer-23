@@ -100,7 +100,6 @@ vision_receive_t vision_receive = { 0 };
 //未接收到视觉数据标志位，该位为1 则未接收
 bool_t not_rx_vision_data_flag = 1;
 
-fp32 dt = VISION_CALC_TIME;
 void vision_task(void const* pvParameters)
 {
     // 延时等待，等待上位机发送数据成功
@@ -202,7 +201,7 @@ static void calc_gimbal_aim_target_vector(vector_t* armor_target_vector, vector_
     fp32 bullet_flight_time = newton_iterate_to_calc_bullet_flight_time(T_0, PRECISION, MIN_DELTAT, MAX_ITERATE_COUNT, armor_distance, armor_distance_speed, BULLET_SPEED);
     
     //计算间隔 = 飞行时间 + 视觉计算时间
-    fp32 time = bullet_flight_time + dt;
+    fp32 time = bullet_flight_time + VISION_CALC_TIME;
 
     //计算瞄准位置
     aim_vector->x = armor_target_vector->x + observe_vx * time + robot_r * (1 - cosf(angle_speed * time)); // 水平分量加旋转分量

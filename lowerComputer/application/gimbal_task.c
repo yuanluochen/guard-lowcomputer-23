@@ -141,7 +141,7 @@ static void gimbal_relative_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add);
 /**
  * @brief 云台二阶线性控制器初始化
  * 
- * @param controller 云台二阶控制器结构体
+ * @param controller 云台二阶线性控制器结构体
  * @param k_feed_forward 前馈系数
  * @param k_angle_error 角度误差系数
  * @param k_angle_speed 角速度系数
@@ -151,9 +151,9 @@ static void gimbal_relative_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add);
 static void gimbal_motor_second_order_linear_controller_init(gimbal_motor_second_order_linear_controller_t* controller, fp32 k_feed_forward, fp32 k_angle_error, fp32 k_angle_speed, fp32 max_out, fp32 min_out);
 
 /**
- * @brief 云台二阶控制器计算 
+ * @brief 云台二阶线性控制器计算 
  * 
- * @param controller 云台二阶控制器结构体
+ * @param controller 云台二阶线性控制器结构体
  * @param set_angle 角度设置值
  * @param cur_angle 当前角度
  * @param cur_angle_speed 当前角速度 
@@ -162,11 +162,8 @@ static void gimbal_motor_second_order_linear_controller_init(gimbal_motor_second
  */
 static fp32 gimbal_motor_second_order_linear_controller_calc(gimbal_motor_second_order_linear_controller_t* controller, fp32 set_angle, fp32 cur_angle, fp32 cur_angle_speed, fp32 cur_current);
 
-
+//云台任务结构体
 gimbal_control_t gimbal_control;
-
-extern ExtY_stm32 stm32_Y_yaw;
-extern ExtY_stm32 stm32_Y_pitch;
 
 /**
  * @brief          云台任务，间隔 GIMBAL_CONTROL_TIME 1ms
@@ -184,6 +181,7 @@ void gimbal_task(void const *pvParameters)
     // 判断电机是否都上线
     while (toe_is_error(YAW_GIMBAL_MOTOR_TOE) || toe_is_error(PITCH_GIMBAL_MOTOR_TOE))
     {
+        //等待电机上线，防止电机不工作
         vTaskDelay(GIMBAL_CONTROL_TIME);
         gimbal_feedback_update(&gimbal_control); // 云台数据反馈
     }
@@ -244,7 +242,7 @@ static void gimbal_init(gimbal_control_t *init)
 {
     // 给底盘跟随云台模式用的
     gimbal_control.gimbal_yaw_motor.frist_ecd = GIMBAL_YAW_OFFSET_ENCODE;
-    gimbal_control.gimbal_yaw_motor.LAST_ZERO_ECD = GIMBAL_YAW_LAST_OFFSET_ENCODE;
+    gimbal_control.gimbal_yaw_motor.last_zero_ecd = GIMBAL_YAW_LAST_OFFSET_ENCODE;
 
     // 电机数据指针获取
     init->gimbal_yaw_motor.gimbal_motor_measure = get_yaw_gimbal_motor_measure_point();
@@ -259,17 +257,11 @@ static void gimbal_init(gimbal_control_t *init)
     // 初始化电机模式
     init->gimbal_yaw_motor.gimbal_motor_mode = init->gimbal_yaw_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_RAW;
     init->gimbal_pitch_motor.gimbal_motor_mode = init->gimbal_pitch_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_RAW;
-    // 初始化yaw电机pid
-    stm32_pid_init_yaw();
-    // 初始化pitch轴电机pid
-    stm32_pid_init_pitch();
 
     //初始化云台电机二阶控制器
     gimbal_motor_second_order_linear_controller_init(&init->gimbal_yaw_motor.gimbal_motor_second_order_linear_controller, YAW_FEED_FORWARD, K_YAW_ANGLE_ERROR, K_YAW_ANGLE_SPEED, YAW_MAX_OUT, YAW_MIX_OUT);
     gimbal_motor_second_order_linear_controller_init(&init->gimbal_pitch_motor.gimbal_motor_second_order_linear_controller, PITCH_FEED_FORWARD, K_PITCH_ANGLE_ERROR, K_PITCH_ANGLE_SPEED, PITCH_MAX_OUT, PITCH_MIX_OUT);
 
-    // 云台PID清除
-    stm32_step_gimbal_pid_clear();
     // 云台数据更新
     gimbal_feedback_update(init);
     // yaw轴电机初始化
@@ -281,8 +273,10 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_pitch_motor.relative_angle_set = init->gimbal_pitch_motor.relative_angle;
     init->gimbal_pitch_motor.motor_gyro_set = init->gimbal_pitch_motor.motor_gyro;
 
+    //yaw轴云台初始化相对角度
     init->gimbal_yaw_motor.offset_ecd = GIMBAL_YAW_OFFSET_ENCODE;
-    init->gimbal_pitch_motor.offset_ecd = GIMBAL_PITCH_OFFSET_ENCODE; // pitch轴云台初始化相对角度
+    // pitch轴云台初始化相对角度
+    init->gimbal_pitch_motor.offset_ecd = GIMBAL_PITCH_OFFSET_ENCODE; 
 
     // 初始化云台自动扫描结构体的扫描范围
     init->gimbal_auto_scan.pitch_range = PITCH_SCAN_RANGE;
@@ -603,20 +597,9 @@ static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
     {
         return;
     }
-    // if (gimbal_motor == &gimbal_control.gimbal_yaw_motor)
-    // {
-    //     stm32_step_yaw(gimbal_motor->absolute_angle_set, gimbal_motor->absolute_angle, gimbal_motor->motor_gyro);
-    //     gimbal_motor->current_set = stm32_Y_yaw.Out1;
-    //     gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
-    // }
-    // else if (gimbal_motor == &gimbal_control.gimbal_pitch_motor)
-    // {
-    //     stm32_step_pitch(gimbal_motor->absolute_angle_set, gimbal_motor->absolute_angle, gimbal_motor->motor_gyro);
-    //     gimbal_motor->current_set = stm32_Y_pitch.Out1;
-    //     gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
-    // }
-
+    //计算云台电机控制电流
     gimbal_motor->current_set = gimbal_motor_second_order_linear_controller_calc(&gimbal_motor->gimbal_motor_second_order_linear_controller, gimbal_motor->absolute_angle_set, gimbal_motor->absolute_angle, gimbal_motor->motor_gyro, gimbal_motor->gimbal_motor_measure->given_current);
+    //赋值电流值
     gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
 
 }
@@ -631,19 +614,11 @@ static void gimbal_motor_relative_angle_control(gimbal_motor_t *gimbal_motor)
     {
         return;
     }
-    if (gimbal_motor == &gimbal_control.gimbal_yaw_motor)
-    {
-        stm32_step_yaw(gimbal_motor->relative_angle_set, gimbal_motor->relative_angle, 0);
-        gimbal_motor->current_set = stm32_Y_yaw.Out1;
-        gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
-    }
-    else if (gimbal_motor == &gimbal_control.gimbal_pitch_motor)
-    {
-        stm32_step_pitch(gimbal_motor->relative_angle_set, gimbal_motor->relative_angle, gimbal_motor->motor_gyro);
-        gimbal_motor->current_set = stm32_Y_pitch.Out1;
-        // 控制值赋值
-        gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
-    }
+    //计算云台电机控制电流
+    gimbal_motor->current_set = gimbal_motor_second_order_linear_controller_calc(&gimbal_motor->gimbal_motor_second_order_linear_controller, gimbal_motor->relative_angle_set, gimbal_motor->relative_angle, gimbal_motor->gimbal_motor_measure->speed_rpm, gimbal_motor->gimbal_motor_measure->given_current);
+    //赋值电流值
+    gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
+
 }
 
 /**
@@ -661,32 +636,11 @@ static void gimbal_motor_raw_angle_control(gimbal_motor_t *gimbal_motor)
     gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
 }
 
-#if GIMBAL_TEST_MODE
-int32_t yaw_ins_int_1000, pitch_ins_int_1000;
-int32_t yaw_ins_set_1000, pitch_ins_set_1000;
-int32_t pitch_relative_set_1000, pitch_relative_angle_1000;
-int32_t yaw_speed_int_1000, pitch_speed_int_1000;
-int32_t yaw_speed_set_int_1000, pitch_speed_set_int_1000;
-static void J_scope_gimbal_test(void)
-{
-    yaw_ins_int_1000 = (int32_t)(gimbal_control.gimbal_yaw_motor.absolute_angle * 1000);
-    yaw_ins_set_1000 = (int32_t)(gimbal_control.gimbal_yaw_motor.absolute_angle_set * 1000);
-    yaw_speed_int_1000 = (int32_t)(gimbal_control.gimbal_yaw_motor.motor_gyro * 1000);
-    yaw_speed_set_int_1000 = (int32_t)(gimbal_control.gimbal_yaw_motor.motor_gyro_set * 1000);
-
-    pitch_ins_int_1000 = (int32_t)(gimbal_control.gimbal_pitch_motor.absolute_angle * 1000);
-    pitch_ins_set_1000 = (int32_t)(gimbal_control.gimbal_pitch_motor.absolute_angle_set * 1000);
-    pitch_speed_int_1000 = (int32_t)(gimbal_control.gimbal_pitch_motor.motor_gyro * 1000); 
-    pitch_speed_set_int_1000 = (int32_t)(gimbal_control.gimbal_pitch_motor.motor_gyro_set * 1000);
-    pitch_relative_angle_1000 = (int32_t)(gimbal_control.gimbal_pitch_motor.relative_angle * 1000);
-    pitch_relative_set_1000 = (int32_t)(gimbal_control.gimbal_pitch_motor.relative_angle_set * 1000);
-}
-#endif
 
 /**
  * @brief 云台二阶线性控制器初始化
  *
- * @param controller 云台二阶控制器结构体
+ * @param controller 云台二阶线性控制器结构体
  * @param k_feed_forward 前馈系数
  * @param k_angle_error 角度误差系数
  * @param k_angle_speed 角速度系数
@@ -707,9 +661,9 @@ static void gimbal_motor_second_order_linear_controller_init(gimbal_motor_second
 }
 
 /**
- * @brief 云台二阶控制器计算
+ * @brief 云台二阶线性控制器计算
  *
- * @param controller 云台二阶控制器结构体
+ * @param controller 云台二阶线性控制器结构体
  * @param set_angle 角度设置值
  * @param cur_angle 当前角度
  * @param cur_angle_speed 当前角速度
@@ -731,6 +685,7 @@ static fp32 gimbal_motor_second_order_linear_controller_calc(gimbal_motor_second
     // 计算输出值 = 前馈值 + 角度误差值 * 系数 + 角速度 * 系数
     controller->output = controller->feed_forward + controller->angle_error * controller->k_angle_error + (-controller->cur_angle_speed * controller->k_angle_speed);
 
+    //限制输出值，防止出现电机崩溃的情况
     if (controller->output >= controller->max_out)
     {
         controller->output = controller->max_out;

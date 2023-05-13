@@ -397,19 +397,19 @@ void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *ch
         {
             X_FLAG++;
             x_flag = 1;
-            gimbal_control.gimbal_yaw_motor.frist_ecd = gimbal_control.gimbal_yaw_motor.ZERO_ECD_flag - 4096;
+            gimbal_control.gimbal_yaw_motor.frist_ecd = gimbal_control.gimbal_yaw_motor.zero_ecd_flag - 4096;
         }
         else if (chassis_move_rc_to_vector->chassis_RC->key.v & KEY_PRESSED_OFFSET_X && (X_FLAG % 2 == 1))
         {
             X_FLAG++;
             x_flag = 1;
-            gimbal_control.gimbal_yaw_motor.frist_ecd = gimbal_control.gimbal_yaw_motor.ZERO_ECD_flag;
+            gimbal_control.gimbal_yaw_motor.frist_ecd = gimbal_control.gimbal_yaw_motor.zero_ecd_flag;
         }
     }
     if (gimbal_control.gimbal_yaw_motor.frist_ecd >= 4096)
-        gimbal_control.gimbal_yaw_motor.LAST_ZERO_ECD = gimbal_control.gimbal_yaw_motor.frist_ecd - 4096;
+        gimbal_control.gimbal_yaw_motor.last_zero_ecd = gimbal_control.gimbal_yaw_motor.frist_ecd - 4096;
     else
-        gimbal_control.gimbal_yaw_motor.LAST_ZERO_ECD = gimbal_control.gimbal_yaw_motor.frist_ecd + 4096;
+        gimbal_control.gimbal_yaw_motor.last_zero_ecd = gimbal_control.gimbal_yaw_motor.frist_ecd + 4096;
 
     if (vy_set_channel_RC == 0)
     {
@@ -462,7 +462,7 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
         if (chassis_move_control->mode_flag == 1)
         {
 
-            Angle_Error_Compare(((gimbal_control.gimbal_yaw_motor.relative_angle / MOTOR_ECD_TO_RAD) + chassis_move_control->chassis_yaw_motor->frist_ecd), gimbal_control.gimbal_yaw_motor.frist_ecd, gimbal_control.gimbal_yaw_motor.LAST_ZERO_ECD);
+            Angle_Error_Compare(((gimbal_control.gimbal_yaw_motor.relative_angle / MOTOR_ECD_TO_RAD) + chassis_move_control->chassis_yaw_motor->frist_ecd), gimbal_control.gimbal_yaw_motor.frist_ecd, gimbal_control.gimbal_yaw_motor.last_zero_ecd);
         }
         relative_angle = (chassis_move_control->chassis_yaw_motor->relative_angle);
         //			relative_angle=chassis_move_control->chassis_yaw_motor->relative_angle-(chassis_move_control->chassis_yaw_motor->frist_ecd*Motor_Ecd_to_rad);

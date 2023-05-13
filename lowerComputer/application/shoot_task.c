@@ -82,7 +82,6 @@ shoot_motor_control_mode_e fric_motor_mode = SHOOT_MOTOR_STOP;    // 摩擦轮电机
 shoot_motor_control_mode_e trigger_motor_mode = SHOOT_MOTOR_STOP; // 拨弹盘电机
 
 
-int flag = 0;
 /**
  * @brief          射击任务，间隔 GIMBAL_CONTROL_TIME 1ms
  * @param[in]      pvParameters: 空
@@ -94,29 +93,28 @@ void shoot_task(void const *pvParameters)
     shoot_init();
     while (1)
     {
-        flag = BUTTEN_TRIG_PIN;
         //设置发射模式
         Shoot_Set_Mode();
-        // 模式切换数据过渡,主要PID清除
+        // 模式切换数据过渡,主要PID清除，防止数据积累引发电机反转
         shoot_mode_change_transit();
         //发射数据更新
         Shoot_Feedback_Update();
         //射击控制循环
         shoot_control_loop();
-        // //发送控制电流
-        // if (!(toe_is_error(TRIGGER_MOTOR_TOE) && !toe_is_error(FRIC_LEFT_MOTOR_TOE) && !toe_is_error(FRIC_RIGHT_MOTOR_TOE)))
-        // {
-        //     if (toe_is_error(DBUS_TOE))
-        //     {
-        //         // 遥控器报错，停止运行
-        //         CAN_cmd_shoot(0, 0, 0, 0);
-        //     }
-        //     else
-        //     {
-        //         // 发送控制指令
-        //         CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
-        //     }
-        // }
+        //发送控制电流
+        if (!(toe_is_error(TRIGGER_MOTOR_TOE) && !toe_is_error(FRIC_LEFT_MOTOR_TOE) && !toe_is_error(FRIC_RIGHT_MOTOR_TOE)))
+        {
+            if (toe_is_error(DBUS_TOE))
+            {
+                // 遥控器报错，停止运行
+                CAN_cmd_shoot(0, 0, 0, 0);
+            }
+            else
+            {
+                // 发送控制指令
+                CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
+            }
+        }
         vTaskDelay(SHOOT_TASK_DELAY_TIME);
     }
 }
@@ -133,6 +131,7 @@ void shoot_init(void)
     stm32_shoot_pid_init();
     //摩擦轮电机PID清除
     stm32_step_shoot_pid_clear();
+    //拨弹盘pid
     static const fp32 Trigger_speed_pid[3] = {900, 0, 100};
     PID_Init(&trigger_motor.motor_pid, PID_POSITION, Trigger_speed_pid, TRIGGER_READY_PID_MAX_OUT, TRIGGER_READY_PID_MAX_IOUT);
     // 数据指针获取
