@@ -168,7 +168,7 @@ static void vision_data_process(vision_control_t* vision_data)
     //计算云台指向的空间向量
     calc_gimbal_aim_target_vector(&vision_data->target_armor_vector, &vision_data->robot_gimbal_aim_vector, robot_temp.vx, robot_temp.vy, robot_temp.vz, robot_temp.v_yaw, robot_temp.r1, BULLET_SPEED);
 
-    //反解欧拉角
+    //反解欧拉角，坐标轴旋转方式 yaw -> pitch -> roll
     vision_data->vision_absolution_angle.yaw = atan2(vision_data->robot_gimbal_aim_vector.y, vision_data->robot_gimbal_aim_vector.x);
     vision_data->vision_absolution_angle.pitch = atan2(vision_data->robot_gimbal_aim_vector.z, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)));   
 }
@@ -193,9 +193,9 @@ static void robot_center_vector_to_armor_center_vetcor(fp32 robot_center_x, fp32
 static void calc_gimbal_aim_target_vector(vector_t* armor_target_vector, vector_t* aim_vector, fp32 observe_vx, fp32 observe_vy, fp32 observe_vz, fp32 angle_speed, fp32 robot_r, fp32 bullet_speed)
 {
     //计算装甲板空间距离向量发射坐标系下
-    fp32 armor_distance = sqrt(pow(armor_target_vector->x, 2) + pow(armor_target_vector->y, 2)) * (armor_target_vector->x / fabs(armor_target_vector->x));
+    fp32 armor_distance = sqrt(pow(armor_target_vector->x, 2) + pow(armor_target_vector->y, 2));
     //计算装甲板空间移动速度向量
-    fp32 armor_distance_speed = sqrt(pow(observe_vx, 2) + pow(observe_vy, 2)) * (observe_vx / fabs(observe_vx));
+    fp32 armor_distance_speed = observe_vx * (sqrt(pow(armor_target_vector->x, 2) + pow(armor_target_vector->y, 2)) / armor_target_vector->x);
     
     //估计子弹飞行时间
     fp32 bullet_flight_time = newton_iterate_to_calc_bullet_flight_time(T_0, PRECISION, MIN_DELTAT, MAX_ITERATE_COUNT, armor_distance, armor_distance_speed, BULLET_SPEED);
@@ -203,13 +203,21 @@ static void calc_gimbal_aim_target_vector(vector_t* armor_target_vector, vector_
     //计算间隔 = 飞行时间 + 视觉计算时间
     fp32 time = bullet_flight_time + VISION_CALC_TIME;
 
-    //计算瞄准位置
-    aim_vector->x = armor_target_vector->x + observe_vx * time + robot_r * (1 - cosf(angle_speed * time)); // 水平分量加旋转分量
-    aim_vector->y = armor_target_vector->y + observe_vy * time - robot_r * sinf(angle_speed * time);       // 水平分量加旋转分量
-    aim_vector->z = armor_target_vector->z + observe_vz * time;
+    //计算装甲板未来位置
+    armor_target_vector->x = armor_target_vector->x + observe_vx * time + robot_r * (1 - cosf(angle_speed * time)); // 水平分量加旋转分量
+    armor_target_vector->y = armor_target_vector->y + observe_vy * time - robot_r * sinf(angle_speed * time);       // 水平分量加旋转分量
+    armor_target_vector->z = armor_target_vector->z + observe_vz * time;
+
+    //计算弹道落点距离
+    armor_distance = sqrt(pow(armor_target_vector->x, 2) + pow(armor_target_vector->y, 2));
 
     //计算弹道补偿
     aim_vector->z = calc_gimbal_aim_z_compensation(bullet_flight_time, armor_distance, armor_target_vector->z, bullet_speed, PRECISION, MAX_ITERATE_COUNT);
+
+    //赋值云台瞄准位置
+    aim_vector->x = armor_target_vector->x;
+    aim_vector->y = armor_target_vector->y;
+    aim_vector->z = aim_vector->z;
 
 }
 

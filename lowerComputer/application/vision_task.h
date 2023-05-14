@@ -59,7 +59,7 @@
 //最大迭代次数
 #define MAX_ITERATE_COUNT 20
 //视觉计算时间
-#define VISION_CALC_TIME 0.03f
+#define VISION_CALC_TIME 0.003f
 
 //比例补偿器比例系数
 #define ITERATE_SCALE_FACTOR 0.3f
