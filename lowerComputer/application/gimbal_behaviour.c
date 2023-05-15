@@ -368,6 +368,9 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
         if (last_gimbal_behaviour != GIMBAL_AUTO && gimbal_behaviour == GIMBAL_AUTO)
         {
             other_mode_transform_auto_mode_flag = 1;
+            // 保存当前云台位置
+            gimbal_mode_set->gimbal_auto_scan.yaw_center_value = gimbal_mode_set->gimbal_yaw_motor.absolute_angle;
+            gimbal_mode_set->gimbal_auto_scan.pitch_center_value = gimbal_mode_set->gimbal_pitch_motor.absolute_angle;
         }
         // 保存历史数据
         last_gimbal_behaviour = gimbal_behaviour;
@@ -459,7 +462,8 @@ static void gimbal_auto_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
         // pitch_set_angle = 0;
         // yaw_set_angle = auto_scan_AC_set_yaw + gimbal_control_set->gimbal_auto_scan.yaw_center_value;
         // yaw_set_angle = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
-        pitch_set_angle = 0;
+        yaw_set_angle = gimbal_control_set->gimbal_auto_scan.yaw_center_value;
+        pitch_set_angle = gimbal_control_set->gimbal_auto_scan.pitch_center_value;
 
     }
     else

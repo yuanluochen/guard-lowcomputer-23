@@ -100,6 +100,7 @@ vision_receive_t vision_receive = { 0 };
 //未接收到视觉数据标志位，该位为1 则未接收
 bool_t not_rx_vision_data_flag = 1;
 
+fp32 k1 = AIR_K1;
 void vision_task(void const* pvParameters)
 {
     // 延时等待，等待上位机发送数据成功
@@ -200,8 +201,8 @@ static void calc_gimbal_aim_target_vector(vector_t* armor_target_vector, vector_
     //估计子弹飞行时间
     fp32 bullet_flight_time = newton_iterate_to_calc_bullet_flight_time(T_0, PRECISION, MIN_DELTAT, MAX_ITERATE_COUNT, armor_distance, armor_distance_speed, BULLET_SPEED);
     
-    //计算间隔 = 飞行时间 + 视觉计算时间
-    fp32 time = bullet_flight_time + VISION_CALC_TIME;
+    //计算间隔 = 飞行时间
+    fp32 time = bullet_flight_time;
 
     //计算装甲板未来位置
     armor_target_vector->x = armor_target_vector->x + observe_vx * time + robot_r * (1 - cosf(angle_speed * time)); // 水平分量加旋转分量
@@ -233,16 +234,15 @@ static void vision_analysis_date(vision_control_t *vision_set)
     {
         // 自瞄模式，设置角度为上位机设置角度
 
-        // 判断是否接收到上位机数据
-        if (vision_set->vision_receive_point->rx_flag) // 识别到目标
+        // 判断接收内存中是否存在未读取的数据
+        if (vision_set->vision_receive_point->receive_state == UNLOADED) //存在未读取的数据
         {
             // 接收到数据标志位为0
             not_rx_vision_data_flag = 0;
 
             unrx_time = 0;
-            // 接收到上位机数据
-            // 接收标志位 置零
-            vision_set->vision_receive_point->rx_flag = 0;
+            // 标记数据已经读取
+            vision_set->vision_receive_point->receive_state = LOADED;
 
             // 获取上位机视觉数据
             vision_gimbal_pitch = vision_set->vision_absolution_angle.pitch;
@@ -265,6 +265,11 @@ static void vision_analysis_date(vision_control_t *vision_set)
             vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
             not_rx_vision_data_flag = 1;
         }
+    }
+    else
+    {
+        //非自瞄模式，发弹模式为停止发弹
+        vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
     }
 
     // 赋值控制值
@@ -382,11 +387,15 @@ void receive_decode(uint8_t* buf, uint32_t len)
         memcpy(&temp_packet, buf, sizeof(temp_packet));
         if (temp_packet.header == HIGH_TO_LOWER_HEAD)
         {
-            //数据正确，将临时数据拷贝到接收数据包中
-            memcpy(&vision_receive.receive_packet, &temp_packet, sizeof(receive_packet_t));
-            //接收数据位置1
-            vision_receive.rx_flag = 1;
-        }
+            //筛选掉不合理的数据
+            if (!(temp_packet.vx == 0 && temp_packet.vy == 0 && temp_packet.vz == 0 && temp_packet.v_yaw == 0))
+            {
+                //  数据正确，将临时数据拷贝到接收数据包中
+                memcpy(&vision_receive.receive_packet, &temp_packet, sizeof(receive_packet_t));
+                // 接收数据数据状态标志为未读取
+                vision_receive.receive_state = UNLOADED;
+            }
+       }
     }
 }
 
@@ -518,7 +527,7 @@ static float newton_iterate_to_calc_bullet_flight_time(float t_0, float precisio
  */
 static float bullet_flight_function(float t, float target_distance, float target_distance_speed, float bullet_speed)
 {
-    return ((1.0f / AIR_K1) * log(AIR_K1 * bullet_speed * t + 1.0f) - target_distance - target_distance_speed * t);
+    return ((1.0f / k1) * log(k1 * bullet_speed * t + 1.0f) - target_distance - target_distance_speed * t);
 }
 /**
  * @brief 子弹微分函数
@@ -530,15 +539,15 @@ static float bullet_flight_function(float t, float target_distance, float target
  */
 static float bullet_flight_diff_function(float t, float target_distance_spped, float bullet_speed)
 {
-    return ((bullet_speed / (AIR_K1 * bullet_speed * t + 1.0f)) - target_distance_spped);
+    return ((bullet_speed / (k1 * bullet_speed * t + 1.0f)) - target_distance_spped);
 }
 
 /**
  * @brief 弹道补偿 比例迭代器进行迭代
  *
  * @param bullet_flight_time 子弹飞行时间
- * @param armor_position_distance 装甲板空间x距离
- * @param armor_position_vertical 装甲板空间y轴距离
+ * @param armor_position_distance 装甲板空间距离
+ * @param armor_position_vertical 装甲板空间z轴距离
  * @param bullet_speed 弹速
  * @param precision 迭代精度
  * @param max_iterate_count 最大迭代次数
@@ -576,6 +585,7 @@ static float calc_gimbal_aim_z_compensation(float bullet_flight_time, float armo
 
 bool_t judge_not_rx_vision_data(void)
 {
+    
     return not_rx_vision_data_flag;
 }
 

@@ -201,11 +201,11 @@
 #define PITCH_FEED_FORWARD -0.95f
 
 //角度误差项系数
-#define K_YAW_ANGLE_ERROR 140000.0f
+#define K_YAW_ANGLE_ERROR 100000.0f
 #define K_PITCH_ANGLE_ERROR 250000.0f
 
 //速度项系数
-#define K_YAW_ANGLE_SPEED 4500.0f
+#define K_YAW_ANGLE_SPEED 5000.0f
 #define K_PITCH_ANGLE_SPEED 4500.0f
 
 //最大最小输出

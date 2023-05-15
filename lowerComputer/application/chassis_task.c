@@ -143,21 +143,21 @@ void chassis_task(void const *pvParameters)
         //底盘控制PID计算
         chassis_control_loop(&chassis_move);
         
-        // if (!(toe_is_error(CHASSIS_MOTOR1_TOE) && toe_is_error(CHASSIS_MOTOR2_TOE) && toe_is_error(CHASSIS_MOTOR3_TOE) && toe_is_error(CHASSIS_MOTOR4_TOE)))
-        // {
-        //     // 确保至少一个电机在线
-        //     if (toe_is_error(DBUS_TOE))
-        //     {
-        //         // 当遥控器掉线的时候，发送给底盘电机零电流.
-        //         CAN_cmd_chassis(0, 0, 0, 0);
-        //     }
-        //     else
-        //     {
-        //         //发送控制电流
-        //         CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
-        //                         chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
-        //     }
-        // }
+        if (!(toe_is_error(CHASSIS_MOTOR1_TOE) && toe_is_error(CHASSIS_MOTOR2_TOE) && toe_is_error(CHASSIS_MOTOR3_TOE) && toe_is_error(CHASSIS_MOTOR4_TOE)))
+        {
+            // 确保至少一个电机在线
+            if (toe_is_error(DBUS_TOE))
+            {
+                // 当遥控器掉线的时候，发送给底盘电机零电流.
+                CAN_cmd_chassis(0, 0, 0, 0);
+            }
+            else
+            {
+                //发送控制电流
+                CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
+                                chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+            }
+        }
         //os delay
         //系统延时
         vTaskDelay(CHASSIS_CONTROL_TIME_MS);
@@ -549,6 +549,11 @@ static void chassis_vector_to_mecanum_wheel_speed(const fp32 vx_set, const fp32 
     wheel_speed[1] = vx_set - vy_set + (CHASSIS_WZ_SET_SCALE - 1.0f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
     wheel_speed[2] = vx_set + vy_set + (-CHASSIS_WZ_SET_SCALE - 1.0f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
     wheel_speed[3] = -vx_set + vy_set + (-CHASSIS_WZ_SET_SCALE - 1.0f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
+    // wheel_speed[0] = -vx_set - vy_set + MOTOR_DISTANCE_TO_CENTER * wz_set;
+    // wheel_speed[1] = vx_set - vy_set + MOTOR_DISTANCE_TO_CENTER * wz_set;
+    // wheel_speed[2] = vx_set + vy_set + MOTOR_DISTANCE_TO_CENTER * wz_set;
+    // wheel_speed[3] = -vx_set + vy_set + MOTOR_DISTANCE_TO_CENTER * wz_set;
+
 }
 
 

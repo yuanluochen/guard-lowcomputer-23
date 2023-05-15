@@ -280,6 +280,21 @@
           <WinNumber>1</WinNumber>
           <ItemText>stm32_U_yaw,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>25</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>vision_control</ItemText>
+        </Ww>
+        <Ww>
+          <count>26</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>fric_move</ItemText>
+        </Ww>
+        <Ww>
+          <count>27</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>\\standard_tpye_c\../application/shoot_task.c\fric_move.motor_fric[0].fric_motor_measure-&gt;last_ecd</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

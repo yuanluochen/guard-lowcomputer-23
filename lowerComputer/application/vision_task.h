@@ -40,16 +40,18 @@
 #define RADIAN_TO_ANGLE (360 / (2 * PI))
 
 //最大未接受到上位机数据的时间
-#define MAX_UNRX_TIME 400
+#define MAX_UNRX_TIME 100
 
 //IMU 到 枪口之间的竖直距离
-#define IMU_TO_GUMPOINT_DISTANCE 0.1
+#define IMU_TO_GUMPOINT_VERTICAK 0.05
+//IMU 到 枪口之间的竖直距离
+#define IMU_TO_GUNPOINT_DISTANCE 0.20
 
 //弹速
-#define BULLET_SPEED 22.5f
+#define BULLET_SPEED 25.5f
 
 //空气阻力系数 K1 = (0.5 * density * C * S) / m
-#define AIR_K1 0.25f
+#define AIR_K1 0.20f
 //初始子弹飞行迭代数值
 #define T_0 0.0f
 //迭代精度
@@ -67,6 +69,14 @@
 #define G 9.8f
 
 
+//接收数据状态
+typedef enum
+{
+    //未读取
+    UNLOADED,
+    //已读取
+    LOADED,
+}receive_state_e;
 
 //数据起始帧类型
 typedef enum
@@ -139,7 +149,7 @@ typedef struct __attribute__((packed))
 typedef struct
 {
     // 接收标志位
-    bool_t rx_flag;
+    uint8_t receive_state : 1;
     // 接收数据包
     receive_packet_t receive_packet;
 } vision_receive_t;
