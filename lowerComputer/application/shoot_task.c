@@ -104,16 +104,8 @@ void shoot_task(void const *pvParameters)
         //发送控制电流
         if (!(toe_is_error(TRIGGER_MOTOR_TOE) && !toe_is_error(FRIC_LEFT_MOTOR_TOE) && !toe_is_error(FRIC_RIGHT_MOTOR_TOE)))
         {
-            if (toe_is_error(DBUS_TOE))
-            {
-                // 遥控器报错，停止运行
-                CAN_cmd_shoot(0, 0, 0, 0);
-            }
-            else
-            {
-                // 发送控制指令
-                CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
-            }
+            // 发送控制指令
+            CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
         }
         vTaskDelay(SHOOT_TASK_DELAY_TIME);
     }
@@ -252,7 +244,7 @@ static void shoot_set_control_mode(fric_move_t *fric_set_control)
             else
             {
                 // 进入其他模式
-                         init_time = 0;
+                init_time = 0;
             }
         }
     }

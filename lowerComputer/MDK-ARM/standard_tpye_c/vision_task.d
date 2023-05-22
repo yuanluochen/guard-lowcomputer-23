@@ -54,6 +54,8 @@ standard_tpye_c\vision_task.o: ../components/algorithm/Include/arm_math.h
 standard_tpye_c\vision_task.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\vision_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\string.h
 standard_tpye_c\vision_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
+standard_tpye_c\vision_task.o: ..\application\referee.h
+standard_tpye_c\vision_task.o: ../application/protocol/protocol.h
 standard_tpye_c\vision_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 standard_tpye_c\vision_task.o: ../Inc/FreeRTOSConfig.h
 standard_tpye_c\vision_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h

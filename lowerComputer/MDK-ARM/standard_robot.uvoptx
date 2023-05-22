@@ -293,7 +293,17 @@
         <Ww>
           <count>27</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\standard_tpye_c\../application/shoot_task.c\fric_move.motor_fric[0].fric_motor_measure-&gt;last_ecd</ItemText>
+          <ItemText>robot_state,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>28</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>game_robot_pos_t</ItemText>
+        </Ww>
+        <Ww>
+          <count>29</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>res</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

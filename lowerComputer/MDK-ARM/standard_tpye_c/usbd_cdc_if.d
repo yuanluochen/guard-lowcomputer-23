@@ -64,3 +64,5 @@ standard_tpye_c\usbd_cdc_if.o: ../bsp/boards/bsp_buzzer.h
 standard_tpye_c\usbd_cdc_if.o: ../components/algorithm/Include/arm_math.h
 standard_tpye_c\usbd_cdc_if.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\usbd_cdc_if.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
+standard_tpye_c\usbd_cdc_if.o: ../application/referee.h
+standard_tpye_c\usbd_cdc_if.o: ../application/protocol/protocol.h

@@ -218,16 +218,16 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
         //根据血量变化判断底盘自动模式
         judge_chassis_auto_mode(chassis_move_mode);
 
-        if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_RUN)
-        {
-            //小陀螺
-            chassis_move_mode->chassis_mode = CHASSIS_VECTOR_SPIN;
-        }
-        else if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_ATTACK)
-        {
-            //不移动
-            chassis_move_mode->chassis_mode = CHASSIS_VECTOR_NO_FOLLOW_YAW;
-        }
+        // if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_RUN)
+        // {
+        // 小陀螺
+        chassis_move_mode->chassis_mode = CHASSIS_VECTOR_SPIN;
+        // }
+        // else if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_ATTACK)
+        // {
+        //     //不移动
+        //     chassis_move_mode->chassis_mode = CHASSIS_VECTOR_NO_FOLLOW_YAW;
+        // }
 
     }
 }

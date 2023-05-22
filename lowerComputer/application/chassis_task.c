@@ -143,21 +143,21 @@ void chassis_task(void const *pvParameters)
         //底盘控制PID计算
         chassis_control_loop(&chassis_move);
         
-        if (!(toe_is_error(CHASSIS_MOTOR1_TOE) && toe_is_error(CHASSIS_MOTOR2_TOE) && toe_is_error(CHASSIS_MOTOR3_TOE) && toe_is_error(CHASSIS_MOTOR4_TOE)))
-        {
-            // 确保至少一个电机在线
-            if (toe_is_error(DBUS_TOE))
-            {
-                // 当遥控器掉线的时候，发送给底盘电机零电流.
-                CAN_cmd_chassis(0, 0, 0, 0);
-            }
-            else
-            {
-                //发送控制电流
-                CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
-                                chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
-            }
-        }
+        // if (!(toe_is_error(CHASSIS_MOTOR1_TOE) && toe_is_error(CHASSIS_MOTOR2_TOE) && toe_is_error(CHASSIS_MOTOR3_TOE) && toe_is_error(CHASSIS_MOTOR4_TOE)))
+        // {
+        //     // 确保至少一个电机在线
+        //     if (toe_is_error(DBUS_TOE))
+        //     {
+        //         // 当遥控器掉线的时候，发送给底盘电机零电流.
+        //         CAN_cmd_chassis(0, 0, 0, 0);
+        //     }
+        //     else
+        //     {
+        //         //发送控制电流
+        //         CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
+        //                         chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+        //     }
+        // }
         //os delay
         //系统延时
         vTaskDelay(CHASSIS_CONTROL_TIME_MS);
@@ -288,12 +288,12 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_move_tra
     {
         chassis_move_transit->chassis_yaw_set = chassis_move_transit->chassis_yaw;
     }
-    if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_SPIN) &&
-        chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
-    {
-        //小陀螺模式就近对位
-        chassis_move_transit->mode_flag = 1;
-    }
+    // if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_SPIN) &&
+    //     chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
+    // {
+    //     //小陀螺模式就近对位
+    //     chassis_move_transit->mode_flag = 1;
+    // }
     // if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_NO_FOLLOW_YAW) &&
     //     chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
     // {
@@ -458,12 +458,12 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
         fp32 relative_angle = 0.0f;
         // 设置控制相对云台角度
         chassis_move_control->chassis_relative_angle_set = rad_format(angle_set);
-        // 小陀螺停止，就近对位
-        if (chassis_move_control->mode_flag == 1)
-        {
+        // // 小陀螺停止，就近对位
+        // if (chassis_move_control->mode_flag == 1)
+        // {
 
-            Angle_Error_Compare(((gimbal_control.gimbal_yaw_motor.relative_angle / MOTOR_ECD_TO_RAD) + chassis_move_control->chassis_yaw_motor->frist_ecd), gimbal_control.gimbal_yaw_motor.frist_ecd, gimbal_control.gimbal_yaw_motor.last_zero_ecd);
-        }
+        //     Angle_Error_Compare(((gimbal_control.gimbal_yaw_motor.relative_angle / MOTOR_ECD_TO_RAD) + chassis_move_control->chassis_yaw_motor->frist_ecd), gimbal_control.gimbal_yaw_motor.frist_ecd, gimbal_control.gimbal_yaw_motor.last_zero_ecd);
+        // }
         relative_angle = (chassis_move_control->chassis_yaw_motor->relative_angle);
         //			relative_angle=chassis_move_control->chassis_yaw_motor->relative_angle-(chassis_move_control->chassis_yaw_motor->frist_ecd*Motor_Ecd_to_rad);
         // 旋转控制底盘速度方向，保证前进方向是云台方向，有利于运动平稳

@@ -17,6 +17,7 @@
 #include "dma.h"
 #include "INS_task.h"
 #include "arm_math.h"
+#include "referee.h"
 
 //允许发弹角度误差
 #define ALLOW_ATTACK_ERROR 0.02
@@ -39,16 +40,19 @@
 //弧度制转角度制
 #define RADIAN_TO_ANGLE (360 / (2 * PI))
 
+//机器人红蓝id分界值，大于该值则机器人自身为蓝色，小于这个值机器人自身为红色
+#define ROBOT_RED_AND_BLUE_DIVIDE_VALUE 100
+
 //最大未接受到上位机数据的时间
 #define MAX_UNRX_TIME 100
 
 //IMU 到 枪口之间的竖直距离
-#define IMU_TO_GUMPOINT_VERTICAK 0.05
+#define IMU_TO_GUMPOINT_VERTICAK 0.05f
 //IMU 到 枪口之间的竖直距离
-#define IMU_TO_GUNPOINT_DISTANCE 0.20
+#define IMU_TO_GUNPOINT_DISTANCE 0.20f
 
 //弹速
-#define BULLET_SPEED 25.5f
+#define BULLET_SPEED 24.5f
 
 //空气阻力系数 K1 = (0.5 * density * C * S) / m
 #define AIR_K1 0.20f
@@ -69,6 +73,8 @@
 #define G 9.8f
 
 
+
+
 //接收数据状态
 typedef enum
 {
@@ -86,6 +92,29 @@ typedef enum
     //上位机发送到下位机
     HIGH_TO_LOWER_HEAD = 0XA5,
 }data_head_type_e;
+
+//装甲板颜色
+typedef enum
+{
+    RED = 0,
+    BLUE = 1,
+}robot_armor_color_e;
+
+//id
+typedef enum
+{
+    OUTPOST = 0, // 前哨站
+    GUADE = 6,   // 哨兵
+    BASE = 7,    // 基地
+} armor_id_e;
+
+// //装甲板编号
+// typedef enum
+// {
+//     BALANCE = 2,
+//     OUTPOST = 3,
+//     NORMAL = 4,
+// } armor_num_e;
 
 //哨兵发射命令
 typedef enum
@@ -115,9 +144,8 @@ typedef struct
 typedef struct __attribute__((packed))
 {
     uint8_t header;
-    uint8_t robot_color : 1;
-    uint8_t task_mode : 2;
-    uint8_t reserved : 5;
+    uint8_t detect_color : 1; // 0-red 1-blue
+    uint8_t reserved : 7;
     float pitch;
     float yaw;
     float aim_x;
@@ -130,7 +158,10 @@ typedef struct __attribute__((packed))
 typedef struct __attribute__((packed))
 {
     uint8_t header;
-    bool_t tracking;
+    bool_t tracking : 1;
+    uint8_t id : 3;         // 0-outpost 6-guard 7-base
+    uint8_t armors_num : 3; // 2-balance 3-outpost 4-normal
+    uint8_t reserved : 1;
     float x;
     float y;
     float z;
@@ -141,7 +172,7 @@ typedef struct __attribute__((packed))
     float v_yaw;
     float r1;
     float r2;
-    float z_2;
+    float dz;
     uint16_t checksum;
 } receive_packet_t;
 
@@ -185,6 +216,9 @@ typedef struct
     eular_angle_t vision_absolution_angle;
     // 四元数
     fp32 quat[4];
+
+    //机器人状态指针
+    ext_game_robot_state_t* robot_state_point;
 
     // 目标装甲板地球坐标系下空间坐标点
     vector_t target_armor_vector;
@@ -249,5 +283,6 @@ void send_packet(vision_control_t* send);
 void earthFrame_to_relativeFrame(vector_t* vector, const float* q);
 //相对坐标系下的空间向量转化为世界坐标系下的空间向量
 void relativeFrame_to_earthFrame(vector_t* vector, const float* q);
+
 
 #endif // !VISION_TASK_H
