@@ -450,21 +450,21 @@ static void gimbal_auto_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
     // 判断数据是否长久未更新
     if (judge_not_rx_vision_data())
     {
-        // // 长久未更新
+        // 长久未更新
 
-        // // 自动扫描设置浮动值
-        // static fp32 auto_scan_AC_set_yaw = 0;
-        // static fp32 auto_scan_AC_set_pitch = 0;
-        // // 计算运行时间
-        // gimbal_control_set->gimbal_auto_scan.scan_run_time = TIME_MS_TO_S(HAL_GetTick()) - gimbal_control_set->gimbal_auto_scan.scan_begin_time;
-        // //云台自动扫描,设置浮动值
-        // scan_control_set(&auto_scan_AC_set_yaw, gimbal_control_set->gimbal_auto_scan.yaw_range, gimbal_control_set->gimbal_auto_scan.scan_yaw_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
-        // scan_control_set(&auto_scan_AC_set_pitch, gimbal_control_set->gimbal_auto_scan.pitch_range, gimbal_control_set->gimbal_auto_scan.scan_pitch_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
-        // // 赋值控制值  = 中心值 + 加上浮动函数
-        // pitch_set_angle = auto_scan_AC_set_pitch;
-        // yaw_set_angle = auto_scan_AC_set_yaw + gimbal_control_set->gimbal_auto_scan.yaw_center_value;
-        yaw_set_angle = gimbal_control_set->gimbal_auto_scan.yaw_center_value;
-        pitch_set_angle = gimbal_control_set->gimbal_auto_scan.pitch_center_value;
+        // 自动扫描设置浮动值
+        static fp32 auto_scan_AC_set_yaw = 0;
+        static fp32 auto_scan_AC_set_pitch = 0;
+        // 计算运行时间
+        gimbal_control_set->gimbal_auto_scan.scan_run_time = TIME_MS_TO_S(HAL_GetTick()) - gimbal_control_set->gimbal_auto_scan.scan_begin_time;
+        //云台自动扫描,设置浮动值
+        scan_control_set(&auto_scan_AC_set_yaw, gimbal_control_set->gimbal_auto_scan.yaw_range, gimbal_control_set->gimbal_auto_scan.scan_yaw_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
+        scan_control_set(&auto_scan_AC_set_pitch, gimbal_control_set->gimbal_auto_scan.pitch_range, gimbal_control_set->gimbal_auto_scan.scan_pitch_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
+        // 赋值控制值  = 中心值 + 加上浮动函数
+        pitch_set_angle = auto_scan_AC_set_pitch;
+        yaw_set_angle = auto_scan_AC_set_yaw + gimbal_control_set->gimbal_auto_scan.yaw_center_value;
+        // yaw_set_angle = gimbal_control_set->gimbal_auto_scan.yaw_center_value;
+        // pitch_set_angle = gimbal_control_set->gimbal_auto_scan.pitch_center_value;
 
     }
     else

@@ -186,14 +186,14 @@
 #define GIMBAL_SWING_STOP_COUNT 1000
 
 //yaw轴扫描范围，以中心为基础
-#define YAW_SCAN_RANGE  180
+#define YAW_SCAN_RANGE  PI
 //pitch轴扫描范围，以中心值为基础
-#define PITCH_SCAN_RANGE 3
+#define PITCH_SCAN_RANGE 0.25f
 
 //yaw轴扫描周期
 #define YAW_SCAN_PERIOD 5.5f
 //pitch轴扫描周期
-#define PITCH_SCAN_PERIOD 0.5f
+#define PITCH_SCAN_PERIOD 1.5f
 
 
 //线性控制器前馈系数
