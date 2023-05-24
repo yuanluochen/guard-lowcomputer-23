@@ -68,4 +68,5 @@ standard_tpye_c\chassis_power_control.o: ..\application\INS_task.h
 standard_tpye_c\chassis_power_control.o: ../bsp/boards/bsp_buzzer.h
 standard_tpye_c\chassis_power_control.o: ..\application\referee.h
 standard_tpye_c\chassis_power_control.o: ../application/protocol/protocol.h
+standard_tpye_c\chassis_power_control.o: ..\application\SolveTrajectory.h
 standard_tpye_c\chassis_power_control.o: ..\application\detect_task.h

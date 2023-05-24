@@ -18,6 +18,7 @@
 #include "INS_task.h"
 #include "arm_math.h"
 #include "referee.h"
+#include "SolveTrajectory.h"
 
 //允许发弹角度误差
 #define ALLOW_ATTACK_ERROR 0.02
@@ -71,6 +72,9 @@
 #define ITERATE_SCALE_FACTOR 0.3f
 //重力加速度
 #define G 9.8f
+
+//时间偏移
+#define TIME_BIAS 100
 
 
 
@@ -145,7 +149,9 @@ typedef struct __attribute__((packed))
 {
     uint8_t header;
     uint8_t detect_color : 1; // 0-red 1-blue
-    uint8_t reserved : 7;
+    bool_t reset_tracker : 1;
+    uint8_t reserved : 6;
+    float roll;
     float pitch;
     float yaw;
     float aim_x;
@@ -214,8 +220,6 @@ typedef struct
     eular_angle_t imu_absolution_angle;
     // 视觉解算的绝对角
     eular_angle_t vision_absolution_angle;
-    // 四元数
-    fp32 quat[4];
 
     //机器人状态指针
     ext_game_robot_state_t* robot_state_point;
@@ -279,10 +283,6 @@ void receive_decode(uint8_t* buf, uint32_t len);
 void send_packet(vision_control_t* send);
 
 
-//世界坐标系下的空间向量转化为相对坐标系下的空间向量
-void earthFrame_to_relativeFrame(vector_t* vector, const float* q);
-//相对坐标系下的空间向量转化为世界坐标系下的空间向量
-void relativeFrame_to_earthFrame(vector_t* vector, const float* q);
 
 
 #endif // !VISION_TASK_H

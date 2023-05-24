@@ -81,6 +81,7 @@ standard_tpye_c\freertos.o: ../application/INS_task.h
 standard_tpye_c\freertos.o: ../bsp/boards/bsp_buzzer.h
 standard_tpye_c\freertos.o: ../application/referee.h
 standard_tpye_c\freertos.o: ../application/protocol/protocol.h
+standard_tpye_c\freertos.o: ../application/SolveTrajectory.h
 standard_tpye_c\freertos.o: ../application/detect_task.h
 standard_tpye_c\freertos.o: ../application/shoot_task.h
 standard_tpye_c\freertos.o: ../application/led_flow_task.h

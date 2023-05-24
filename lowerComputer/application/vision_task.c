@@ -24,8 +24,6 @@ static void vision_task_init(vision_control_t* init);
 static void vision_task_feedback_update(vision_control_t* update);
 // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角
 static void vision_data_process(vision_control_t* vision_data);
-//惯性系云台瞄准向量计算
-static void calc_gimbal_aim_target_vector(vision_control_t* calc_aim_vector);
 //设置yaw轴pitch轴增量
 static void vision_analysis_date(vision_control_t* vision_set);
 //配置发送数据包
@@ -36,42 +34,6 @@ static uint8_t judge_enemy_robot_armor_color(ext_game_robot_state_t* person_robo
 //获取接收数据包指针
 static vision_receive_t* get_vision_receive_point(void);
 
-//机器人中心x轴分量转为装甲板中心x轴分量
-static float robot_center_x_to_armor_center_x(fp32 xc_k, fp32 vx, fp32 yaw_k, fp32 vyaw, fp32 r, fp32 t);
-
-//机器人中心y轴分量转为装甲板中心y轴分量
-static float robot_center_y_to_armor_center_y(fp32 yc_k, fp32 vy, fp32 yaw_k, fp32 vyaw, fp32 r, fp32 t);
-
-//机器人中心z轴分量转为装甲板中心z轴分量
-static float robot_center_z_to_armor_center_z(fp32 zc_k, fp32 vz, fp32 t);
-//迭代函数
-static float bullet_flight_function(fp32 t, fp32 xc_k, fp32 yc_k, fp32 yaw_k,
-                           fp32 vx, fp32 vy, fp32 vyaw,
-                           fp32 r, fp32 bullet_speed, fp32 k1);
-
-
-//迭代微分方程
-static float bullet_flight_diff_function(fp32 t, fp32 xc_k, fp32 yc_k, fp32 yaw_k,
-                           fp32 vx, fp32 vy, fp32 vyaw,
-                           fp32 r, fp32 bullet_speed, fp32 k1);
-
-//牛顿迭代法求解子弹飞行时间
-static float newton_iterate_to_calc_bullet_flight_time(float t_0, float precision, float min_deltat, int max_iterate_count,
-                                                       receive_packet_t* robot_data, float bullet_speed);
-
-/**
- * @brief 弹道补偿 比例迭代器进行迭代
- *
- * @param bullet_flight_time 子弹飞行时间
- * @param armor_position_distance 装甲板空间x距离
- * @param armor_position_vertical 装甲板空间y轴距离
- * @param bullet_speed 弹速
- * @param precision 迭代精度
- * @param max_iterate_count 最大迭代次数
- * @return z轴补偿瞄准位置
- */
-static float calc_gimbal_aim_z_compensation(float bullet_flight_time, float armor_position_distance, float armor_position_vertical, float bullet_speed, float precision, float max_iterate_count);
-
 
 //视觉任务结构体
 vision_control_t vision_control = { 0 };
@@ -81,8 +43,6 @@ vision_receive_t vision_receive = { 0 };
 //未接收到视觉数据标志位，该位为1 则未接收
 bool_t not_rx_vision_data_flag = 1;
 
-fp32 k1 = AIR_K1;
-uint8_t res = 4;
 void vision_task(void const* pvParameters)
 {
     // 延时等待，等待上位机发送数据成功
@@ -119,8 +79,6 @@ static void vision_task_init(vision_control_t* init)
 {
     // 获取陀螺仪绝对角指针                                                                                                                                                                                                                                                                                                                                                           init->vision_angle_point = get_INS_angle_point();
     init->vision_angle_point = get_INS_angle_point();
-    // 获取四元数指针
-    init->vision_quat_point = get_INS_quat_point();
     // 获取接收数据包指针
     init->vision_receive_point = get_vision_receive_point();
     // 获取机器人状态指针
@@ -137,40 +95,19 @@ static void vision_task_feedback_update(vision_control_t* update)
     update->imu_absolution_angle.yaw = *(update->vision_angle_point + INS_YAW_ADDRESS_OFFSET);
     update->imu_absolution_angle.pitch = *(update->vision_angle_point + INS_PITCH_ADDRESS_OFFSET);
     update->imu_absolution_angle.roll = *(update->vision_angle_point + INS_ROLL_ADDRESS_OFFSET);
-    // 获取四元数
-    memcpy(update->quat, update->vision_quat_point, sizeof(update->vision_quat_point));
 }
 
 static void vision_data_process(vision_control_t* vision_data)
 {
-    // 计算机器人云台指向的空间向量
-    calc_gimbal_aim_target_vector(vision_data);
-
-    //反解欧拉角，坐标轴旋转方式 yaw -> pitch -> roll
-    vision_data->vision_absolution_angle.yaw = atan2(vision_data->robot_gimbal_aim_vector.y, vision_data->robot_gimbal_aim_vector.x);
-    vision_data->vision_absolution_angle.pitch = atan2(vision_data->robot_gimbal_aim_vector.z, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)));   
+    //机器人数据
+    receive_packet_t robot_data = {0};
+    memcpy(&robot_data, &vision_data->vision_receive_point->receive_packet, sizeof(robot_data));
+    //初始化计算结构体
+    GimbalControlInit(0, 0, 0, 0.1, 0.2 ,0.2, -0.32, 0, BULLET_SPEED, 0.076);
+    //计算数据
+    GimbalControlTransform(robot_data.x, robot_data.y, robot_data.z, robot_data.vx, robot_data.vy, robot_data.vz, TIME_BIAS, &vision_data->vision_absolution_angle.pitch, &vision_data->vision_absolution_angle.yaw, &vision_data->robot_gimbal_aim_vector.x, &vision_data->robot_gimbal_aim_vector.y, &vision_data->robot_gimbal_aim_vector.z);
 }
 
-
-
-static void calc_gimbal_aim_target_vector(vision_control_t* calc_aim_vector)
-{
-    //获取当前视觉数据
-    receive_packet_t robot_data = { 0 };
-    memcpy(&robot_data, &calc_aim_vector->vision_receive_point->receive_packet, sizeof(robot_data));
-    //计算子弹飞行时间
-    fp32 flight_time = newton_iterate_to_calc_bullet_flight_time(T_0, PRECISION, MIN_DELTAT, MAX_ITERATE_COUNT, &robot_data, BULLET_SPEED);
-    //更新装甲板位置
-    calc_aim_vector->target_armor_vector.x = robot_center_x_to_armor_center_x(robot_data.x, robot_data.vx, robot_data.yaw, robot_data.v_yaw, robot_data.r1, flight_time);
-    calc_aim_vector->target_armor_vector.y = robot_center_x_to_armor_center_x(robot_data.y, robot_data.vy, robot_data.yaw, robot_data.v_yaw, robot_data.r1, flight_time);
-    calc_aim_vector->target_armor_vector.z = robot_center_z_to_armor_center_z(robot_data.z, robot_data.vz, flight_time);
-    //高度补偿
-    calc_aim_vector->robot_gimbal_aim_vector.z = calc_gimbal_aim_z_compensation(flight_time, sqrt(pow(calc_aim_vector->target_armor_vector.x, 2) + pow(calc_aim_vector->target_armor_vector.y, 2)), calc_aim_vector->target_armor_vector.z, BULLET_SPEED, PRECISION, MAX_ITERATE_COUNT);
-    //赋值数值
-    calc_aim_vector->robot_gimbal_aim_vector.x = calc_aim_vector->target_armor_vector.x;
-    calc_aim_vector->robot_gimbal_aim_vector.y = calc_aim_vector->target_armor_vector.y;
-
-}
 
 static void vision_analysis_date(vision_control_t *vision_set)
 {
@@ -304,8 +241,8 @@ static void set_vision_send_packet(vision_control_t* set_send_packet)
 
     set_send_packet->send_packet.header = LOWER_TO_HIGH_HEAD;
     set_send_packet->send_packet.detect_color = judge_enemy_robot_armor_color(set_send_packet->robot_state_point);
-    set_send_packet->send_packet.reserved = res;
-    set_send_packet->send_packet.pitch = set_send_packet->imu_absolution_angle.pitch;
+    set_send_packet->send_packet.roll = set_send_packet->imu_absolution_angle.roll;
+    set_send_packet->send_packet.pitch = -set_send_packet->imu_absolution_angle.pitch;
     set_send_packet->send_packet.yaw = set_send_packet->imu_absolution_angle.yaw;
     set_send_packet->send_packet.aim_x = set_send_packet->robot_gimbal_aim_vector.x;
     set_send_packet->send_packet.aim_y = set_send_packet->robot_gimbal_aim_vector.y;
@@ -369,182 +306,6 @@ static vision_receive_t* get_vision_receive_point(void)
 }
 
 
-/**
- * @brief 相对坐标系转惯性坐标系
- * 
- * @param vector 相对坐标系下的空间向量
- * @param q 四元数
- */
-void relativeFrame_to_earthFrame(vector_t* vector, const float* q)
-{
-    //相对坐标临时变量
-    vector_t relativeFrame_temp;
-    memcpy(&relativeFrame_temp, vector, sizeof(vector));
-    //相对坐标转绝对坐标
-    vector->x = 2.0f * ((0.5f - q[2] * q[2] - q[3] * q[3]) * relativeFrame_temp.x +
-                       (q[1] * q[2] - q[0] * q[3]) * relativeFrame_temp.y +
-                       (q[1] * q[3] + q[0] * q[2]) * relativeFrame_temp.z);
-
-    vector->y = 2.0f * ((q[1] * q[2] + q[0] * q[3]) * relativeFrame_temp.x +
-                       (0.5f - q[1] * q[1] - q[3] * q[3]) * relativeFrame_temp.y +
-                       (q[2] * q[3] - q[0] * q[1]) * relativeFrame_temp.z);
-
-    vector->z = 2.0f * ((q[1] * q[3] - q[0] * q[2]) * relativeFrame_temp.x +
-                       (q[2] * q[3] + q[0] * q[1]) * relativeFrame_temp.y +
-                       (0.5f - q[1] * q[1] - q[2] * q[2]) * relativeFrame_temp.z);
-}
-
-/**
- * @brief 惯性坐标系转相对坐标系 
- *  
- * @param vector 惯性坐标系下的空间向量
- * @param q 四元数
- */
-void earthFrame_to_relativeFrame(vector_t* vector, const float* q)
-{
-    //惯性坐标系下的临时变脸 
-    vector_t earthFrame_temp;
-    memcpy(&earthFrame_temp, vector, sizeof(vector));
-    //惯性坐标系转相对坐标系
-    vector->x = 2.0f * ((0.5f - q[2] * q[2] - q[3] * q[3]) * earthFrame_temp.x +
-                       (q[1] * q[2] + q[0] * q[3]) * earthFrame_temp.y +
-                       (q[1] * q[3] - q[0] * q[2]) * earthFrame_temp.z);
-
-    vector->y = 2.0f * ((q[1] * q[2] - q[0] * q[3]) * earthFrame_temp.x +
-                       (0.5f - q[1] * q[1] - q[3] * q[3]) * earthFrame_temp.y +
-                       (q[2] * q[3] + q[0] * q[1]) * earthFrame_temp.z);
-
-    vector->z = 2.0f * ((q[1] * q[3] + q[0] * q[2]) * earthFrame_temp.x +
-                       (q[2] * q[3] - q[0] * q[1]) * earthFrame_temp.y +
-                       (0.5f - q[1] * q[1] - q[2] * q[2]) * earthFrame_temp.z);
-}
-
-//牛顿迭代法求解子弹飞行时间
-static float newton_iterate_to_calc_bullet_flight_time(float t_0, float precision, float min_deltat, int max_iterate_count,
-                                                       receive_packet_t* robot_data, float bullet_speed)
-{
-    //当前解
-    float t_n = t_0;
-    // 迭代后的解
-    float t_n1 = t_0;
-    // 迭代后的函数值
-    float f_n1 = 0;
-    // 函数值
-    float f_n = 0;
-    // 微分函数值
-    float diff_f_n = 0;
-    // 前后两次迭代的差值
-    float deltat = 0;
-    // 迭代次数
-    int iterate_count = 0;
-    do
-    {
-        // 更新迭代数值
-        t_n = t_n1;
-
-        //更新函数值
-        f_n = bullet_flight_function(t_n, robot_data->x, robot_data->y, robot_data->yaw, robot_data->vx, robot_data->vy, robot_data->v_yaw, robot_data->r1, bullet_speed, k1);
-        diff_f_n = bullet_flight_diff_function(t_n, robot_data->x, robot_data->y, robot_data->yaw, robot_data->vx, robot_data->vy, robot_data->v_yaw, robot_data->r1, bullet_speed, k1);
-
-        //判断微分值是否合法
-        if (diff_f_n < 1e-6f)
-        {
-            if (fabs(f_n) > precision)
-            {
-                return NAN;
-            }
-            else
-            {
-                return f_n;
-            }
-        }
-        //迭代
-        t_n1 = t_n - (f_n / diff_f_n);
-
-        f_n1 = bullet_flight_function(t_n, robot_data->x, robot_data->y, robot_data->yaw, robot_data->vx, robot_data->vy, robot_data->v_yaw, robot_data->r1, bullet_speed, k1);
-
-        deltat = fabs(t_n1 - t_n);
-
-    } while (fabs(f_n1) > precision || deltat > min_deltat || iterate_count++ > max_iterate_count);
-
-    return t_n1;
-}
-
-static float robot_center_x_to_armor_center_x(fp32 xc_k, fp32 vx, fp32 yaw_k, fp32 vyaw, fp32 r, fp32 t)
-{
-    return xc_k + t * vx - r * cos(yaw_k + t * vyaw);
-}
-
-static float robot_center_y_to_armor_center_y(fp32 yc_k, fp32 vy, fp32 yaw_k, fp32 vyaw, fp32 r, fp32 t)
-{
-    return yc_k + t * vy - r * sin(yaw_k + t * vyaw);
-}
-
-static float robot_center_z_to_armor_center_z(fp32 zc_k, fp32 vz, fp32 t)
-{
-    return zc_k + t * vz;
-}
-
-//迭代微分函数
-static float bullet_flight_diff_function(fp32 t, fp32 xc_k, fp32 yc_k, fp32 yaw_k,
-                           fp32 vx, fp32 vy, fp32 vyaw,
-                           fp32 r, fp32 bullet_speed, fp32 k1)
-{
-    fp32 temp_1 = robot_center_y_to_armor_center_y(yc_k, vy, yaw_k, vyaw, r, t);
-    fp32 temp_2 = robot_center_x_to_armor_center_x(xc_k, vx, yaw_k, vyaw, r, t);
-    return bullet_speed / (k1 * bullet_speed * t + 1.0f) - (2 * (vx + r * vyaw * sin(yaw_k + t * vyaw)) * temp_2 + 2 * (vy - r * vyaw * cos(yaw_k + t * vyaw)) * temp_2) / (2 * sqrt(pow(temp_1, 2) + pow(temp_2, 2)));
-}
-
-//迭代函数
-static float bullet_flight_function(fp32 t, fp32 xc_k, fp32 yc_k, fp32 yaw_k,
-                           fp32 vx, fp32 vy, fp32 vyaw,
-                           fp32 r, fp32 bullet_speed, fp32 k1)
-{
-    fp32 temp_1 = robot_center_y_to_armor_center_y(yc_k, vy, yaw_k, vyaw, r, t);
-    fp32 temp_2 = robot_center_x_to_armor_center_x(xc_k, vx, yaw_k, vyaw, r, t);
-    return (1.0f / k1) * log(k1 * bullet_speed * t + 1.0f) - sqrt(pow(temp_1, 2) + pow(temp_2, 2));
-}
-
-/**
- * @brief 弹道补偿 比例迭代器进行迭代
- *
- * @param bullet_flight_time 子弹飞行时间
- * @param armor_position_distance 装甲板空间距离
- * @param armor_position_vertical 装甲板空间z轴距离
- * @param bullet_speed 弹速
- * @param precision 迭代精度
- * @param max_iterate_count 最大迭代次数
- * @return z轴补偿瞄准位置
- */
-static float calc_gimbal_aim_z_compensation(float bullet_flight_time, float armor_position_distance, float armor_position_vertical, float bullet_speed, float precision, float max_iterate_count)
-{
-    // 计算落点高度
-    float bullet_drop_z = armor_position_vertical;
-    // 瞄准高度
-    float aim_z = armor_position_vertical;
-    // 仰角
-    float pitch = 0;
-    // 计算值与真实值之间的误差
-    float calc_and_actual_error = 0;
-    // 比例迭代法
-    for (int i = 0; i < max_iterate_count; i++)
-    {
-        // 计算仰角
-        pitch = atan2(aim_z, armor_position_distance);
-        // 计算子弹落点高度
-        bullet_drop_z = bullet_speed * sin(pitch) * bullet_flight_time - 0.5f * G * pow(bullet_flight_time, 2);
-        // 计算误差
-        calc_and_actual_error = armor_position_vertical - bullet_drop_z;
-        // 对瞄准高度进行补偿
-        aim_z += calc_and_actual_error * ITERATE_SCALE_FACTOR;
-        // 判断误差是否符合精度要求
-        if (fabs(calc_and_actual_error) < precision)
-        {
-            break;
-        }
-    }
-    return aim_z;
-}
 
 bool_t judge_not_rx_vision_data(void)
 {

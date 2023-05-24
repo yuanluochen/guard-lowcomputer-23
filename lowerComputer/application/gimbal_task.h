@@ -188,12 +188,12 @@
 //yaw轴扫描范围，以中心为基础
 #define YAW_SCAN_RANGE  PI
 //pitch轴扫描范围，以中心值为基础
-#define PITCH_SCAN_RANGE 0.25f
+#define PITCH_SCAN_RANGE 0.10f
 
 //yaw轴扫描周期
-#define YAW_SCAN_PERIOD 5.5f
+#define YAW_SCAN_PERIOD 7.5f
 //pitch轴扫描周期
-#define PITCH_SCAN_PERIOD 1.5f
+#define PITCH_SCAN_PERIOD 0.5f
 
 
 //线性控制器前馈系数
@@ -201,12 +201,12 @@
 #define PITCH_FEED_FORWARD -0.95f
 
 //角度误差项系数
-#define K_YAW_ANGLE_ERROR 130000.0f
+#define K_YAW_ANGLE_ERROR 100000.0f
 #define K_PITCH_ANGLE_ERROR 200000.0f
 
 //速度项系数
 #define K_YAW_ANGLE_SPEED 5000.0f
-#define K_PITCH_ANGLE_SPEED 8000.0f
+#define K_PITCH_ANGLE_SPEED 9000.0f
 
 //最大最小输出
 #define YAW_MAX_OUT 32000.0f
