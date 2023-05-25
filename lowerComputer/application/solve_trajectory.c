@@ -5,16 +5,14 @@
 // 只考虑水平方向的空气阻力
 
 #include "arm_math.h"
-
-#include "SolveTrajectory.h"
+#include "solve_trajectory.h"
 
 struct SolveTrajectory st;
 struct tar_pos tar_position[4];
 float t = 0.5f; // 飞行时间
 
-float z_static = 0.1; // yaw轴电机到枪口水平面的垂直距离
 
-float s_static = 0.19133; // 枪口前推的距离
+
 /*
 @brief 初始化
 @param pitch:rad
@@ -104,6 +102,9 @@ void GimbalControlTransform(float xw, float yw, float zw,
     float timeDelay = bias_time / 1000.0 + t;
     st.tar_yaw += st.v_yaw * timeDelay;
 
+    float z_static = 0.1; // yaw轴电机到枪口水平面的垂直距离
+    float s_static = 0.19133; // 枪口前推的距离
+
     // 计算四块装甲板的位置
     int use_1 = 1;
     int i = 0;
@@ -180,7 +181,7 @@ void GimbalControlTransform(float xw, float yw, float zw,
     *aim_x = tar_position[idx].x + vxw * timeDelay;
     *aim_y = tar_position[idx].y + vyw * timeDelay;
 
-    *pitch = GimbalControlGetPitch(sqrt((*aim_x) * (*aim_x) + (*aim_y) * (*aim_y)) + s_static,
+    *pitch = -GimbalControlGetPitch(sqrt((*aim_x) * (*aim_x) + (*aim_y) * (*aim_y)) + s_static,
                                     tar_position[idx].z - z_static, st.current_v);
     *yaw = (float)(atan2(*aim_y, *aim_x));
 }

@@ -290,6 +290,16 @@
           <WinNumber>1</WinNumber>
           <ItemText>s_static</ItemText>
         </Ww>
+        <Ww>
+          <count>27</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gyro_offset[3]</ItemText>
+        </Ww>
+        <Ww>
+          <count>28</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gyro_offset</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -1079,8 +1089,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\application\SolveTrajectory.c</PathWithFileName>
-      <FilenameWithoutPath>SolveTrajectory.c</FilenameWithoutPath>
+      <PathWithFileName>..\application\solve_trajectory.c</PathWithFileName>
+      <FilenameWithoutPath>solve_trajectory.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

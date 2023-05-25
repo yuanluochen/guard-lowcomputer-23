@@ -85,9 +85,9 @@
 
 #if !IMU_OFFSET_CALI
 //Õ”¬›“«¡„∆Ø
-#define GYRO_OFFSET_1 -2.6715104e-6
-#define GYRO_OFFSET_2 0.000133123511
-#define GYRO_OFFSET_3 -0.000268165284
+#define GYRO_OFFSET_1 2.1345837e-05
+#define GYRO_OFFSET_2 0.000158144379
+#define GYRO_OFFSET_3 -0.000152674766
 #endif
 /**
   * @brief          imu task, init bmi088, ist8310, calculate the euler angle

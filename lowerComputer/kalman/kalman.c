@@ -102,14 +102,11 @@ float *kalman_filter_calc(kalman_filter_t *F, float angle)
         0,
         0
     };
-
     // 单位矩阵I
     float I_data[4] = {
         1, 0,
         0, 1
     };
-
-
 
     mat TEMP22, TEMP21, TEMP11, TEMP12, TEMP11_2;
     //单位矩阵
@@ -160,4 +157,5 @@ float *kalman_filter_calc(kalman_filter_t *F, float angle)
     F->filtered_value[1] = F->xhat.pData[1];
     return F->filtered_value;
 }
+
 

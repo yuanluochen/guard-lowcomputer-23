@@ -68,7 +68,7 @@ standard_tpye_c\chassis_behaviour.o: ..\application\INS_task.h
 standard_tpye_c\chassis_behaviour.o: ../bsp/boards/bsp_buzzer.h
 standard_tpye_c\chassis_behaviour.o: ..\application\referee.h
 standard_tpye_c\chassis_behaviour.o: ../application/protocol/protocol.h
-standard_tpye_c\chassis_behaviour.o: ..\application\SolveTrajectory.h
+standard_tpye_c\chassis_behaviour.o: ..\application\solve_trajectory.h
 standard_tpye_c\chassis_behaviour.o: ..\application\detect_task.h
 standard_tpye_c\chassis_behaviour.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 standard_tpye_c\chassis_behaviour.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h

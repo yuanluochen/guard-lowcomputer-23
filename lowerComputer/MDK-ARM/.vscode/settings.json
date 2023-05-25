@@ -27,6 +27,7 @@
         "usb_task.h": "c",
         "crc8_crc16.h": "c",
         "usbd_cdc_if.h": "c",
-        "usb_device.h": "c"
+        "usb_device.h": "c",
+        "solve_trajectory.h": "c"
     }
 }

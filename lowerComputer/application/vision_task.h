@@ -18,15 +18,15 @@
 #include "INS_task.h"
 #include "arm_math.h"
 #include "referee.h"
-#include "SolveTrajectory.h"
+#include "solve_trajectory.h"
 
 //允许发弹角度误差
-#define ALLOW_ATTACK_ERROR 0.02
+#define ALLOW_ATTACK_ERROR 0.06
 
 //发弹判断计数次数
 #define JUDGE_ATTACK_COUNT 2
 //发弹停止判断计数次数
-#define JUDGE_STOP_ATTACK_COUNT 10
+#define JUDGE_STOP_ATTACK_COUNT 5
 
 //延时等待
 #define VISION_SEND_TASK_INIT_TIME 401
@@ -74,7 +74,7 @@
 #define G 9.8f
 
 //时间偏移
-#define TIME_BIAS 100
+#define TIME_BIAS 0
 
 
 

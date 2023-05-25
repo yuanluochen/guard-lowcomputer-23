@@ -198,15 +198,15 @@
 
 //线性控制器前馈系数
 #define YAW_FEED_FORWARD 0.9f
-#define PITCH_FEED_FORWARD -0.95f
+#define PITCH_FEED_FORWARD 0.95f
 
 //角度误差项系数
 #define K_YAW_ANGLE_ERROR 100000.0f
-#define K_PITCH_ANGLE_ERROR 200000.0f
+#define K_PITCH_ANGLE_ERROR 170000.0f
 
 //速度项系数
 #define K_YAW_ANGLE_SPEED 5000.0f
-#define K_PITCH_ANGLE_SPEED 9000.0f
+#define K_PITCH_ANGLE_SPEED 8000.0f
 
 //最大最小输出
 #define YAW_MAX_OUT 32000.0f

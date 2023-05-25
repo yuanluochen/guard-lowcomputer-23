@@ -103,7 +103,7 @@ static void vision_data_process(vision_control_t* vision_data)
     receive_packet_t robot_data = {0};
     memcpy(&robot_data, &vision_data->vision_receive_point->receive_packet, sizeof(robot_data));
     //初始化计算结构体
-    GimbalControlInit(0, 0, 0, 0.1, 0.2 ,0.2, -0.32, 0, BULLET_SPEED, 0.076);
+    GimbalControlInit(vision_data->imu_absolution_angle.pitch, vision_data->imu_absolution_angle.yaw, robot_data.yaw, robot_data.v_yaw, robot_data.r1, robot_data.r2, robot_data.dz, 0, BULLET_SPEED, 0.076);
     //计算数据
     GimbalControlTransform(robot_data.x, robot_data.y, robot_data.z, robot_data.vx, robot_data.vy, robot_data.vz, TIME_BIAS, &vision_data->vision_absolution_angle.pitch, &vision_data->vision_absolution_angle.yaw, &vision_data->robot_gimbal_aim_vector.x, &vision_data->robot_gimbal_aim_vector.y, &vision_data->robot_gimbal_aim_vector.z);
 }
@@ -242,7 +242,7 @@ static void set_vision_send_packet(vision_control_t* set_send_packet)
     set_send_packet->send_packet.header = LOWER_TO_HIGH_HEAD;
     set_send_packet->send_packet.detect_color = judge_enemy_robot_armor_color(set_send_packet->robot_state_point);
     set_send_packet->send_packet.roll = set_send_packet->imu_absolution_angle.roll;
-    set_send_packet->send_packet.pitch = -set_send_packet->imu_absolution_angle.pitch;
+    set_send_packet->send_packet.pitch = set_send_packet->imu_absolution_angle.pitch;
     set_send_packet->send_packet.yaw = set_send_packet->imu_absolution_angle.yaw;
     set_send_packet->send_packet.aim_x = set_send_packet->robot_gimbal_aim_vector.x;
     set_send_packet->send_packet.aim_y = set_send_packet->robot_gimbal_aim_vector.y;
