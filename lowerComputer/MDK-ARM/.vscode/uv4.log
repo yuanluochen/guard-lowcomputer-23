@@ -1,7 +1,7 @@
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\Ac506u7\Bin'
 Build target 'standard_robot'
-compiling solve_trajectory.c...
+compiling vision_task.c...
 linking...
-Program Size: Code=96192 RO-data=13348 RW-data=1156 ZI-data=58036  
+Program Size: Code=99456 RO-data=13484 RW-data=1136 ZI-data=57984  
 "standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 0 Warning(s).
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:03

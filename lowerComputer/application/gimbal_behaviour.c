@@ -453,8 +453,8 @@ static void gimbal_auto_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
         // 长久未更新
 
         // 自动扫描设置浮动值
-        static fp32 auto_scan_AC_set_yaw = 0;
-        static fp32 auto_scan_AC_set_pitch = 0;
+        fp32 auto_scan_AC_set_yaw = 0;
+        fp32 auto_scan_AC_set_pitch = gimbal_control_set->gimbal_auto_scan.pitch_range;
         // 计算运行时间
         gimbal_control_set->gimbal_auto_scan.scan_run_time = TIME_MS_TO_S(HAL_GetTick()) - gimbal_control_set->gimbal_auto_scan.scan_begin_time;
         //云台自动扫描,设置浮动值

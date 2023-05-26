@@ -236,5 +236,7 @@ extern void get_shoot_heat_limit_and_heat(uint16_t *heat_limit, uint16_t *heat);
 ext_game_robot_state_t* get_game_robot_status_point(void);
 //获取伤害类型指针
 ext_robot_hurt_t* get_robot_hurt_point(void);
+//获取发射机构弹速
+ext_shoot_data_t* get_shoot_data_point(void);
 
 #endif

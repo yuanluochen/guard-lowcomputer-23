@@ -674,11 +674,6 @@
               <FileType>1</FileType>
               <FilePath>..\application\vision_task.c</FilePath>
             </File>
-            <File>
-              <FileName>solve_trajectory.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\solve_trajectory.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>

@@ -197,3 +197,9 @@ ext_robot_hurt_t* get_robot_hurt_point(void)
     return &robot_hurt_t;
 }
 
+//获取机器人发射机构弹速信息
+ext_shoot_data_t* get_shoot_data_point(void)
+{
+    return &shoot_data_t;
+}
+

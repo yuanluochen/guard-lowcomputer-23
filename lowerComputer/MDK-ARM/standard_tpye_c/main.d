@@ -96,7 +96,6 @@ standard_tpye_c\main.o: ../application/INS_task.h
 standard_tpye_c\main.o: ../bsp/boards/bsp_buzzer.h
 standard_tpye_c\main.o: ../application/referee.h
 standard_tpye_c\main.o: ../application/protocol/protocol.h
-standard_tpye_c\main.o: ../application/solve_trajectory.h
 standard_tpye_c\main.o: ../application/detect_task.h
 standard_tpye_c\main.o: ../application/led_flow_task.h
 standard_tpye_c\main.o: ../application/oled_task.h

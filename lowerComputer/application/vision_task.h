@@ -18,7 +18,6 @@
 #include "INS_task.h"
 #include "arm_math.h"
 #include "referee.h"
-#include "solve_trajectory.h"
 
 //允许发弹角度误差
 #define ALLOW_ATTACK_ERROR 0.06
@@ -53,10 +52,10 @@
 #define IMU_TO_GUNPOINT_DISTANCE 0.20f
 
 //弹速
-#define BULLET_SPEED 24.5f
+#define BULLET_SPEED 26.0f
 
 //空气阻力系数 K1 = (0.5 * density * C * S) / m
-#define AIR_K1 0.20f
+#define AIR_K1 0.076f
 //初始子弹飞行迭代数值
 #define T_0 0.0f
 //迭代精度
@@ -71,10 +70,31 @@
 //比例补偿器比例系数
 #define ITERATE_SCALE_FACTOR 0.3f
 //重力加速度
-#define G 9.8f
+#define GRAVITY 9.78f
 
-//时间偏移
-#define TIME_BIAS 0
+//固有时间偏移即上位机计算时间单位ms
+#define TIME_BIAS 5
+
+//ms转s
+#ifndef TIME_MS_TO_S
+#define TIME_MS_TO_S(ms) (fp32)(ms / 1000.0f)
+
+#endif // !TIME_MS_TO_S(x)
+
+//全圆弧度
+#define ALL_CIRCLE (2 * PI)
+
+//yaw轴电机到枪口的竖直高度
+#define Z_STATIC 0.15f
+//枪口前推距离
+#define DISTANCE_STATIC 0.25f
+//初始飞行时间
+#define INIT_FILIGHT_TIME 0.5f
+
+//发射枪管id
+#define SHOOT_ID 1
+//子弹类型
+#define BULLET_TYPE 1
 
 
 
@@ -107,18 +127,19 @@ typedef enum
 //id
 typedef enum
 {
-    OUTPOST = 0, // 前哨站
-    GUADE = 6,   // 哨兵
-    BASE = 7,    // 基地
+    ID_OUTPOST = 0, // 前哨站
+    ID_GUADE = 6,   // 哨兵
+    ID_BASE = 7,    // 基地
 } armor_id_e;
 
-// //装甲板编号
-// typedef enum
-// {
-//     BALANCE = 2,
-//     OUTPOST = 3,
-//     NORMAL = 4,
-// } armor_num_e;
+//装甲板数值
+typedef enum
+{
+    ARMOR_NUM_BALANCE = 2,
+    ARMOR_NUM_OUTPOST = 3,
+    ARMOR_NUM_NORMAL = 4
+}armor_num_e;
+
 
 //哨兵发射命令
 typedef enum
@@ -166,7 +187,7 @@ typedef struct __attribute__((packed))
     uint8_t header;
     bool_t tracking : 1;
     uint8_t id : 3;         // 0-outpost 6-guard 7-base
-    uint8_t armors_num : 3; // 2-balance 3-outpost 4-normal
+    uint8_t armors_num : 3; // 装甲板数量 2-balance 3-outpost 4-normal
     uint8_t reserved : 1;
     float x;
     float y;
@@ -207,14 +228,64 @@ typedef struct
     shoot_command_e shoot_command;
 } shoot_vision_control_t;
 
+// 目标位置结构体
+typedef struct
+{
+    float x;
+    float y;
+    float z;
+    float yaw;
+} target_position_t;
+
+//弹道计算结构体
+typedef struct
+{
+    // 当前弹速
+    fp32 current_bullet_speed;
+    // 当前pitch
+    fp32 current_pitch;
+    // 当前yaw
+    fp32 current_yaw;
+    // 弹道系数
+    fp32 k1;
+    //子弹飞行时间
+    fp32 flight_time;
+    //预测时间
+    fp32 predict_time;
+
+    // 目标yaw
+    fp32 target_yaw;
+
+    // 装甲板数量
+    uint8_t armor_num;
+
+    //yaw轴电机到枪口水平面的垂直距离
+    fp32 z_static;
+    //枪口前推距离
+    fp32 distance_static;
+
+    //所有装甲板位置指针
+    target_position_t* all_target_position_point;
+
+} solve_trajectory_t;
+
+
 
 // 视觉任务结构体
 typedef struct
 {
     // 绝对角指针
     const fp32* vision_angle_point;
-    // 四元数指针
-    const fp32* vision_quat_point; 
+    // 当前弹速
+    fp32 current_bullet_speed;
+    // 检测装甲板的颜色(敌方装甲板的颜色)
+    uint8_t detect_armor_color;
+
+
+    //弹道解算
+    solve_trajectory_t solve_trajectory;
+    //目标位置
+    target_position_t target_position;
 
     // 自身imu绝对角
     eular_angle_t imu_absolution_angle;
@@ -222,10 +293,10 @@ typedef struct
     eular_angle_t vision_absolution_angle;
 
     //机器人状态指针
-    ext_game_robot_state_t* robot_state_point;
+    const ext_game_robot_state_t* robot_state_point;
+    //发射机构弹速指针
+    const ext_shoot_data_t* shoot_data_point;
 
-    // 目标装甲板地球坐标系下空间坐标点
-    vector_t target_armor_vector;
     // 机器人云台瞄准位置向量
     vector_t robot_gimbal_aim_vector;
 
@@ -236,7 +307,6 @@ typedef struct
 
     // 云台电机运动命令
     gimbal_vision_control_t gimbal_vision_control;
-
     // 发射机构发射命令
     shoot_vision_control_t shoot_vision_control;
 

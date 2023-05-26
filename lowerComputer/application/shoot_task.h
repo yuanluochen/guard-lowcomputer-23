@@ -100,7 +100,7 @@
 #define GUARD_MAX_MUZZLE_HEAT 240
 
 //哨兵枪口热量距离最大值最大允许误差
-#define GUARD_MAX_ALLOW_MUZZLE_HEAT_ERR0R 40
+#define GUARD_MAX_ALLOW_MUZZLE_HEAT_ERR0R 20
 
 typedef enum
 {
