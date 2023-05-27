@@ -328,7 +328,6 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
                     save_auto_scan_center_value_flag = 1;
                     // 初始化完成保存扫描中心点
                     gimbal_mode_set->gimbal_auto_scan.yaw_center_value = gimbal_mode_set->gimbal_yaw_motor.absolute_angle_set;
-                    gimbal_mode_set->gimbal_auto_scan.pitch_center_value = gimbal_mode_set->gimbal_pitch_motor.absolute_angle_set;
                 }
             }
        }
@@ -370,7 +369,6 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
             other_mode_transform_auto_mode_flag = 1;
             // 保存当前云台位置
             gimbal_mode_set->gimbal_auto_scan.yaw_center_value = gimbal_mode_set->gimbal_yaw_motor.absolute_angle;
-            gimbal_mode_set->gimbal_auto_scan.pitch_center_value = gimbal_mode_set->gimbal_pitch_motor.absolute_angle;
         }
         // 保存历史数据
         last_gimbal_behaviour = gimbal_behaviour;
@@ -450,21 +448,21 @@ static void gimbal_auto_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
     // 判断数据是否长久未更新
     if (judge_not_rx_vision_data())
     {
-        // 长久未更新
+        // // 长久未更新
 
-        // 自动扫描设置浮动值
-        fp32 auto_scan_AC_set_yaw = 0;
-        fp32 auto_scan_AC_set_pitch = gimbal_control_set->gimbal_auto_scan.pitch_range;
-        // 计算运行时间
-        gimbal_control_set->gimbal_auto_scan.scan_run_time = TIME_MS_TO_S(HAL_GetTick()) - gimbal_control_set->gimbal_auto_scan.scan_begin_time;
-        //云台自动扫描,设置浮动值
-        scan_control_set(&auto_scan_AC_set_yaw, gimbal_control_set->gimbal_auto_scan.yaw_range, gimbal_control_set->gimbal_auto_scan.scan_yaw_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
-        scan_control_set(&auto_scan_AC_set_pitch, gimbal_control_set->gimbal_auto_scan.pitch_range, gimbal_control_set->gimbal_auto_scan.scan_pitch_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
-        // 赋值控制值  = 中心值 + 加上浮动函数
-        pitch_set_angle = auto_scan_AC_set_pitch;
-        yaw_set_angle = auto_scan_AC_set_yaw + gimbal_control_set->gimbal_auto_scan.yaw_center_value;
-        // yaw_set_angle = gimbal_control_set->gimbal_auto_scan.yaw_center_value;
-        // pitch_set_angle = gimbal_control_set->gimbal_auto_scan.pitch_center_value;
+        // // 自动扫描设置浮动值
+        // fp32 auto_scan_AC_set_yaw = 0;
+        // fp32 auto_scan_AC_set_pitch = 0;
+        // // 计算运行时间
+        // gimbal_control_set->gimbal_auto_scan.scan_run_time = TIME_MS_TO_S(HAL_GetTick()) - gimbal_control_set->gimbal_auto_scan.scan_begin_time;
+        // //云台自动扫描,设置浮动值
+        // scan_control_set(&auto_scan_AC_set_yaw, gimbal_control_set->gimbal_auto_scan.yaw_range, gimbal_control_set->gimbal_auto_scan.scan_yaw_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
+        // scan_control_set(&auto_scan_AC_set_pitch, gimbal_control_set->gimbal_auto_scan.pitch_range, gimbal_control_set->gimbal_auto_scan.scan_pitch_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
+        // // 赋值控制值  = 中心值 + 加上浮动函数
+        // pitch_set_angle = auto_scan_AC_set_pitch + gimbal_control_set->gimbal_auto_scan.pitch_center_value;
+        // yaw_set_angle = auto_scan_AC_set_yaw + gimbal_control_set->gimbal_auto_scan.yaw_center_value;
+        yaw_set_angle = gimbal_control_set->gimbal_auto_scan.yaw_center_value;
+        pitch_set_angle = gimbal_control_set->gimbal_auto_scan.pitch_center_value;
 
     }
     else

@@ -20,7 +20,7 @@
 #include "referee.h"
 
 //允许发弹角度误差
-#define ALLOW_ATTACK_ERROR 0.06
+#define ALLOW_ATTACK_ERROR 0.04
 
 //发弹判断计数次数
 #define JUDGE_ATTACK_COUNT 2
@@ -52,10 +52,10 @@
 #define IMU_TO_GUNPOINT_DISTANCE 0.20f
 
 //弹速
-#define BULLET_SPEED 26.0f
+#define BULLET_SPEED 25.0f
 
 //空气阻力系数 K1 = (0.5 * density * C * S) / m
-#define AIR_K1 0.076f
+#define AIR_K1 0.09f
 //初始子弹飞行迭代数值
 #define T_0 0.0f
 //迭代精度
@@ -73,7 +73,7 @@
 #define GRAVITY 9.78f
 
 //固有时间偏移即上位机计算时间单位ms
-#define TIME_BIAS 5
+#define TIME_BIAS 15
 
 //ms转s
 #ifndef TIME_MS_TO_S
@@ -203,6 +203,9 @@ typedef struct __attribute__((packed))
     uint16_t checksum;
 } receive_packet_t;
 
+//类型转化
+typedef receive_packet_t target_data_t;
+
 // 视觉接收结构体
 typedef struct
 {
@@ -227,6 +230,15 @@ typedef struct
     // 自动发射命令
     shoot_command_e shoot_command;
 } shoot_vision_control_t;
+
+//哨兵底盘控制命令
+typedef struct 
+{
+    //我方机器人距离敌方机器人的距离
+    fp32 distance;
+}chassis_vision_control_t;
+
+
 
 // 目标位置结构体
 typedef struct
@@ -281,7 +293,8 @@ typedef struct
     // 检测装甲板的颜色(敌方装甲板的颜色)
     uint8_t detect_armor_color;
 
-
+    //敌方机器人数据
+    target_data_t target_data;
     //弹道解算
     solve_trajectory_t solve_trajectory;
     //目标位置
@@ -309,6 +322,8 @@ typedef struct
     gimbal_vision_control_t gimbal_vision_control;
     // 发射机构发射命令
     shoot_vision_control_t shoot_vision_control;
+    //底盘运动命令
+    chassis_vision_control_t chassis_vision_control;
 
 } vision_control_t;
 
@@ -316,11 +331,13 @@ typedef struct
 void vision_task(void const *pvParameters);
 
 // 获取上位机云台命令
-gimbal_vision_control_t *get_vision_gimbal_point(void);
+const gimbal_vision_control_t *get_vision_gimbal_point(void);
 
 // 获取上位机发射命令
-shoot_vision_control_t *get_vision_shoot_point(void);
+const shoot_vision_control_t *get_vision_shoot_point(void);
 
+// 获取上位机底盘控制命令
+const chassis_vision_control_t* get_vision_chassis_point(void);
 /**
  * @brief 判断未接收到上位机数据
  *

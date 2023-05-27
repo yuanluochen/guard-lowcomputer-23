@@ -44,6 +44,8 @@
 //the channel of choosing chassis mode,
 //选择底盘状态 开关通道号
 #define CHASSIS_MODE_CHANNEL 0
+//选择自动模式
+#define CHASSIS_AUTO_MODE 1
 //rocker value (max 660) change to vertial speed (m/s) 
 //遥控器前进摇杆（max 660）转化成车体前进速度（m/s）的比例
 #define CHASSIS_VX_RC_SEN 0.006f
@@ -136,6 +138,15 @@
 //底盘小陀螺速度值
 #define SPIN_SPEED -10
 
+//底盘自动移动距离项差值系数
+#define AUTO_MOVE_K_DISTANCE_ERROR 1.0f
+//底盘自动移动最大输出速度 m/s
+#define AUTO_MOVE_MAX_OUTPUT_SPEED 5.0f
+//底盘自动移动最小输出速度 m/s
+#define AUTO_MOVE_MIN_OUTPUT_SPEED -5.0f
+//设定距离 m
+#define AUOT_MOVE_SET_DISTANCE 1.5f
+
 
 typedef enum
 {
@@ -181,6 +192,29 @@ typedef struct
     uint16_t last_HP;//上次血量 
 }auto_HP_t;
 
+
+//底盘自动移动控制结构体
+typedef struct 
+{
+    //设定目标距离
+    fp32 set_distance;
+    //当前距离
+    fp32 current_distance;
+    //距离误差
+    fp32 distance_error;
+    //输出值 -- 速度
+    fp32 output;
+    //最大输出值
+    fp32 max_output;
+    //最小输出值
+    fp32 min_output;
+
+    //距离误差项系数
+    fp32 k_distance_error;
+
+}chassis_auto_move_controller_t;
+
+
 //底盘自动化控制结构体
 typedef struct 
 {
@@ -194,6 +228,12 @@ typedef struct
 
     //伤害类型指针
     ext_robot_hurt_t* ext_robot_hurt_point;
+
+    //视觉控制指针
+    const chassis_vision_control_t* chassis_vision_control_point;
+
+    //底盘自动移动控制器
+    chassis_auto_move_controller_t chassis_auto_move_controller;
     
 }chassis_auto_t;
 
@@ -268,5 +308,25 @@ extern void chassis_task(void const *pvParameters);
   * @retval         none
   */
 extern void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_move_rc_to_vector);
+
+
+/**
+ * @brief 底盘自动移动控制器初始化
+ * 
+ * @param controller 底盘自动移动控制器
+ * @param k_distance_error 距离误差项系数
+ * @param max_out 最大输出
+ * @param min_out 最小输出
+ */
+void chassis_auto_move_controller_init(chassis_auto_move_controller_t* controller, fp32 k_distance_error, fp32 max_out, fp32 min_out);
+
+/**
+ * @brief 比例计算实现底盘跟随敌方机器人中心的目标,计算移动速度
+ * 
+ * @param controller 底盘自动控制器结构体
+ * @param set_distance 设定的距离
+ * @param current_distance 当前距离
+ */
+void chassis_auto_move_controller_calc(chassis_auto_move_controller_t* controller, fp32 set_distance, fp32 current_distance);
 
 #endif

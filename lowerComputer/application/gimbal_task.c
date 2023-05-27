@@ -284,6 +284,9 @@ static void gimbal_init(gimbal_control_t *init)
     // 初始化云台自动扫描周期
     init->gimbal_auto_scan.scan_pitch_period = PITCH_SCAN_PERIOD;
     init->gimbal_auto_scan.scan_yaw_period = YAW_SCAN_PERIOD;
+    
+    //pitch轴扫描中心值
+    init->gimbal_auto_scan.pitch_center_value = init->gimbal_auto_scan.pitch_range;
 
     // 设置pitch轴相对角最大值
     init->gimbal_pitch_motor.max_relative_angle = -motor_ecd_to_angle_change(GIMBAL_PITCH_MAX_ENCODE, init->gimbal_pitch_motor.offset_ecd);

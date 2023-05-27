@@ -18,9 +18,6 @@
 #include "usbd_cdc_if.h"
 #include "arm_math.h"
 
-//类型转化
-typedef receive_packet_t target_data_t;
-
 //视觉任务初始化
 static void vision_task_init(vision_control_t* init);
 //视觉任务数据更新
@@ -45,12 +42,13 @@ static void select_optimal_target(solve_trajectory_t* solve_trajectory, target_d
 //赋值云台瞄准位置
 static void calc_robot_gimbal_aim_vector(vector_t* robot_gimbal_aim_vector, target_position_t* target_position, fp32 vx, fp32 vy, fp32 vz, fp32 predict_time);
 // 计算子弹落点
-float calc_bullet_drop(solve_trajectory_t* solve_trajectory, float x, float bullet_speed, float pitch);
+static float calc_bullet_drop(solve_trajectory_t* solve_trajectory, float x, float bullet_speed, float pitch);
 // 二维平面弹道模型，计算pitch轴的高度
-float calc_target_position_pitch_angle(solve_trajectory_t* solve_trajectory, fp32 x, fp32 z);
+static float calc_target_position_pitch_angle(solve_trajectory_t* solve_trajectory, fp32 x, fp32 z);
 
 //获取接收数据包指针
 static vision_receive_t* get_vision_receive_point(void);
+
 
 //视觉任务结构体
 vision_control_t vision_control = { 0 };
@@ -82,6 +80,7 @@ void vision_task(void const* pvParameters)
         // 解析上位机数据,配置yaw轴pitch轴增量,以及判断是否发射
         vision_analysis_date(&vision_control);
 
+
         // 配置发送数据包
         set_vision_send_packet(&vision_control);
         // 发送数据包
@@ -106,6 +105,8 @@ static void vision_task_init(vision_control_t* init)
     init->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
     //初始化一些基本的弹道参数
     solve_trajectory_param_init(&init->solve_trajectory, AIR_K1, INIT_FILIGHT_TIME, Z_STATIC, DISTANCE_STATIC);
+    //初始化当前弹速
+    init->current_bullet_speed = BULLET_SPEED;
     //更新数据
     vision_task_feedback_update(init);
 }
@@ -118,30 +119,23 @@ static void vision_task_feedback_update(vision_control_t* update)
     update->imu_absolution_angle.roll = *(update->vision_angle_point + INS_ROLL_ADDRESS_OFFSET);
     // 判断敌方装甲板颜色
     judge_enemy_robot_armor_color(update);
-    // 赋值当前弹速
+    // 修正当前弹速
     calc_current_bullet_speed(update);
+    //获取敌方机器人数据
+    memcpy(&update->target_data, &update->vision_receive_point->receive_packet, sizeof(target_data_t));
 }
 
 static void vision_data_process(vision_control_t* vision_data)
 {
-    //机器人数据
-    target_data_t robot_data = {0};
-    memcpy(&robot_data, &vision_data->vision_receive_point->receive_packet, sizeof(target_data_t));
-    // //初始化计算结构体
-    // GimbalControlInit(vision_data->imu_absolution_angle.pitch, vision_data->imu_absolution_angle.yaw, robot_data.yaw, robot_data.v_yaw, robot_data.r1, robot_data.r2, robot_data.dz, 0, BULLET_SPEED, 0.076);
-    // //计算数据
-    // GimbalControlTransform(robot_data.x, robot_data.y, robot_data.z, robot_data.vx, robot_data.vy, robot_data.vz, TIME_BIAS, &vision_data->vision_absolution_angle.pitch, &vision_data->vision_absolution_angle.yaw, &vision_data->robot_gimbal_aim_vector.x, &vision_data->robot_gimbal_aim_vector.y, &vision_data->robot_gimbal_aim_vector.z);
-
     //赋值弹道计算的可变参数
     assign_solve_trajectory_param(&vision_data->solve_trajectory, vision_data->imu_absolution_angle.pitch, vision_data->imu_absolution_angle.yaw, vision_data->current_bullet_speed);
     //选择最优装甲板
-    select_optimal_target(&vision_data->solve_trajectory, &robot_data, &vision_data->target_position);
+    select_optimal_target(&vision_data->solve_trajectory, &vision_data->target_data, &vision_data->target_position);
     //计算机器人瞄准位置
-    calc_robot_gimbal_aim_vector(&vision_data->robot_gimbal_aim_vector, &vision_data->target_position, robot_data.vx, robot_data.vy, robot_data.vz, vision_data->solve_trajectory.predict_time);
+    calc_robot_gimbal_aim_vector(&vision_data->robot_gimbal_aim_vector, &vision_data->target_position, vision_data->target_data.vx, vision_data->target_data.vy, vision_data->target_data.vz, vision_data->solve_trajectory.predict_time);
     //计算机器人pitch轴与yaw轴角度
     vision_data->vision_absolution_angle.pitch = calc_target_position_pitch_angle(&vision_data->solve_trajectory, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)) + vision_data->solve_trajectory.distance_static, vision_data->robot_gimbal_aim_vector.z - vision_data->solve_trajectory.z_static);
     vision_data->vision_absolution_angle.yaw = atan2(vision_data->robot_gimbal_aim_vector.y, vision_data->robot_gimbal_aim_vector.x);
-
 }
 
 
@@ -173,6 +167,9 @@ static void vision_analysis_date(vision_control_t *vision_set)
 
             // 判断发射
             vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->imu_absolution_angle.yaw), (vision_gimbal_pitch - vision_set->imu_absolution_angle.pitch));
+
+            //赋值底盘运动命令
+            vision_set->chassis_vision_control.distance = sqrt(pow(vision_set->target_data.x, 2) + pow(vision_set->target_data.y, 2));
         }
         else
         {
@@ -310,7 +307,10 @@ static void calc_current_bullet_speed(vision_control_t* calc_cur_bullet_speed)
     {
         if (calc_cur_bullet_speed->shoot_data_point->shooter_id == SHOOT_ID)
         {
-            calc_cur_bullet_speed->current_bullet_speed = calc_cur_bullet_speed->shoot_data_point->bullet_speed;
+            if (calc_cur_bullet_speed->shoot_data_point->bullet_speed >= BULLET_SPEED)
+            {
+                calc_cur_bullet_speed->current_bullet_speed = calc_cur_bullet_speed->shoot_data_point->bullet_speed;
+            }
         }
     }
 }
@@ -420,7 +420,7 @@ static void select_optimal_target(solve_trajectory_t* solve_trajectory, target_d
         solve_trajectory->all_target_position_point[i].yaw = solve_trajectory->target_yaw + i * (ALL_CIRCLE / solve_trajectory->armor_num);
         solve_trajectory->all_target_position_point[i].x = vision_data->x - r * cos(solve_trajectory->all_target_position_point[i].yaw);
         solve_trajectory->all_target_position_point[i].y = vision_data->y - r * sin(solve_trajectory->all_target_position_point[i].yaw);
-        solve_trajectory->all_target_position_point[i].z = (i % 2 == 0) ? vision_data->z : vision_data->z + vision_data->dz;
+        solve_trajectory->all_target_position_point[i].z = (i % 2 == 0) ? vision_data->z : vision_data->dz;
     }
 
     // 选择与机器人自身yaw差值最小的目标,冒泡排序选择最小目标
@@ -471,7 +471,7 @@ static void calc_robot_gimbal_aim_vector(vector_t* robot_gimbal_aim_vector, targ
  * @param pitch 仰角
  * @return 子弹落点
  */
-float calc_bullet_drop(solve_trajectory_t* solve_trajectory, float x, float bullet_speed, float pitch)
+static float calc_bullet_drop(solve_trajectory_t* solve_trajectory, float x, float bullet_speed, float pitch)
 {
     solve_trajectory->flight_time = (float)((exp(solve_trajectory->k1 * x) - 1) / (solve_trajectory->k1 * bullet_speed * cos(pitch)));
     //计算子弹落点高度
@@ -488,12 +488,13 @@ float calc_bullet_drop(solve_trajectory_t* solve_trajectory, float x, float bull
  * @param bullet_speed 弹速
  * @return 返回pitch轴数值
  */
-float calc_target_position_pitch_angle(solve_trajectory_t* solve_trajectory, fp32 x, fp32 z)
+static float calc_target_position_pitch_angle(solve_trajectory_t* solve_trajectory, fp32 x, fp32 z)
 {
     // 计算落点高度
     float bullet_drop_z = 0;
     // 瞄准高度
     float aim_z = z;
+    //
 
     // 仰角
     float pitch = 0;
@@ -532,13 +533,19 @@ bool_t judge_not_rx_vision_data(void)
 }
 
 // 获取上位机云台命令
-gimbal_vision_control_t *get_vision_gimbal_point(void)
+const gimbal_vision_control_t *get_vision_gimbal_point(void)
 {
     return &vision_control.gimbal_vision_control;
 }
 
 // 获取上位机发射命令
-shoot_vision_control_t *get_vision_shoot_point(void)
+const shoot_vision_control_t *get_vision_shoot_point(void)
 {
     return &vision_control.shoot_vision_control;
+}
+
+//获取底盘控制命令
+const chassis_vision_control_t* get_vision_chassis_point(void)
+{
+    return &vision_control.chassis_vision_control;
 }

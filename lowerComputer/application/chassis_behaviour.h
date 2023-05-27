@@ -143,6 +143,13 @@ extern void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode);
 extern void chassis_behaviour_control_set(fp32 *vx_set, fp32 *vy_set, fp32 *angle_set, chassis_move_t *chassis_move_rc_to_vector);
 
 
-bool_t chassis_auto_mode_control_gimbal_auto_mode(void);
+/**
+ * @brief 根据血量判断底盘自动运行状态
+ * 
+ * @param chassis_judge_auto_mode 底盘结构体
+ */
+void judge_chassis_auto_mode(chassis_move_t* chassis_judge_auto_mode);
+
+
 
 #endif

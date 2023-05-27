@@ -205,6 +205,8 @@ static void chassis_init(chassis_move_t *chassis_move_init)
     chassis_move_init->chassis_auto.ext_game_robot_state_point = get_game_robot_status_point();
     //获取伤害类型指针
     chassis_move_init->chassis_auto.ext_robot_hurt_point = get_robot_hurt_point();
+    //获取视觉控制指针
+    chassis_move_init->chassis_auto.chassis_vision_control_point = get_vision_chassis_point();
     
     //get chassis motor data point,  initialize motor speed PID
     //获取底盘电机数据指针，初始化PID 
@@ -235,6 +237,8 @@ static void chassis_init(chassis_move_t *chassis_move_init)
     chassis_move_init->chassis_auto.auto_HP.cur_HP = chassis_move_init->chassis_auto.ext_game_robot_state_point->max_HP;
     chassis_move_init->chassis_auto.auto_HP.last_HP = chassis_move_init->chassis_auto.ext_game_robot_state_point->max_HP;
 
+    //初始化底盘自动移动控制器
+    chassis_auto_move_controller_init(&chassis_move_init->chassis_auto.chassis_auto_move_controller, AUTO_MOVE_K_DISTANCE_ERROR, AUTO_MOVE_MAX_OUTPUT_SPEED, AUTO_MOVE_MIN_OUTPUT_SPEED);
 
     //update data
     //更新一下数据
@@ -288,17 +292,17 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_move_tra
     {
         chassis_move_transit->chassis_yaw_set = chassis_move_transit->chassis_yaw;
     }
-    // if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_SPIN) &&
-    //     chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
-    // {
-    //     //小陀螺模式就近对位
-    //     chassis_move_transit->mode_flag = 1;
-    // }
-    // if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_NO_FOLLOW_YAW) &&
-    //     chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
-    // {
-    //     chassis_move_transit->mode_flag = 1;
-    // }
+    if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_SPIN) &&
+        chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
+    {
+        //小陀螺模式就近对位
+        chassis_move_transit->mode_flag = 1;
+    }
+    if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_NO_FOLLOW_YAW) &&
+        chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
+    {
+        chassis_move_transit->mode_flag = 1;
+    }
 
     chassis_move_transit->last_chassis_mode = chassis_move_transit->chassis_mode;
 }
@@ -458,12 +462,12 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
         fp32 relative_angle = 0.0f;
         // 设置控制相对云台角度
         chassis_move_control->chassis_relative_angle_set = rad_format(angle_set);
-        // // 小陀螺停止，就近对位
-        // if (chassis_move_control->mode_flag == 1)
-        // {
+        // 小陀螺停止，就近对位
+        if (chassis_move_control->mode_flag == 1)
+        {
 
-        //     Angle_Error_Compare(((gimbal_control.gimbal_yaw_motor.relative_angle / MOTOR_ECD_TO_RAD) + chassis_move_control->chassis_yaw_motor->frist_ecd), gimbal_control.gimbal_yaw_motor.frist_ecd, gimbal_control.gimbal_yaw_motor.last_zero_ecd);
-        // }
+            Angle_Error_Compare(((gimbal_control.gimbal_yaw_motor.relative_angle / MOTOR_ECD_TO_RAD) + chassis_move_control->chassis_yaw_motor->frist_ecd), gimbal_control.gimbal_yaw_motor.frist_ecd, gimbal_control.gimbal_yaw_motor.last_zero_ecd);
+        }
         relative_angle = (chassis_move_control->chassis_yaw_motor->relative_angle);
         //			relative_angle=chassis_move_control->chassis_yaw_motor->relative_angle-(chassis_move_control->chassis_yaw_motor->frist_ecd*Motor_Ecd_to_rad);
         // 旋转控制底盘速度方向，保证前进方向是云台方向，有利于运动平稳
@@ -674,4 +678,47 @@ void Angle_Error_Compare(int now_angle, int zero_angle, int last_zero_angle)
             gimbal_control.gimbal_yaw_motor.frist_ecd = zero_angle;
         }
     }
+}
+
+
+void chassis_auto_move_controller_init(chassis_auto_move_controller_t* controller, fp32 k_distance_error, fp32 max_out, fp32 min_out)
+{
+    controller->k_distance_error = k_distance_error;
+    controller->max_output = max_out;
+    controller->min_output = min_out;
+}
+
+void chassis_auto_move_controller_calc(chassis_auto_move_controller_t* controller, fp32 set_distance, fp32 current_distance)
+{
+    //赋值数值
+    controller->set_distance = set_distance;
+    controller->current_distance = current_distance;
+
+    //输出值
+    fp32 output = 0;
+
+    //判断当前距离是否小于设定值
+    if (controller->current_distance < controller->set_distance)
+    {
+        //不移动
+        output = 0;
+    }
+    else
+    {
+        //比例输出
+        output = controller->k_distance_error * (current_distance - set_distance); 
+    }
+
+    //限幅
+    if (output >= controller->max_output)
+    {
+        output = controller->max_output;
+    }
+    else if (output <= controller->min_output)
+    {
+        output = controller->min_output;
+    }
+
+    //赋值输出值
+    controller->output = output;
 }
