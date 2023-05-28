@@ -145,7 +145,7 @@
 //底盘自动移动最小输出速度 m/s
 #define AUTO_MOVE_MIN_OUTPUT_SPEED -5.0f
 //设定距离 m
-#define AUOT_MOVE_SET_DISTANCE 1.5f
+#define AUOT_MOVE_SET_DISTANCE 2.5f
 
 
 typedef enum
@@ -308,6 +308,16 @@ extern void chassis_task(void const *pvParameters);
   * @retval         none
   */
 extern void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_move_rc_to_vector);
+
+/**
+  * @brief          计算纵向和横移速度
+  *                 
+  * @param[out]     vx_set: 纵向速度指针
+  * @param[out]     vy_set: 横向速度指针
+  * @param[out]     chassis_move_rc_to_vector: "chassis_move" 变量指针
+  * @retval         none
+  */
+extern void chassis_vision_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_move_vision_to_vector);
 
 
 /**

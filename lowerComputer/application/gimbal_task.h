@@ -188,7 +188,7 @@
 //yaw轴扫描范围，以中心为基础
 #define YAW_SCAN_RANGE  PI
 //pitch轴扫描范围，以中心值为基础
-#define PITCH_SCAN_RANGE 0.15f
+#define PITCH_SCAN_RANGE 0.05f
 
 //yaw轴扫描周期
 #define YAW_SCAN_PERIOD 11.5f
@@ -202,7 +202,7 @@
 
 //角度误差项系数
 #define K_YAW_ANGLE_ERROR 100000.0f
-#define K_PITCH_ANGLE_ERROR 230000.0f
+#define K_PITCH_ANGLE_ERROR 200000.0f
 
 //速度项系数
 #define K_YAW_ANGLE_SPEED 5000.0f

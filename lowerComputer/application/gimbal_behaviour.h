@@ -70,15 +70,14 @@
 //时间ms转s
 #define TIME_MS_TO_S(ms) (fp32)(ms / 1000.0f)
 
-
-
 typedef enum
 {
-  GIMBAL_ZERO_FORCE = 0, 
-  GIMBAL_INIT,           
-  GIMBAL_AUTO,             //自动模式
-  GIMBAL_RC,               //遥控器控制模式
-  GIMBAL_MOTIONLESS,     
+    GIMBAL_ZERO_FORCE = 0,
+    GIMBAL_INIT,
+    GIMBAL_AUTO_SCAN,   // 自动扫描模式
+    GIMBAL_AUTO_ATTACK, // 自动击打模式
+    GIMBAL_RC,          // 遥控器控制模式
+    GIMBAL_MOTIONLESS,
 } gimbal_behaviour_e;
 
 /**
@@ -113,19 +112,7 @@ extern bool_t gimbal_cmd_to_chassis_stop(void);
   */
 extern bool_t gimbal_cmd_to_shoot_stop(void);
 
-/**
- * @brief 判断云台模式为自动模式
- * 
- * @return 返回1 为自动模式，返回0 不是自动模式 
- */
-bool_t judge_gimbal_mode_is_auto_mode(void);
 
-/**
- * @brief  判断云台从其他模式切入自动模式，当该函数执行时，标志位会清零
- * 
- * @return 返回1 事件发生 返回0 事件未发生 
- */
-bool_t judge_other_mode_transform_auto_mode(void);
 /**
  * @brief 云台控制底盘任务执行
  * 

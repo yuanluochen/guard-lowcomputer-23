@@ -22,10 +22,10 @@
 static void vision_task_init(vision_control_t* init);
 //视觉任务数据更新
 static void vision_task_feedback_update(vision_control_t* update);
+// 判断是否识别到目标
+static void vision_judge_appear_target(vision_control_t* judge_appear_target);
 // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角
 static void vision_data_process(vision_control_t* vision_data);
-//设置yaw轴pitch轴增量
-static void vision_analysis_date(vision_control_t* vision_set);
 //配置发送数据包
 static void set_vision_send_packet(vision_control_t* set_send_packet);
 //判断敌方机器人装甲板颜色，返回0 则敌方为红色，返回1 则敌方为蓝色
@@ -55,9 +55,6 @@ vision_control_t vision_control = { 0 };
 //视觉接收结构体
 vision_receive_t vision_receive = { 0 };
 
-//未接收到视觉数据标志位，该位为1 则未接收
-bool_t not_rx_vision_data_flag = 1;
-
 void vision_task(void const* pvParameters)
 {
     // 延时等待，等待上位机发送数据成功
@@ -75,11 +72,10 @@ void vision_task(void const* pvParameters)
     {
         // 更新数据
         vision_task_feedback_update(&vision_control);
-        // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角
+        //判断是否识别到目标
+        vision_judge_appear_target(&vision_control);
+        // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角,并设置控制命令
         vision_data_process(&vision_control);
-        // 解析上位机数据,配置yaw轴pitch轴增量,以及判断是否发射
-        vision_analysis_date(&vision_control);
-
 
         // 配置发送数据包
         set_vision_send_packet(&vision_control);
@@ -107,6 +103,8 @@ static void vision_task_init(vision_control_t* init)
     solve_trajectory_param_init(&init->solve_trajectory, AIR_K1, INIT_FILIGHT_TIME, Z_STATIC, DISTANCE_STATIC);
     //初始化当前弹速
     init->current_bullet_speed = BULLET_SPEED;
+    //初始化视觉目标状态为未识别到目标
+    init->vision_target_appear_state = TARGET_UNAPPEAR;
     //更新数据
     vision_task_feedback_update(init);
 }
@@ -122,90 +120,67 @@ static void vision_task_feedback_update(vision_control_t* update)
     // 修正当前弹速
     calc_current_bullet_speed(update);
     //获取敌方机器人数据
-    memcpy(&update->target_data, &update->vision_receive_point->receive_packet, sizeof(target_data_t));
+    if (update->vision_receive_point->receive_state == UNLOADED)
+    {
+        //拷贝数据
+        memcpy(&update->target_data, &update->vision_receive_point->receive_packet, sizeof(target_data_t));
+        //接收数值状态置为已读取
+        update->vision_receive_point->receive_state = LOADED;
+    }
+}
+
+static void vision_judge_appear_target(vision_control_t* judge_appear_target)
+{
+    //根据接收数据判断是否为识别到目标
+    if (judge_appear_target->vision_receive_point->receive_packet.x == 0 &&
+        judge_appear_target->vision_receive_point->receive_packet.y == 0 &&
+        judge_appear_target->vision_receive_point->receive_packet.z == 0 &&
+        judge_appear_target->vision_receive_point->receive_packet.yaw == 0 &&
+        judge_appear_target->vision_receive_point->receive_packet.vx == 0 &&
+        judge_appear_target->vision_receive_point->receive_packet.vy == 0 &&
+        judge_appear_target->vision_receive_point->receive_packet.vz == 0 &&
+        judge_appear_target->vision_receive_point->receive_packet.v_yaw == 0
+        )
+    {
+        //未识别到目标
+        judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
+    }
+    else
+    {
+        //识别到目标
+        judge_appear_target->vision_target_appear_state = TARGET_APPEAR;
+    }
 }
 
 static void vision_data_process(vision_control_t* vision_data)
 {
-    //赋值弹道计算的可变参数
-    assign_solve_trajectory_param(&vision_data->solve_trajectory, vision_data->imu_absolution_angle.pitch, vision_data->imu_absolution_angle.yaw, vision_data->current_bullet_speed);
-    //选择最优装甲板
-    select_optimal_target(&vision_data->solve_trajectory, &vision_data->target_data, &vision_data->target_position);
-    //计算机器人瞄准位置
-    calc_robot_gimbal_aim_vector(&vision_data->robot_gimbal_aim_vector, &vision_data->target_position, vision_data->target_data.vx, vision_data->target_data.vy, vision_data->target_data.vz, vision_data->solve_trajectory.predict_time);
-    //计算机器人pitch轴与yaw轴角度
-    vision_data->vision_absolution_angle.pitch = calc_target_position_pitch_angle(&vision_data->solve_trajectory, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)) + vision_data->solve_trajectory.distance_static, vision_data->robot_gimbal_aim_vector.z - vision_data->solve_trajectory.z_static);
-    vision_data->vision_absolution_angle.yaw = atan2(vision_data->robot_gimbal_aim_vector.y, vision_data->robot_gimbal_aim_vector.x);
-}
-
-
-static void vision_analysis_date(vision_control_t *vision_set)
-{
-    static fp32 vision_gimbal_yaw = 0;   // yaw轴绝对角
-    static fp32 vision_gimbal_pitch = 0; // pitch轴绝对角
-    // 未接收到上位机的时间
-    static int32_t unrx_time = MAX_UNRX_TIME;
-
-    // 判断当前云台模式为自瞄模式
-    if (judge_gimbal_mode_is_auto_mode())
+    //判断是否识别到目标
+    if (vision_data->vision_target_appear_state == TARGET_APPEAR)
     {
-        // 自瞄模式，设置角度为上位机设置角度
-
-        // 判断接收内存中是否存在未读取的数据
-        if (vision_set->vision_receive_point->receive_state == UNLOADED) //存在未读取的数据
-        {
-            // 接收到数据标志位为0
-            not_rx_vision_data_flag = 0;
-
-            unrx_time = 0;
-            // 标记数据已经读取
-            vision_set->vision_receive_point->receive_state = LOADED;
-
-            // 获取上位机视觉数据
-            vision_gimbal_pitch = vision_set->vision_absolution_angle.pitch;
-            vision_gimbal_yaw = vision_set->vision_absolution_angle.yaw;
-
-            // 判断发射
-            vision_shoot_judge(vision_set, (vision_gimbal_yaw - vision_set->imu_absolution_angle.yaw), (vision_gimbal_pitch - vision_set->imu_absolution_angle.pitch));
-
-            //赋值底盘运动命令
-            vision_set->chassis_vision_control.distance = sqrt(pow(vision_set->target_data.x, 2) + pow(vision_set->target_data.y, 2));
-        }
-        else
-        {
-            unrx_time++;
-        }
-
-        // 判断上位机视觉停止发送指令
-        if (unrx_time >= MAX_UNRX_TIME)
-        {
-            // 数据置零
-            unrx_time = 0;
-            // 停止发弹
-            vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
-            not_rx_vision_data_flag = 1;
-        }
+        //识别到目标
+        // 赋值弹道计算的可变参数
+        assign_solve_trajectory_param(&vision_data->solve_trajectory, vision_data->imu_absolution_angle.pitch, vision_data->imu_absolution_angle.yaw, vision_data->current_bullet_speed);
+        // 选择最优装甲板
+        select_optimal_target(&vision_data->solve_trajectory, &vision_data->target_data, &vision_data->target_position);
+        // 计算机器人瞄准位置
+        calc_robot_gimbal_aim_vector(&vision_data->robot_gimbal_aim_vector, &vision_data->target_position, vision_data->target_data.vx, vision_data->target_data.vy, vision_data->target_data.vz, vision_data->solve_trajectory.predict_time);
+        // 计算机器人pitch轴与yaw轴角度
+        vision_data->gimbal_vision_control.gimbal_pitch = calc_target_position_pitch_angle(&vision_data->solve_trajectory, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)) + vision_data->solve_trajectory.distance_static, vision_data->robot_gimbal_aim_vector.z - vision_data->solve_trajectory.z_static);
+        vision_data->gimbal_vision_control.gimbal_yaw = atan2(vision_data->robot_gimbal_aim_vector.y, vision_data->robot_gimbal_aim_vector.x);
+        //判断发射
+        vision_shoot_judge(vision_data, vision_data->gimbal_vision_control.gimbal_yaw - vision_data->imu_absolution_angle.yaw, vision_data->gimbal_vision_control.gimbal_pitch - vision_data->imu_absolution_angle.pitch);
+        //赋值底盘控制命令
+        vision_data->chassis_vision_control.distance = sqrt(pow(vision_data->target_data.x, 2) + pow(vision_data->target_data.y, 2));
     }
     else
     {
-        //非自瞄模式，发弹模式为停止发弹
-        vision_set->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
-    }
+        //未识别到目标
 
-    // 赋值控制值
-    // 判断是否控制值被赋值
-    if (vision_gimbal_pitch == 0 && vision_gimbal_yaw == 0)
-    {
-
-        // 未赋值依旧为当前值
-        vision_set->gimbal_vision_control.gimbal_pitch = vision_set->imu_absolution_angle.pitch;
-        vision_set->gimbal_vision_control.gimbal_yaw = vision_set->imu_absolution_angle.yaw;
-    }
-    else
-    {
-        // 已赋值，用设置值
-        vision_set->gimbal_vision_control.gimbal_pitch = vision_gimbal_pitch;
-        vision_set->gimbal_vision_control.gimbal_yaw = vision_gimbal_yaw;
+        //底盘云台控制值置零
+        memset(&vision_data->gimbal_vision_control, 0, sizeof(gimbal_vision_control_t));
+        memset(&vision_data->chassis_vision_control, 0, sizeof(chassis_vision_control_t));
+        //设置停止发射
+        vision_data->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
     }
 }
 
@@ -341,14 +316,11 @@ void receive_decode(uint8_t* buf, uint32_t len)
         memcpy(&temp_packet, buf, sizeof(receive_packet_t));
         if (temp_packet.header == HIGH_TO_LOWER_HEAD)
         {
-            if (!(temp_packet.vx == 0 && temp_packet.vy == 0 && temp_packet.vz == 0))
-            {
-                // 数据正确，将临时数据拷贝到接收数据包中
-                memcpy(&vision_receive.receive_packet, &temp_packet, sizeof(receive_packet_t));
-                // 接收数据数据状态标志为未读取
-                vision_receive.receive_state = UNLOADED;
-            }
-       }
+            // 数据正确，将临时数据拷贝到接收数据包中
+            memcpy(&vision_receive.receive_packet, &temp_packet, sizeof(receive_packet_t));
+            // 接收数据数据状态标志为未读取
+            vision_receive.receive_state = UNLOADED;
+        }
     }
 }
 
@@ -526,10 +498,10 @@ static vision_receive_t* get_vision_receive_point(void)
     return &vision_receive;
 }
 
-
-bool_t judge_not_rx_vision_data(void)
+//获取当前视觉是否识别到目标
+bool_t judge_vision_appear_target(void)
 {
-    return not_rx_vision_data_flag;
+    return vision_control.vision_target_appear_state == TARGET_APPEAR;
 }
 
 // 获取上位机云台命令

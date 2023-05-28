@@ -353,8 +353,6 @@ static void chassis_feedback_update(chassis_move_t *chassis_move_update)
 
 void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_move_rc_to_vector)
 {
-    // int16_t vx_channel, vy_channel;
-    // fp32 vx_set_channel, vy_set_channel;
     fp32 vx_set_channel_RC, vy_set_channel_RC;
     int16_t vx_channel_RC, vy_channel_RC;
     // deadline, because some remote control need be calibrated,  the value of rocker is not zero in middle place,
@@ -437,6 +435,46 @@ void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *ch
         *vy_set = -1.f * (*vy_set);
     }
 }
+
+/**
+  * @brief          计算纵向和横移速度
+  *                 
+  * @param[out]     vx_set: 纵向速度指针
+  * @param[out]     vy_set: 横向速度指针
+  * @param[out]     chassis_move_rc_to_vector: "chassis_move" 变量指针
+  * @retval         none
+  */
+void chassis_vision_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_move_vision_to_vector)
+{
+    // 设定值
+    fp32 vx = 0;
+    fp32 vy = 0;
+
+    // 计算控制量
+    chassis_auto_move_controller_calc(&chassis_move_vision_to_vector->chassis_auto.chassis_auto_move_controller, AUOT_MOVE_SET_DISTANCE, chassis_move_vision_to_vector->chassis_auto.chassis_vision_control_point->distance);
+    // 输出控制量
+    vx = chassis_move_vision_to_vector->chassis_auto.chassis_auto_move_controller.output;
+    vy = 0;
+
+    // 一阶低通滤波处理数据
+    first_order_filter_cali(&chassis_move_vision_to_vector->chassis_cmd_slow_set_vx, vx);
+
+    if (vx == 0)
+    {
+        chassis_move_vision_to_vector->chassis_cmd_slow_set_vx.out = 0;
+    }
+
+    // 赋值
+    *vx_set = chassis_move_vision_to_vector->chassis_cmd_slow_set_vx.out;
+    *vy_set = vy;
+
+    if (X_FLAG % 2 == 1)
+    {
+        *vx_set = -1.f * (*vx_set);
+        *vy_set = -1.f * (*vy_set);
+    }
+}
+
 
 /**
   * @brief          设置底盘控制设置值, 三运动控制值是通过chassis_behaviour_control_set函数设置的

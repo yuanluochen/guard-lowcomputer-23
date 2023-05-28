@@ -162,7 +162,32 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     else if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
         //上档为自动模式,底盘自动控制
-        chassis_behaviour_mode = CHASSIS_AUTO;
+
+        // 判断自动模式
+        if (switch_is_down(chassis_move_mode->chassis_RC->rc.s[CHASSIS_AUTO_MODE]))
+        {
+            //底盘原地不动
+            chassis_behaviour_mode = CHASSIS_NO_MOVE;
+        }
+        else if (switch_is_mid(chassis_move_mode->chassis_RC->rc.s[CHASSIS_AUTO_MODE]))
+        {
+            //根据视觉是否识别到目标判断底盘自动模式
+            if (judge_vision_appear_target())
+            {
+                //识别到目标
+                chassis_behaviour_mode = CHASSIS_AUTO;
+            }
+            else
+            {
+                //未识别到目标
+                chassis_behaviour_mode = CHASSIS_NO_MOVE;
+            }
+        }
+        else if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_AUTO_MODE]))
+        {
+            //原地小陀螺
+            chassis_behaviour_mode = CHASSIS_SPIN;
+        }
     }
     else if (toe_is_error(DBUS_TOE))
     {
@@ -218,23 +243,7 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     }
     else if (chassis_behaviour_mode == CHASSIS_AUTO)
     {
-        //判断自动模式
-        if (switch_is_down(chassis_move_mode->chassis_RC->rc.s[CHASSIS_AUTO_MODE]))
-        {
-            //底盘原地不动
-            chassis_move_mode->chassis_mode = CHASSIS_VECTOR_NO_FOLLOW_YAW;
-        }
-        else if (switch_is_mid(chassis_move_mode->chassis_RC->rc.s[CHASSIS_AUTO_MODE]))
-        {
-            //底盘跟随云台，跟随移动
-            chassis_move_mode->chassis_mode = CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW;
-        }
-        else if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_AUTO_MODE]))
-        {
-            //原地小陀螺
-            chassis_move_mode->chassis_mode = CHASSIS_VECTOR_SPIN;
-        }
-
+        chassis_move_mode->chassis_mode = CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW;
     }
 }
 
@@ -544,33 +553,13 @@ static void chassis_open_set_control(fp32 *vx_set, fp32 *vy_set, fp32 *wz_set, c
 
 static void chassis_auto_control(fp32* vx_set, fp32* vy_set, fp32* wz_set, chassis_move_t* chassis_move_vision_to_vector)
 {
-    //设定值
-    fp32 vx = 0;
-    fp32 vy = 0;
-    fp32 wz = 0;
-
-    //判断数据是否长久未更新
-    if (judge_not_rx_vision_data())
+    if (vx_set == NULL || vy_set == NULL || wz_set == NULL || chassis_move_vision_to_vector == NULL)
     {
-        //不控制移动
-        vx = 0;
-        vy = 0;
-        wz = 0;
+        return;
     }
-    else
-    {
-        //计算控制量
-        chassis_auto_move_controller_calc(&chassis_move_vision_to_vector->chassis_auto.chassis_auto_move_controller, AUOT_MOVE_SET_DISTANCE, chassis_move_vision_to_vector->chassis_auto.chassis_vision_control_point->distance);
-        //输出控制量
-        vx = chassis_move_vision_to_vector->chassis_auto.chassis_auto_move_controller.output;
-        vy = 0;
-        wz = 0;
-    }
+    chassis_vision_to_control_vector(vx_set, vy_set, chassis_move_vision_to_vector);
+    *wz_set = 0;
 
-    //赋值
-    *vx_set = vx;
-    *vy_set = vy;
-    *wz_set = wz;
 }
 
 

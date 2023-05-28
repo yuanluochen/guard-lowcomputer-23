@@ -284,6 +284,9 @@ static void gimbal_init(gimbal_control_t *init)
     // 初始化云台自动扫描周期
     init->gimbal_auto_scan.scan_pitch_period = PITCH_SCAN_PERIOD;
     init->gimbal_auto_scan.scan_yaw_period = YAW_SCAN_PERIOD;
+
+    //获取云台自动扫描初始化时间
+    init->gimbal_auto_scan.scan_begin_time = TIME_MS_TO_S(HAL_GetTick());
     
     //pitch轴扫描中心值
     init->gimbal_auto_scan.pitch_center_value = init->gimbal_auto_scan.pitch_range;

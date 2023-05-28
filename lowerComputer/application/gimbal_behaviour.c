@@ -128,7 +128,15 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
  * @param gimbal_control_set  云台数据指针
  * @author                    yuanluochen
  */
-static void gimbal_auto_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set);
+static void gimbal_auto_attack_control(fp32* yaw, fp32* pitch, gimbal_control_t* gimbal_control_set);
+/**
+ * @brief                     云台进入自动扫描模式，云台yaw轴pitch轴浮动扫描
+ *
+ * @param yaw                 yaw 轴角度增量
+ * @param pitch               pitch 轴角度增量
+ * @param gimbal_control_set  云台指针
+ */
+static void gimbal_auto_scan_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
 
 /*----------------------------------结构体---------------------------*/
 //云台行为状态机
@@ -184,7 +192,8 @@ void gimbal_behaviour_mode_set(gimbal_control_t *gimbal_mode_set)
     // 相对角度控制和遥控器和初始化模式以及自动模式都采用一种控制模式
     case GIMBAL_RC:
     case GIMBAL_INIT:
-    case GIMBAL_AUTO:
+    case GIMBAL_AUTO_SCAN:
+    case GIMBAL_AUTO_ATTACK:
         gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;   // yaw轴通过陀螺仪的绝对角控制
         gimbal_mode_set->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO; // pitch轴通过陀螺仪的绝对角控制
         break;
@@ -209,7 +218,7 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
     {
         return;
     }
-    // 判断底盘模式，根据底盘模式选择底盘控制方式
+    // 判断云台模式，根据云台模式选择云台控制方式
     switch (gimbal_behaviour)
     {
     case GIMBAL_ZERO_FORCE: // 无力模式云台无力
@@ -228,8 +237,12 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
         gimbal_motionless_control(add_yaw, add_pitch, gimbal_control_set);
         break;
 
-    case GIMBAL_AUTO: // 自动模式，上位机控制
-        gimbal_auto_control(add_yaw, add_pitch, gimbal_control_set);
+    case GIMBAL_AUTO_ATTACK: // 自动袭击模式
+        gimbal_auto_attack_control(add_yaw, add_pitch, gimbal_control_set);
+        break;
+
+    case GIMBAL_AUTO_SCAN: //自动扫描模式
+        gimbal_auto_scan_control(add_yaw, add_pitch, gimbal_control_set);
         break;
     }
 }
@@ -345,7 +358,18 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
         else if (switch_is_up(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
         {
             // 切换到云台自动模式
-            gimbal_behaviour = GIMBAL_AUTO;
+
+            //根据视觉是否识别，自动控制模式
+            if (judge_vision_appear_target())
+            {
+                //识别到目标
+                gimbal_behaviour = GIMBAL_AUTO_ATTACK;  //云台自动袭击模式
+            }
+            else
+            {
+                //未识别到目标
+                gimbal_behaviour = GIMBAL_AUTO_SCAN;   //云台自动扫描模式
+            }            
         }
         // 遥控器报错处理
         if (toe_is_error(DBUS_TOE))
@@ -364,7 +388,7 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
         }
 
         // 判断是否发生云台从其他模式切入自瞄模式
-        if (last_gimbal_behaviour != GIMBAL_AUTO && gimbal_behaviour == GIMBAL_AUTO)
+        if (last_gimbal_behaviour != GIMBAL_AUTO_ATTACK && gimbal_behaviour == GIMBAL_AUTO_ATTACK)
         {
             other_mode_transform_auto_mode_flag = 1;
             // 保存当前云台位置
@@ -425,16 +449,44 @@ static void gimbal_motionless_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *
 }
 
 /**
- * @brief                     云台进入自动模式，云台姿态受视觉上位机控制，电机是绝对角度控制
+ * @brief                     云台进入自动袭击模式，云台姿态受视觉上位机控制，电机是绝对角度控制
  *
  * @param yaw                 yaw 轴角度增量
  * @param pitch               pitch 轴角度增量
  * @param gimbal_control_set  云台指针
  */
-static void gimbal_auto_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
+static void gimbal_auto_attack_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
 {
     // yaw pitch 轴设定值与当前值的差值
-    fp32 pitch_error = 0; 
+    fp32 pitch_error = 0;
+    fp32 yaw_error = 0;
+
+    // pitch轴yaw轴设定角度
+    fp32 pitch_set_angle = 0;
+    fp32 yaw_set_angle = 0;
+
+    // 计算过去设定角度与当前角度之间的差值
+    yaw_error = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
+    pitch_error = gimbal_control_set->gimbal_pitch_motor.absolute_angle_set - gimbal_control_set->gimbal_pitch_motor.absolute_angle;
+    //  获取上位机视觉数据
+    pitch_set_angle = gimbal_control_set->gimbal_vision_point->gimbal_pitch;
+    yaw_set_angle = gimbal_control_set->gimbal_vision_point->gimbal_yaw;
+    // 赋值增量
+    *yaw = yaw_set_angle - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
+    *pitch = pitch_set_angle - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;
+}
+
+/**
+ * @brief                     云台进入自动扫描模式，云台yaw轴pitch轴浮动扫描
+ *
+ * @param yaw                 yaw 轴角度增量
+ * @param pitch               pitch 轴角度增量
+ * @param gimbal_control_set  云台指针
+ */
+static void gimbal_auto_scan_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
+{
+    // yaw pitch 轴设定值与当前值的差值
+    fp32 pitch_error = 0;
     fp32 yaw_error = 0;
 
     // pitch轴yaw轴设定角度
@@ -445,34 +497,20 @@ static void gimbal_auto_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal
     yaw_error = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
     pitch_error = gimbal_control_set->gimbal_pitch_motor.absolute_angle_set - gimbal_control_set->gimbal_pitch_motor.absolute_angle;
 
-    // 判断数据是否长久未更新
-    if (judge_not_rx_vision_data())
-    {
-        // // 长久未更新
+    // 自动扫描设置浮动值
+    fp32 auto_scan_AC_set_yaw = 0;
+    fp32 auto_scan_AC_set_pitch = 0;
+    // 计算运行时间
+    gimbal_control_set->gimbal_auto_scan.scan_run_time = TIME_MS_TO_S(HAL_GetTick()) - gimbal_control_set->gimbal_auto_scan.scan_begin_time;
+    //云台自动扫描,设置浮动值
+    scan_control_set(&auto_scan_AC_set_yaw, gimbal_control_set->gimbal_auto_scan.yaw_range, gimbal_control_set->gimbal_auto_scan.scan_yaw_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
+    scan_control_set(&auto_scan_AC_set_pitch, gimbal_control_set->gimbal_auto_scan.pitch_range, gimbal_control_set->gimbal_auto_scan.scan_pitch_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
+    // 赋值控制值  = 中心值 + 加上浮动函数
+    pitch_set_angle = auto_scan_AC_set_pitch + gimbal_control_set->gimbal_auto_scan.pitch_center_value;
+    yaw_set_angle = auto_scan_AC_set_yaw + gimbal_control_set->gimbal_auto_scan.yaw_center_value;
 
-        // // 自动扫描设置浮动值
-        // fp32 auto_scan_AC_set_yaw = 0;
-        // fp32 auto_scan_AC_set_pitch = 0;
-        // // 计算运行时间
-        // gimbal_control_set->gimbal_auto_scan.scan_run_time = TIME_MS_TO_S(HAL_GetTick()) - gimbal_control_set->gimbal_auto_scan.scan_begin_time;
-        // //云台自动扫描,设置浮动值
-        // scan_control_set(&auto_scan_AC_set_yaw, gimbal_control_set->gimbal_auto_scan.yaw_range, gimbal_control_set->gimbal_auto_scan.scan_yaw_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
-        // scan_control_set(&auto_scan_AC_set_pitch, gimbal_control_set->gimbal_auto_scan.pitch_range, gimbal_control_set->gimbal_auto_scan.scan_pitch_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
-        // // 赋值控制值  = 中心值 + 加上浮动函数
-        // pitch_set_angle = auto_scan_AC_set_pitch + gimbal_control_set->gimbal_auto_scan.pitch_center_value;
-        // yaw_set_angle = auto_scan_AC_set_yaw + gimbal_control_set->gimbal_auto_scan.yaw_center_value;
-        yaw_set_angle = gimbal_control_set->gimbal_auto_scan.yaw_center_value;
-        pitch_set_angle = gimbal_control_set->gimbal_auto_scan.pitch_center_value;
-
-    }
-    else
-    {
-        //  获取上位机视觉数据
-        pitch_set_angle = gimbal_control_set->gimbal_vision_point->gimbal_pitch;
-        yaw_set_angle = gimbal_control_set->gimbal_vision_point->gimbal_yaw;
-        // 云台自动扫描更新初始时间
-        gimbal_control_set->gimbal_auto_scan.scan_begin_time = TIME_MS_TO_S(HAL_GetTick());
-   }
+    // yaw_set_angle = gimbal_control_set->gimbal_auto_scan.yaw_center_value;
+    // pitch_set_angle = gimbal_control_set->gimbal_auto_scan.pitch_center_value;
     // 赋值增量
     *yaw = yaw_set_angle - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
     *pitch = pitch_set_angle - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;
@@ -535,22 +573,10 @@ void scan_control_set(fp32* gimbal_set, fp32 range, fp32 period, fp32 run_time)
     }
 }
 
-bool_t judge_gimbal_mode_is_auto_mode(void)
-{
-    // 判断当前云台模式是否为自动模式
-    return (gimbal_behaviour == GIMBAL_AUTO) ? 1 : 0;
-}
-
-bool_t judge_other_mode_transform_auto_mode(void)
-{
-    // 读取数值，判断事件是否发生
-    bool_t temp = other_mode_transform_auto_mode_flag;
-    // 数值归零
-    other_mode_transform_auto_mode_flag = 0;
-    return temp;
-}
 
 bool_t gimbal_control_vision_task(void)
 {
     return gimbal_init_finish_flag;
 }
+
+

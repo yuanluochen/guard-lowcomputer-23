@@ -23,7 +23,7 @@
 #define ALLOW_ATTACK_ERROR 0.04
 
 //发弹判断计数次数
-#define JUDGE_ATTACK_COUNT 2
+#define JUDGE_ATTACK_COUNT 1
 //发弹停止判断计数次数
 #define JUDGE_STOP_ATTACK_COUNT 5
 
@@ -52,10 +52,10 @@
 #define IMU_TO_GUNPOINT_DISTANCE 0.20f
 
 //弹速
-#define BULLET_SPEED 25.0f
+#define BULLET_SPEED 23.0f
 
 //空气阻力系数 K1 = (0.5 * density * C * S) / m
-#define AIR_K1 0.09f
+#define AIR_K1 0.11f
 //初始子弹飞行迭代数值
 #define T_0 0.0f
 //迭代精度
@@ -73,7 +73,7 @@
 #define GRAVITY 9.78f
 
 //固有时间偏移即上位机计算时间单位ms
-#define TIME_BIAS 15
+#define TIME_BIAS 100
 
 //ms转s
 #ifndef TIME_MS_TO_S
@@ -85,7 +85,7 @@
 #define ALL_CIRCLE (2 * PI)
 
 //yaw轴电机到枪口的竖直高度
-#define Z_STATIC 0.15f
+#define Z_STATIC 0.0f
 //枪口前推距离
 #define DISTANCE_STATIC 0.25f
 //初始飞行时间
@@ -148,6 +148,13 @@ typedef enum
     SHOOT_READY_ATTACK, // 准备袭击
     SHOOT_STOP_ATTACK,  // 停止袭击
 } shoot_command_e;
+
+// 视觉目标状态
+typedef enum
+{
+    TARGET_UNAPPEAR, // 未识别到目标
+    TARGET_APPEAR,   // 识别到目标
+} vision_target_appear_state_e;
 
 //欧拉角结构体
 typedef struct
@@ -302,8 +309,6 @@ typedef struct
 
     // 自身imu绝对角
     eular_angle_t imu_absolution_angle;
-    // 视觉解算的绝对角
-    eular_angle_t vision_absolution_angle;
 
     //机器人状态指针
     const ext_game_robot_state_t* robot_state_point;
@@ -318,6 +323,9 @@ typedef struct
     //发送数据包
     send_packet_t send_packet;
 
+
+    // 视觉目标状态
+    vision_target_appear_state_e vision_target_appear_state;
     // 云台电机运动命令
     gimbal_vision_control_t gimbal_vision_control;
     // 发射机构发射命令
@@ -338,12 +346,13 @@ const shoot_vision_control_t *get_vision_shoot_point(void);
 
 // 获取上位机底盘控制命令
 const chassis_vision_control_t* get_vision_chassis_point(void);
+
 /**
- * @brief 判断未接收到上位机数据
- *
- * @return 返回1 未接收到， 返回0 接收到
+ * @brief 判断视觉是否识别到目标
+ * 
+ * @return bool_t 返回1 识别到目标 返回0 未识别到目标
  */
-bool_t judge_not_rx_vision_data(void);
+bool_t judge_vision_appear_target(void);
 
 /**
  * @brief 分析视觉原始增加数据，根据原始数据，判断是否要进行发射
