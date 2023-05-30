@@ -19,13 +19,11 @@
 #include "arm_math.h"
 #include "referee.h"
 
-//允许发弹角度误差
-#define ALLOW_ATTACK_ERROR 0.04
+//允许发弹角度误差 rad
+#define ALLOW_ATTACK_ERROR 0.04f
+//允许发弹距离 m 
+#define ALLOW_ATTACK_DISTANCE 4.0f
 
-//发弹判断计数次数
-#define JUDGE_ATTACK_COUNT 1
-//发弹停止判断计数次数
-#define JUDGE_STOP_ATTACK_COUNT 5
 
 //延时等待
 #define VISION_SEND_TASK_INIT_TIME 401
@@ -43,19 +41,12 @@
 //机器人红蓝id分界值，大于该值则机器人自身为蓝色，小于这个值机器人自身为红色
 #define ROBOT_RED_AND_BLUE_DIVIDE_VALUE 100
 
-//最大未接受到上位机数据的时间
-#define MAX_UNRX_TIME 100
 
-//IMU 到 枪口之间的竖直距离
-#define IMU_TO_GUMPOINT_VERTICAK 0.05f
-//IMU 到 枪口之间的竖直距离
-#define IMU_TO_GUNPOINT_DISTANCE 0.20f
+//最小设定弹速
+#define MIN_SET_BULLET_SPEED 20.0f
 
-//弹速
-#define BULLET_SPEED 23.0f
-
-//空气阻力系数 K1 = (0.5 * density * C * S) / m
-#define AIR_K1 0.11f
+//空气阻力系数
+#define AIR_K1 0.076f
 //初始子弹飞行迭代数值
 #define T_0 0.0f
 //迭代精度
@@ -70,10 +61,10 @@
 //比例补偿器比例系数
 #define ITERATE_SCALE_FACTOR 0.3f
 //重力加速度
-#define GRAVITY 9.78f
+#define GRAVITY 9.79878f
 
 //固有时间偏移即上位机计算时间单位ms
-#define TIME_BIAS 100
+#define TIME_BIAS 25
 
 //ms转s
 #ifndef TIME_MS_TO_S
@@ -84,20 +75,31 @@
 //全圆弧度
 #define ALL_CIRCLE (2 * PI)
 
-//yaw轴电机到枪口的竖直高度
-#define Z_STATIC 0.0f
+//imu到枪口的竖直距离
+#define Z_STATIC 0.005295f
 //枪口前推距离
-#define DISTANCE_STATIC 0.25f
+#define DISTANCE_STATIC 0.21085f
 //初始飞行时间
 #define INIT_FILIGHT_TIME 0.5f
 
-//发射枪管id
-#define SHOOT_ID 1
+
+//最大未接受数据的时间 s
+#define MAX_NOT_RECEIVE_DATA_TIME 0.2f
+
 //子弹类型
-#define BULLET_TYPE 1
+typedef enum
+{
+    BULLET_17 = 1,
+    BULLET_42 = 2,
+}bullet_type_E;
 
-
-
+//发射枪管id
+typedef enum
+{
+    SHOOTER_17_1 = 1,
+    SHOOTER_17_2 = 2,
+    SHOOTER_42 = 3,
+}shooter_id_e;
 
 //接收数据状态
 typedef enum
@@ -124,22 +126,18 @@ typedef enum
     BLUE = 1,
 }robot_armor_color_e;
 
-//id
+
 typedef enum
 {
-    ID_OUTPOST = 0, // 前哨站
-    ID_GUADE = 6,   // 哨兵
-    ID_BASE = 7,    // 基地
-} armor_id_e;
-
-//装甲板数值
-typedef enum
-{
-    ARMOR_NUM_BALANCE = 2,
-    ARMOR_NUM_OUTPOST = 3,
-    ARMOR_NUM_NORMAL = 4
-}armor_num_e;
-
+    ARMOR_OUTPOST = 0,
+    ARMOR_HERO = 1,
+    ARMOR_ENGINEER = 2,
+    ARMOR_INFANTRY3 = 3,
+    ARMOR_INFANTRY4 = 4,
+    ARMOR_INFANTRY5 = 5,
+    ARMOR_GUARD = 6,
+    ARMOR_BASE = 7
+}armor_id_e;
 
 //哨兵发射命令
 typedef enum
@@ -163,6 +161,18 @@ typedef struct
     fp32 pitch;
     fp32 roll;
 } eular_angle_t;
+
+//队列
+typedef struct 
+{
+    // 队列数据指针
+    fp32* date;
+    // 容量
+    int16_t capacity;
+    // 当前存储的数据量
+    int16_t cur_size;
+
+}queue_t;
 
 //向量结构体 
 typedef struct
@@ -216,8 +226,17 @@ typedef receive_packet_t target_data_t;
 // 视觉接收结构体
 typedef struct
 {
-    // 接收标志位
+    // 接收状态位
     uint8_t receive_state : 1;
+    // 上次接收数据的时间
+    fp32 last_receive_time;
+    // 当前接受数据时间
+    fp32 current_receive_time;
+
+    // 当前时间 -- 用于计算是否长时间未接受
+    fp32 current_time;
+    //  间隔时间
+    fp32 interval_time;
     // 接收数据包
     receive_packet_t receive_packet;
 } vision_receive_t;
@@ -278,7 +297,7 @@ typedef struct
     // 装甲板数量
     uint8_t armor_num;
 
-    //yaw轴电机到枪口水平面的垂直距离
+    //IMU到yaw轴电机的竖直距离
     fp32 z_static;
     //枪口前推距离
     fp32 distance_static;
@@ -300,8 +319,11 @@ typedef struct
     // 检测装甲板的颜色(敌方装甲板的颜色)
     uint8_t detect_armor_color;
 
-    //敌方机器人数据
+    //目标数据
     target_data_t target_data;
+    //上次目标数据
+    target_data_t last_target_data;
+    
     //弹道解算
     solve_trajectory_t solve_trajectory;
     //目标位置
@@ -326,6 +348,8 @@ typedef struct
 
     // 视觉目标状态
     vision_target_appear_state_e vision_target_appear_state;
+    // 目标装甲板编号
+    armor_id_e target_armor_id;
     // 云台电机运动命令
     gimbal_vision_control_t gimbal_vision_control;
     // 发射机构发射命令
@@ -355,13 +379,14 @@ const chassis_vision_control_t* get_vision_chassis_point(void);
 bool_t judge_vision_appear_target(void);
 
 /**
- * @brief 分析视觉原始增加数据，根据原始数据，判断是否要进行发射
+ * @brief 分析视觉原始增加数据，根据原始数据，判断是否要进行发射，判断yaw轴pitch的角度，如果在一定范围内，则计算值增加，增加到一定数值则判断发射，如果yaw轴pitch轴角度大于该范围，则计数归零
  * 
  * @param shoot_judge 视觉结构体
  * @param vision_begin_add_yaw_angle 上位机视觉yuw轴原始增加角度
  * @param vision_begin_add_pitch_angle 上位机视觉pitch轴原始增加角度
+ * @param target_distance 目标距离
  */
-void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw_angle, fp32 vision_begin_add_pitch_angle);
+void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw_angle, fp32 vision_begin_add_pitch_angle, fp32 target_distance);
 
 /**
  * @brief 接收数据解码
@@ -379,6 +404,33 @@ void receive_decode(uint8_t* buf, uint32_t len);
 void send_packet(vision_control_t* send);
 
 
+/**
+ * @brief 创建开辟空间 返回指针
+ * 
+ * @param capacity 创建空间的容量
+ * @return queue_t* 
+ */
+queue_t* queue_create(int16_t capacity);
+/**
+ * @brief 向队列中添加数据
+ * 
+ * @param queue 队列结构体
+ * @param append_data 添加的数据
+ */
+void queue_append_data(queue_t* queue, fp32 append_data);
+/**
+ * @brief 释放队列存储数据的空间，并释放队列的空间
+ * 
+ * @param queue 队列结构体
+ */
+void queue_delete(queue_t* queue);
+/**
+ * @brief 计算队列数据的平均值
+ * 
+ * @param queue queue 结构体
+ * @return fp32 返回存储数据的平均值， 如果计算有问题则返回-1
+ */
+fp32 queue_data_calc_average(queue_t* queue);
 
 
 #endif // !VISION_TASK_H

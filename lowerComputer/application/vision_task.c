@@ -24,6 +24,8 @@ static void vision_task_init(vision_control_t* init);
 static void vision_task_feedback_update(vision_control_t* update);
 // 判断是否识别到目标
 static void vision_judge_appear_target(vision_control_t* judge_appear_target);
+// 判断目标装甲板数据
+static void vision_judge_target_armor_data(vision_control_t* judge_target_armor_id);
 // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角
 static void vision_data_process(vision_control_t* vision_data);
 //配置发送数据包
@@ -74,6 +76,8 @@ void vision_task(void const* pvParameters)
         vision_task_feedback_update(&vision_control);
         //判断是否识别到目标
         vision_judge_appear_target(&vision_control);
+        //判断目标装甲板编号
+        vision_judge_target_armor_data(&vision_control);
         // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角,并设置控制命令
         vision_data_process(&vision_control);
 
@@ -102,7 +106,7 @@ static void vision_task_init(vision_control_t* init)
     //初始化一些基本的弹道参数
     solve_trajectory_param_init(&init->solve_trajectory, AIR_K1, INIT_FILIGHT_TIME, Z_STATIC, DISTANCE_STATIC);
     //初始化当前弹速
-    init->current_bullet_speed = BULLET_SPEED;
+    init->current_bullet_speed = MIN_SET_BULLET_SPEED;
     //初始化视觉目标状态为未识别到目标
     init->vision_target_appear_state = TARGET_UNAPPEAR;
     //更新数据
@@ -119,7 +123,7 @@ static void vision_task_feedback_update(vision_control_t* update)
     judge_enemy_robot_armor_color(update);
     // 修正当前弹速
     calc_current_bullet_speed(update);
-    //获取敌方机器人数据
+    //获取目标数据
     if (update->vision_receive_point->receive_state == UNLOADED)
     {
         //拷贝数据
@@ -147,9 +151,27 @@ static void vision_judge_appear_target(vision_control_t* judge_appear_target)
     }
     else
     {
-        //识别到目标
-        judge_appear_target->vision_target_appear_state = TARGET_APPEAR;
+        //更新当前时间
+        judge_appear_target->vision_receive_point->current_time = TIME_MS_TO_S(HAL_GetTick());
+        //判断当前时间是否距离上次接收的时间过长
+        if (fabs(judge_appear_target->vision_receive_point->current_time - judge_appear_target->vision_receive_point->current_receive_time) > MAX_NOT_RECEIVE_DATA_TIME)
+        {
+            //判断为未识别目标
+            judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
+        }
+        else
+        {
+            // 识别到目标
+            judge_appear_target->vision_target_appear_state = TARGET_APPEAR;
+        }
     }
+}
+
+
+static void vision_judge_target_armor_data(vision_control_t* judge_target_armor_id)
+{
+    //赋值装甲板id
+    judge_target_armor_id->target_armor_id = (armor_id_e)judge_target_armor_id->target_data.id; 
 }
 
 static void vision_data_process(vision_control_t* vision_data)
@@ -165,20 +187,19 @@ static void vision_data_process(vision_control_t* vision_data)
         // 计算机器人瞄准位置
         calc_robot_gimbal_aim_vector(&vision_data->robot_gimbal_aim_vector, &vision_data->target_position, vision_data->target_data.vx, vision_data->target_data.vy, vision_data->target_data.vz, vision_data->solve_trajectory.predict_time);
         // 计算机器人pitch轴与yaw轴角度
-        vision_data->gimbal_vision_control.gimbal_pitch = calc_target_position_pitch_angle(&vision_data->solve_trajectory, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)) + vision_data->solve_trajectory.distance_static, vision_data->robot_gimbal_aim_vector.z - vision_data->solve_trajectory.z_static);
+        vision_data->gimbal_vision_control.gimbal_pitch = calc_target_position_pitch_angle(&vision_data->solve_trajectory, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)) - vision_data->solve_trajectory.distance_static, vision_data->robot_gimbal_aim_vector.z + vision_data->solve_trajectory.z_static);
         vision_data->gimbal_vision_control.gimbal_yaw = atan2(vision_data->robot_gimbal_aim_vector.y, vision_data->robot_gimbal_aim_vector.x);
         //判断发射
-        vision_shoot_judge(vision_data, vision_data->gimbal_vision_control.gimbal_yaw - vision_data->imu_absolution_angle.yaw, vision_data->gimbal_vision_control.gimbal_pitch - vision_data->imu_absolution_angle.pitch);
-        //赋值底盘控制命令
+        vision_shoot_judge(vision_data, vision_data->gimbal_vision_control.gimbal_yaw - vision_data->imu_absolution_angle.yaw, vision_data->gimbal_vision_control.gimbal_pitch - vision_data->imu_absolution_angle.pitch, sqrt(pow(vision_data->target_data.x, 2) + pow(vision_data->target_data.y, 2)));
+        //赋值底盘控制命令 -- 我方机器人与目标的距离
         vision_data->chassis_vision_control.distance = sqrt(pow(vision_data->target_data.x, 2) + pow(vision_data->target_data.y, 2));
     }
     else
     {
-        //未识别到目标
-
-        //底盘云台控制值置零
-        memset(&vision_data->gimbal_vision_control, 0, sizeof(gimbal_vision_control_t));
-        memset(&vision_data->chassis_vision_control, 0, sizeof(chassis_vision_control_t));
+        //未识别到目标 -- 控制值清零
+        vision_data->gimbal_vision_control.gimbal_yaw = 0;
+        vision_data->gimbal_vision_control.gimbal_pitch = 0;
+        vision_data->chassis_vision_control.distance = 0;
         //设置停止发射
         vision_data->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
     }
@@ -192,55 +213,24 @@ static void vision_data_process(vision_control_t* vision_data)
  * @param shoot_judge 视觉结构体
  * @param vision_begin_add_yaw_angle 上位机视觉yuw轴原始增加角度
  * @param vision_begin_add_pitch_angle 上位机视觉pitch轴原始增加角度
+ * @param target_distance 目标距离
  */
-void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw_angle, fp32 vision_begin_add_pitch_angle)
-{
-    // 判断击打计数
-    static int attack_count = 0;
-    // 判断停止击打的次数 
-    static int stop_attack_count = 0;
-
-    
-    // 上位机发送角度到一定方位内计数值增加
-    if (fabs(vision_begin_add_pitch_angle) <= ALLOW_ATTACK_ERROR && fabs(vision_begin_add_yaw_angle) <= ALLOW_ATTACK_ERROR)
+void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw_angle, fp32 vision_begin_add_pitch_angle, fp32 target_distance)
+{ 
+    //判断目标距离
+    if (target_distance <= ALLOW_ATTACK_DISTANCE)
     {
-        // 停止击打计数值归零
-        stop_attack_count = 0;
-
-        // 判断计数值是否到达判断击打的计数值
-        if (attack_count >= JUDGE_ATTACK_COUNT)
+        // 小于一定角度开始击打
+        if (fabs(vision_begin_add_pitch_angle) <= ALLOW_ATTACK_ERROR && fabs(vision_begin_add_yaw_angle) <= ALLOW_ATTACK_ERROR)
         {
-            // 到达可击打的次数
-            // 设置击打
             shoot_judge->shoot_vision_control.shoot_command = SHOOT_ATTACK;
         }
         else
         {
-            // 未到达可击打的次数
-            // 计数值增加
-            attack_count++;
-        }
-    }
-    // 上位机发射角度大于该范围计数值归零
-    else if (fabs(vision_begin_add_pitch_angle) > ALLOW_ATTACK_ERROR || fabs(vision_begin_add_yaw_angle) > ALLOW_ATTACK_ERROR)
-    {
-        
-
-        if (stop_attack_count >= JUDGE_STOP_ATTACK_COUNT)
-        {
-            //达到停止击打的计数
-            // 判断击打计数值归零
-            attack_count = 0;
-            //设置停止击打
             shoot_judge->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
         }
-        else
-        {
-            // 未到达停止击打的次数
-            // 计数值增加
-            stop_attack_count ++;
-        }
     }
+
 }
 
 static void set_vision_send_packet(vision_control_t* set_send_packet)
@@ -278,13 +268,15 @@ static void judge_enemy_robot_armor_color(vision_control_t* judge_detect_color)
  */
 static void calc_current_bullet_speed(vision_control_t* calc_cur_bullet_speed)
 {
-    if (calc_cur_bullet_speed->shoot_data_point->bullet_type == BULLET_TYPE)
+    //判断子弹类型
+    if (calc_cur_bullet_speed->shoot_data_point->bullet_type == BULLET_17)
     {
-        if (calc_cur_bullet_speed->shoot_data_point->shooter_id == SHOOT_ID)
+        if (calc_cur_bullet_speed->shoot_data_point->shooter_id == SHOOTER_17_1)
         {
-            if (calc_cur_bullet_speed->shoot_data_point->bullet_speed >= BULLET_SPEED)
+            //判断弹速是否低于一定数值，低于这一数值，认为其不合法
+            if (calc_cur_bullet_speed->shoot_data_point->bullet_speed >= MIN_SET_BULLET_SPEED)
             {
-                calc_cur_bullet_speed->current_bullet_speed = calc_cur_bullet_speed->shoot_data_point->bullet_speed;
+                  calc_cur_bullet_speed->current_bullet_speed = (int16_t)calc_cur_bullet_speed->shoot_data_point->bullet_speed;
             }
         }
     }
@@ -320,6 +312,12 @@ void receive_decode(uint8_t* buf, uint32_t len)
             memcpy(&vision_receive.receive_packet, &temp_packet, sizeof(receive_packet_t));
             // 接收数据数据状态标志为未读取
             vision_receive.receive_state = UNLOADED;
+            // 保存时间
+            vision_receive.last_receive_time = vision_receive.current_receive_time;
+            // 记录当前接收数据的时间
+            vision_receive.current_receive_time = TIME_MS_TO_S(HAL_GetTick());
+            //计算时间间隔
+            vision_receive.interval_time = vision_receive.current_receive_time - vision_receive.last_receive_time;
         }
     }
 }
@@ -331,7 +329,7 @@ void receive_decode(uint8_t* buf, uint32_t len)
  * @param k1 弹道参数
  * @param init_flight_time 初始飞行时间估计值
  * @param z_static yaw轴电机到枪口水平面的垂直距离
- * @param distance_static /枪口前推距离 
+ * @param distance_static 枪口前推距离 
  */
 static void solve_trajectory_param_init(solve_trajectory_t* solve_trajectory, fp32 k1, fp32 init_flight_time, fp32 z_static, fp32 distance_static)\
 {
@@ -340,7 +338,7 @@ static void solve_trajectory_param_init(solve_trajectory_t* solve_trajectory, fp
     solve_trajectory->z_static = z_static;
     solve_trajectory->distance_static = distance_static;
     solve_trajectory->all_target_position_point = NULL;
-    solve_trajectory->current_bullet_speed = BULLET_SPEED;
+    solve_trajectory->current_bullet_speed = MIN_SET_BULLET_SPEED;
 }
 
 /**
@@ -387,12 +385,12 @@ static void select_optimal_target(solve_trajectory_t* solve_trajectory, target_d
     //计算所有装甲板的位置
     for (int i = 0; i < solve_trajectory->armor_num; i++)
     {
-        //由于四块装甲板距离机器人中心距离不同，但是一般两辆对称，所以进行计算装甲板位置时，第0 2块用当前半径，第1 3块用上一次半径
+        //由于四块装甲板距离机器人中心距离不同，但是一般两两对称，所以进行计算装甲板位置时，第0 2块用当前半径，第1 3块用上一次半径
         fp32 r = (i % 2 == 0) ? vision_data->r1 : vision_data->r2;
         solve_trajectory->all_target_position_point[i].yaw = solve_trajectory->target_yaw + i * (ALL_CIRCLE / solve_trajectory->armor_num);
         solve_trajectory->all_target_position_point[i].x = vision_data->x - r * cos(solve_trajectory->all_target_position_point[i].yaw);
         solve_trajectory->all_target_position_point[i].y = vision_data->y - r * sin(solve_trajectory->all_target_position_point[i].yaw);
-        solve_trajectory->all_target_position_point[i].z = (i % 2 == 0) ? vision_data->z : vision_data->dz;
+        solve_trajectory->all_target_position_point[i].z = (i % 2 == 0) ? vision_data->z : vision_data->z + vision_data->dz;
     }
 
     // 选择与机器人自身yaw差值最小的目标,冒泡排序选择最小目标
@@ -466,7 +464,6 @@ static float calc_target_position_pitch_angle(solve_trajectory_t* solve_trajecto
     float bullet_drop_z = 0;
     // 瞄准高度
     float aim_z = z;
-    //
 
     // 仰角
     float pitch = 0;
@@ -521,3 +518,110 @@ const chassis_vision_control_t* get_vision_chassis_point(void)
 {
     return &vision_control.chassis_vision_control;
 }
+
+
+queue_t* queue_create(int16_t capacity)
+{
+    //创建空间
+    queue_t* queue = malloc(sizeof(queue_t));
+    if (queue == NULL)
+    {
+        return NULL;
+    }
+    //数值清空
+    memset(queue, 0, sizeof(queue_t));
+    //赋值容量
+    queue->capacity = capacity;
+    //开辟空间
+    queue->date = malloc(queue->capacity * sizeof(fp32));
+    //赋值当前存储值
+    queue->cur_size = 0; 
+    return queue;
+}
+
+
+void queue_append_data(queue_t* queue, fp32 append_data)
+{
+    
+    if (queue->date != NULL && queue->capacity != 0)
+    {
+        //判断是否已满
+        if (queue->cur_size < queue->capacity)
+        {
+            //未满 -- 添加数据
+
+            //数据后移
+            for (int i = (queue->cur_size - 1); i >= 0; i--)
+            {
+                queue->date[i + 1] = queue->date[i];   
+            }
+
+            //添加最新数据
+            queue->date[0] = append_data;
+
+            //存储量加1
+            queue->cur_size += 1;
+        }
+        else
+        {
+            // 已满 -- 清空最后一位数据
+
+            //数据后移动
+            for (int i = queue->cur_size - 2; i >= 0; i--)
+            {
+                queue->date[i + 1] = queue->date[i];
+            }
+
+            //添加最新数据
+            queue->date[0] = append_data;
+
+            //存储量不变
+        }
+    }
+    else
+    {
+        return;
+    }
+}
+
+
+
+fp32 queue_data_calc_average(queue_t* queue)
+{
+    if (queue == NULL)
+    {
+        //存在问题，返回-1
+        return -1;
+    }
+    fp32 sum = 0;
+    if (queue->cur_size > 0)
+    {
+        for (int i = 0; i < queue->cur_size - 1; i++)
+        {
+            sum += queue->date[i];
+        }
+    }
+    else
+    {
+        //无数据返回0
+        return 0;
+    }
+
+    return sum / queue->cur_size;
+}
+
+
+void queue_delete(queue_t* queue)
+{
+    if (queue == NULL)
+    {
+        return;
+    }
+    //释放存储空间
+    free(queue->date);
+    queue->date = NULL;
+    //释放自身空间
+    free(queue);
+    queue = NULL;
+}
+

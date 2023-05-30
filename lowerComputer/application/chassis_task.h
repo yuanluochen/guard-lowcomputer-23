@@ -135,6 +135,9 @@
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT 6.0f
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 0.2f
 
+//底盘跟随云台死区 rad
+#define CHASSIS_FOLLOW_GIMBAL_DEADLINE 0.005f
+
 //底盘小陀螺速度值
 #define SPIN_SPEED -10
 
@@ -146,6 +149,8 @@
 #define AUTO_MOVE_MIN_OUTPUT_SPEED -5.0f
 //设定距离 m
 #define AUOT_MOVE_SET_DISTANCE 2.5f
+//自动模式下底盘跟随击打距离
+#define AUTO_MOVE_CHASSIS_FOLLOW_ATTACK_DISTANCE AUOT_MOVE_SET_DISTANCE
 
 
 typedef enum

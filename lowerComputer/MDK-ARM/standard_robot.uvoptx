@@ -315,6 +315,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>k</ItemText>
         </Ww>
+        <Ww>
+          <count>32</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>vision_receive</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

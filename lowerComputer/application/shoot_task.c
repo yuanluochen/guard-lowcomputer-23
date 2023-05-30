@@ -90,6 +90,7 @@ shoot_motor_control_mode_e trigger_motor_mode = SHOOT_MOTOR_STOP; // 拨弹盘电机
 void shoot_task(void const *pvParameters)
 {
     vTaskDelay(GIMBAL_TASK_INIT_TIME);
+    //射击初始化
     shoot_init();
     while (1)
     {

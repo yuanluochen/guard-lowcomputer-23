@@ -507,10 +507,9 @@ static void gimbal_auto_scan_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *g
     scan_control_set(&auto_scan_AC_set_pitch, gimbal_control_set->gimbal_auto_scan.pitch_range, gimbal_control_set->gimbal_auto_scan.scan_pitch_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
     // 赋值控制值  = 中心值 + 加上浮动函数
     pitch_set_angle = auto_scan_AC_set_pitch + gimbal_control_set->gimbal_auto_scan.pitch_center_value;
+    // pitch_set_angle = 0.1;
     yaw_set_angle = auto_scan_AC_set_yaw + gimbal_control_set->gimbal_auto_scan.yaw_center_value;
 
-    // yaw_set_angle = gimbal_control_set->gimbal_auto_scan.yaw_center_value;
-    // pitch_set_angle = gimbal_control_set->gimbal_auto_scan.pitch_center_value;
     // 赋值增量
     *yaw = yaw_set_angle - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
     *pitch = pitch_set_angle - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;

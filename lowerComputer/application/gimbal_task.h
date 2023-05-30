@@ -185,15 +185,20 @@
 //云台yaw轴pitch轴设置最大时间
 #define GIMBAL_SWING_STOP_COUNT 1000
 
-//yaw轴扫描范围，以中心为基础
+//yaw轴扫描范围，以中心为基础 半个范围
 #define YAW_SCAN_RANGE  PI
 //pitch轴扫描范围，以中心值为基础
-#define PITCH_SCAN_RANGE 0.05f
+#define PITCH_SCAN_RANGE 0.1f
+
+//yaw轴扫描步长 rad/S
+#define YAW_SCAN_SPEED 0.4f
+//pitch轴扫描步长 rad/s
+#define PITCH_SCAN_SPEED 0.4f
 
 //yaw轴扫描周期
-#define YAW_SCAN_PERIOD 11.5f
+#define YAW_SCAN_PERIOD (2 * YAW_SCAN_RANGE / YAW_SCAN_SPEED)
 //pitch轴扫描周期
-#define PITCH_SCAN_PERIOD 2.5f
+#define PITCH_SCAN_PERIOD (2 * PITCH_SCAN_RANGE / PITCH_SCAN_SPEED)
 
 
 //线性控制器前馈系数
@@ -202,7 +207,7 @@
 
 //角度误差项系数
 #define K_YAW_ANGLE_ERROR 100000.0f
-#define K_PITCH_ANGLE_ERROR 200000.0f
+#define K_PITCH_ANGLE_ERROR 140000.0f
 
 //速度项系数
 #define K_YAW_ANGLE_SPEED 5000.0f

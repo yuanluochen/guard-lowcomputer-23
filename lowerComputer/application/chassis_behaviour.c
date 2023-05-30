@@ -125,7 +125,7 @@ static void chassis_open_set_control(fp32 *vx_set, fp32 *vy_set, fp32 *wz_set, c
  * @param wz_set 旋转速度 正值 逆时针旋转 赋值 顺时针旋转
  * @param chassis_move_vision_to_vector 
  */
-static void chassis_auto_control(fp32* vx_set, fp32* vy_set, fp32* wz_set, chassis_move_t* chassis_move_vision_to_vector);
+static void chassis_auto_follow_target_control(fp32* vx_set, fp32* vy_set, fp32* wz_set, chassis_move_t* chassis_move_vision_to_vector);
 
 
 /*----------------------------------内部变量---------------------------*/
@@ -175,11 +175,21 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
             if (judge_vision_appear_target())
             {
                 //识别到目标
-                chassis_behaviour_mode = CHASSIS_AUTO;
+                //根据与目标距离判断底盘状态
+                if (chassis_move_mode->chassis_auto.chassis_vision_control_point->distance > AUTO_MOVE_CHASSIS_FOLLOW_ATTACK_DISTANCE)
+                {
+                    //大于底盘自动跟随击打距离 底盘自动跟随击打
+                    chassis_behaviour_mode = CHASSIS_AUTO_FOLLOW_TARGET;
+                }
+                else
+                {
+                    //底盘不动
+                    chassis_behaviour_mode = CHASSIS_NO_MOVE; 
+                }
             }
             else
             {
-                //未识别到目标
+                //未识别到目标 -- 底盘不动
                 chassis_behaviour_mode = CHASSIS_NO_MOVE;
             }
         }
@@ -241,7 +251,7 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     {
         chassis_move_mode->chassis_mode = CHASSIS_VECTOR_SPIN;
     }
-    else if (chassis_behaviour_mode == CHASSIS_AUTO)
+    else if (chassis_behaviour_mode == CHASSIS_AUTO_FOLLOW_TARGET)
     {
         chassis_move_mode->chassis_mode = CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW;
     }
@@ -369,9 +379,9 @@ void chassis_behaviour_control_set(fp32 *vx_set, fp32 *vy_set, fp32 *angle_set, 
     {
         chassis_open_set_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
     }
-    else if (chassis_behaviour_mode == CHASSIS_AUTO)
+    else if (chassis_behaviour_mode == CHASSIS_AUTO_FOLLOW_TARGET)
     {
-        chassis_auto_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
+        chassis_auto_follow_target_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
     }
 }
 
@@ -551,7 +561,7 @@ static void chassis_open_set_control(fp32 *vx_set, fp32 *vy_set, fp32 *wz_set, c
 }
 
 
-static void chassis_auto_control(fp32* vx_set, fp32* vy_set, fp32* wz_set, chassis_move_t* chassis_move_vision_to_vector)
+static void chassis_auto_follow_target_control(fp32* vx_set, fp32* vy_set, fp32* wz_set, chassis_move_t* chassis_move_vision_to_vector)
 {
     if (vx_set == NULL || vy_set == NULL || wz_set == NULL || chassis_move_vision_to_vector == NULL)
     {

@@ -511,6 +511,7 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
         // 旋转控制底盘速度方向，保证前进方向是云台方向，有利于运动平稳
         if (relative_angle > PI)
             relative_angle = -2 * PI + relative_angle;
+
         sin_yaw = arm_sin_f32(-relative_angle);
         cos_yaw = arm_cos_f32(-relative_angle);
 
@@ -760,3 +761,6 @@ void chassis_auto_move_controller_calc(chassis_auto_move_controller_t* controlle
     //赋值输出值
     controller->output = output;
 }
+
+
+
