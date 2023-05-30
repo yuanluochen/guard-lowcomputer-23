@@ -230,6 +230,11 @@ void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw
             shoot_judge->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
         }
     }
+    else
+    {
+        //Ô¶¾àÀë²»»÷´ò
+        shoot_judge->shoot_vision_control.shoot_command = SHOOT_STOP_CONTROL
+    }
 
 }
 
