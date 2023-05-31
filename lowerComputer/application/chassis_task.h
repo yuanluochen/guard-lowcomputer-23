@@ -44,6 +44,8 @@
 //the channel of choosing chassis mode,
 //选择底盘状态 开关通道号
 #define CHASSIS_MODE_CHANNEL 0
+//底盘运行模式通道
+#define CHASSIS_RUN_MODE_CHANNEL 1
 //选择自动模式
 #define CHASSIS_AUTO_MODE 1
 //rocker value (max 660) change to vertial speed (m/s) 
@@ -129,14 +131,14 @@
 
 //chassis follow angle PID
 //底盘旋转跟随PID
-#define CHASSIS_FOLLOW_GIMBAL_PID_KP 40.0f
-#define CHASSIS_FOLLOW_GIMBAL_PID_KI 0.0f
-#define CHASSIS_FOLLOW_GIMBAL_PID_KD 0.0f
+#define CHASSIS_FOLLOW_GIMBAL_PID_KP 20.0f
+#define CHASSIS_FOLLOW_GIMBAL_PID_KI 1.0f
+#define CHASSIS_FOLLOW_GIMBAL_PID_KD 5.0f
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT 6.0f
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 0.2f
 
 //底盘跟随云台死区 rad
-#define CHASSIS_FOLLOW_GIMBAL_DEADLINE 0.005f
+#define CHASSIS_FOLLOW_GIMBAL_DEADLINE 0.1f
 
 //底盘小陀螺速度值
 #define SPIN_SPEED -10
@@ -148,7 +150,7 @@
 //底盘自动移动最小输出速度 m/s
 #define AUTO_MOVE_MIN_OUTPUT_SPEED -5.0f
 //设定距离 m
-#define AUOT_MOVE_SET_DISTANCE 2.5f
+#define AUOT_MOVE_SET_DISTANCE 2.0f
 //自动模式下底盘跟随击打距离
 #define AUTO_MOVE_CHASSIS_FOLLOW_ATTACK_DISTANCE AUOT_MOVE_SET_DISTANCE
 

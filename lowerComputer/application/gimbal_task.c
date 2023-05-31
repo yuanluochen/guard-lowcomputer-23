@@ -240,9 +240,11 @@ const gimbal_motor_t *get_pitch_motor_point(void)
 static void gimbal_init(gimbal_control_t *init)
 {
     // 给底盘跟随云台模式用的
-    gimbal_control.gimbal_yaw_motor.frist_ecd = GIMBAL_YAW_OFFSET_ENCODE;
+    gimbal_control.gimbal_yaw_motor.zero_ecd_flag = GIMBAL_YAW_LAST_OFFSET_ENCODE;
     gimbal_control.gimbal_yaw_motor.last_zero_ecd = GIMBAL_YAW_LAST_OFFSET_ENCODE;
 
+    // 云台计算相对角用 
+    gimbal_control.gimbal_yaw_motor.frist_ecd = GIMBAL_YAW_OFFSET_ENCODE;
     // 电机数据指针获取
     init->gimbal_yaw_motor.gimbal_motor_measure = get_yaw_gimbal_motor_measure_point();
     init->gimbal_pitch_motor.gimbal_motor_measure = get_pitch_gimbal_motor_measure_point();
@@ -263,6 +265,7 @@ static void gimbal_init(gimbal_control_t *init)
 
     // 云台数据更新
     gimbal_feedback_update(init);
+    
     // yaw轴电机初始化
     init->gimbal_yaw_motor.absolute_angle_set = init->gimbal_yaw_motor.absolute_angle;
     init->gimbal_yaw_motor.relative_angle_set = init->gimbal_yaw_motor.relative_angle;
@@ -348,10 +351,15 @@ static fp32 motor_ecd_to_angle_change(uint16_t ecd, uint16_t offset_ecd)
 {
     fp32 relative_ecd = ecd - offset_ecd;
 
-    if (relative_ecd > gimbal_control.gimbal_yaw_motor.frist_ecd + 4096)
+    if (relative_ecd > HALF_ECD_RANGE)
     {
-        // relative_ecd -= 8191;
+        relative_ecd -= ECD_RANGE;
     }
+    else if (relative_ecd < -HALF_ECD_RANGE)
+    {
+        relative_ecd += ECD_RANGE;
+    }
+
     return relative_ecd * MOTOR_ECD_TO_RAD;
 }
 

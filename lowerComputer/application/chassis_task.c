@@ -298,11 +298,11 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_move_tra
         //小陀螺模式就近对位
         chassis_move_transit->mode_flag = 1;
     }
-    if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_NO_FOLLOW_YAW) &&
-        chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
-    {
-        chassis_move_transit->mode_flag = 1;
-    }
+    // if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_NO_FOLLOW_YAW) &&
+    //     chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
+    // {
+    //     chassis_move_transit->mode_flag = 1;
+    // }
 
     chassis_move_transit->last_chassis_mode = chassis_move_transit->chassis_mode;
 }
@@ -503,7 +503,6 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
         // 小陀螺停止，就近对位
         if (chassis_move_control->mode_flag == 1)
         {
-
             Angle_Error_Compare(((gimbal_control.gimbal_yaw_motor.relative_angle / MOTOR_ECD_TO_RAD) + chassis_move_control->chassis_yaw_motor->frist_ecd), gimbal_control.gimbal_yaw_motor.frist_ecd, gimbal_control.gimbal_yaw_motor.last_zero_ecd);
         }
         relative_angle = (chassis_move_control->chassis_yaw_motor->relative_angle);
@@ -517,6 +516,7 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
 
         chassis_move_control->vx_set = cos_yaw * vx_set + sin_yaw * vy_set;
         chassis_move_control->vy_set = -sin_yaw * vx_set + cos_yaw * vy_set;
+
         // 计算旋转PID角速度
         chassis_move_control->wz_set = -PID_calc(&chassis_move_control->chassis_angle_pid, chassis_move_control->chassis_yaw_motor->relative_angle, chassis_move_control->chassis_relative_angle_set);
         // 速度限幅
@@ -538,7 +538,7 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
         chassis_move_control->chassis_relative_angle_set = rad_format(angle_set);
         chassis_move_control->vx_set = cos_yaw * vx_set - sin_yaw * vy_set;
         chassis_move_control->vy_set = sin_yaw * vx_set + cos_yaw * vy_set;
-        chassis_move_control->wz_set = SPIN_SPEED;  
+        chassis_move_control->wz_set = SPIN_SPEED;
         // 速度限幅
         chassis_move_control->vx_set = fp32_constrain(chassis_move_control->vx_set, chassis_move_control->vx_min_speed, chassis_move_control->vx_max_speed);
         chassis_move_control->vy_set = fp32_constrain(chassis_move_control->vy_set, chassis_move_control->vy_min_speed, chassis_move_control->vy_max_speed);

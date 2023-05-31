@@ -23,6 +23,8 @@
 #define ALLOW_ATTACK_ERROR 0.04f
 //允许发弹距离 m 
 #define ALLOW_ATTACK_DISTANCE 4.0f
+//允许发弹概率
+#define ALLOE_ATTACK_P 1.0f
 
 
 //延时等待
@@ -43,7 +45,11 @@
 
 
 //最小设定弹速
-#define MIN_SET_BULLET_SPEED 20.0f
+#define MIN_SET_BULLET_SPEED 23.0f
+//最大设定弹速
+#define MAX_SET_BULLET_SPEED 30.0f
+//弹速队列大小
+#define BULLET_SPEED_QUEUE_CAPACITY 20
 
 //空气阻力系数
 #define AIR_K1 0.076f
@@ -65,6 +71,8 @@
 
 //固有时间偏移即上位机计算时间单位ms
 #define TIME_BIAS 25
+//偏差时间队列大小
+#define TIME_BIAS_QUEUE_CAPACITY 10
 
 //ms转s
 #ifndef TIME_MS_TO_S
@@ -76,7 +84,7 @@
 #define ALL_CIRCLE (2 * PI)
 
 //imu到枪口的竖直距离
-#define Z_STATIC 0.005295f
+#define Z_STATIC 0.000f
 //枪口前推距离
 #define DISTANCE_STATIC 0.21085f
 //初始飞行时间
@@ -85,6 +93,8 @@
 
 //最大未接受数据的时间 s
 #define MAX_NOT_RECEIVE_DATA_TIME 0.2f
+
+
 
 //子弹类型
 typedef enum
@@ -217,6 +227,7 @@ typedef struct __attribute__((packed))
     float r1;
     float r2;
     float dz;
+    float p;   //状态协方差矩阵的迹
     uint16_t checksum;
 } receive_packet_t;
 
@@ -288,8 +299,11 @@ typedef struct
     fp32 k1;
     //子弹飞行时间
     fp32 flight_time;
+    // 固有间隔时间
+    fp32 time_bias;
     //预测时间
     fp32 predict_time;
+    
 
     // 目标yaw
     fp32 target_yaw;
@@ -315,7 +329,10 @@ typedef struct
     // 绝对角指针
     const fp32* vision_angle_point;
     // 当前弹速
-    fp32 current_bullet_speed;
+    // fp32 bullet_speed;
+    queue_t* bullet_speed;
+    // 偏差时间
+    queue_t* time_bias;
     // 检测装甲板的颜色(敌方装甲板的颜色)
     uint8_t detect_armor_color;
 

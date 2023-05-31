@@ -211,7 +211,7 @@
 
 //速度项系数
 #define K_YAW_ANGLE_SPEED 5000.0f
-#define K_PITCH_ANGLE_SPEED 9000.0f
+#define K_PITCH_ANGLE_SPEED 4000.0f
 
 //最大最小输出
 #define YAW_MAX_OUT 32000.0f
