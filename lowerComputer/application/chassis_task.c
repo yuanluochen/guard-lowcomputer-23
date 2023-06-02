@@ -516,9 +516,17 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
 
         chassis_move_control->vx_set = cos_yaw * vx_set + sin_yaw * vy_set;
         chassis_move_control->vy_set = -sin_yaw * vx_set + cos_yaw * vy_set;
-
-        // 计算旋转PID角速度
-        chassis_move_control->wz_set = -PID_calc(&chassis_move_control->chassis_angle_pid, chassis_move_control->chassis_yaw_motor->relative_angle, chassis_move_control->chassis_relative_angle_set);
+        //底盘跟随云台死区
+        if (fabs(relative_angle) < CHASSIS_FOLLOW_GIMBAL_DEADLINE && chassis_move_control->vx_set == 0 && chassis_move_control->vy_set == 0)
+        {
+            //相对角度小于死区大小 并且 底盘无x y方向的移动速度，此时不移动
+            chassis_move_control->wz_set = 0;
+        }
+        else
+        {
+            // 计算旋转PID角速度
+            chassis_move_control->wz_set = -PID_calc(&chassis_move_control->chassis_angle_pid, chassis_move_control->chassis_yaw_motor->relative_angle, chassis_move_control->chassis_relative_angle_set);
+        }
         // 速度限幅
         chassis_move_control->vx_set = fp32_constrain(chassis_move_control->vx_set, chassis_move_control->vx_min_speed, chassis_move_control->vx_max_speed);
         chassis_move_control->vy_set = fp32_constrain(chassis_move_control->vy_set, chassis_move_control->vy_min_speed, chassis_move_control->vy_max_speed);

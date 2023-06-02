@@ -148,19 +148,6 @@ fp32 Pitch_Set[8]={0};
 extern chassis_behaviour_e chassis_behaviour_mode;
 //云台初始化完毕标志位
 bool_t gimbal_init_finish_flag = 0;
-/**
- * @brief 标志变量，云台从其他模式切入自瞄模式标志位
- * 
- *        该位为1， 则发生了从其他模式切入自瞄模式
- * 
- */
-bool_t other_mode_transform_auto_mode_flag = 0;
-
-/**
- * @brief 保存云台自动扫描中值 
- * 
- */
-bool_t save_auto_scan_center_value_flag = 0;
 
 
 
@@ -335,13 +322,7 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
                     // 标志初始化完成
                     gimbal_init_finish_flag = 1;
                 }
-                // 数值仅保存一次
-                if (save_auto_scan_center_value_flag == 0)
-                {
-                    save_auto_scan_center_value_flag = 1;
-                    // 初始化完成保存扫描中心点
-                    gimbal_mode_set->gimbal_auto_scan.yaw_center_value = gimbal_mode_set->gimbal_yaw_motor.absolute_angle_set;
-                }
+                
             }
        }
 
@@ -387,12 +368,14 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
             gimbal_init_finish_flag = 0;
         }
 
-        // 判断是否发生云台从其他模式切入自瞄模式
-        if (last_gimbal_behaviour != GIMBAL_AUTO_ATTACK && gimbal_behaviour == GIMBAL_AUTO_ATTACK)
+        // 判断是否发生云台从其他模式切入自动扫描模式模式
+        if (last_gimbal_behaviour != GIMBAL_AUTO_SCAN && gimbal_behaviour == GIMBAL_AUTO_SCAN)
         {
-            other_mode_transform_auto_mode_flag = 1;
-            // 保存当前云台位置
+            // 用于自动扫描 -- 重新初始化扫描初始时间
+            gimbal_mode_set->gimbal_auto_scan.scan_begin_time = TIME_MS_TO_S(HAL_GetTick());
+            // 用于自动扫描 -- 重新设置云台yaw轴扫描中点，为当前位置
             gimbal_mode_set->gimbal_auto_scan.yaw_center_value = gimbal_mode_set->gimbal_yaw_motor.absolute_angle;
+
         }
         // 保存历史数据
         last_gimbal_behaviour = gimbal_behaviour;
@@ -560,15 +543,17 @@ void scan_control_set(fp32* gimbal_set, fp32 range, fp32 period, fp32 run_time)
     // 处理运行时间，将运行时间处理到一个周期内
     fp32 calc_time = run_time - period * ((int16_t)(run_time / period));
     // 判断当前时间所处的位置，根据当前位置，判断数值计算方向
-    if (calc_time < period / 2.0f)
+    if (calc_time < 0.25f * period)
     {
-        // 上半周期,数值为向上递增函数,step为正值
-        *gimbal_set = step * calc_time - range;
+        *gimbal_set = step * calc_time;
     }
-    else if (calc_time >= period / 2.0f)
+    else if (0.25f * period <= calc_time && calc_time < 0.75f * period)
     {
-        // 下半周期，数据为向下递减函数，step为赋值
-        *gimbal_set = -(step * calc_time) + 3 * range;
+        *gimbal_set = -(step * calc_time) + 2 * range;
+    }
+    else if (0.75f * period <= calc_time)
+    {
+        *gimbal_set = step * calc_time - 4 * range;
     }
 }
 

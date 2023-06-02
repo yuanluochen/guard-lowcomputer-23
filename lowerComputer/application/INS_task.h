@@ -35,7 +35,7 @@
 #define SPI_DMA_ACCEL_TEMP_LENGHT 4
 
 //imu校准最大时间
-#define IMU_CAIL_MAX_TIME 500
+#define IMU_CAIL_MAX_TIME 5000
 
 #define IMU_DR_SHFITS        0
 #define IMU_SPI_SHFITS       1
@@ -85,10 +85,18 @@
 
 #if !IMU_OFFSET_CALI
 //陀螺仪零漂
-#define GYRO_OFFSET_1 2.1345837e-05
-#define GYRO_OFFSET_2 0.000158144379
-#define GYRO_OFFSET_3 -0.000152674766
+#define GYRO_OFFSET_1 0.000330639858
+#define GYRO_OFFSET_2 0.000914206787
+#define GYRO_OFFSET_3 -0.000883051485
 #endif
+
+//imu校准状态
+typedef enum
+{
+    IMU_OFFSET_CALI_FINISH,    //校准完毕
+    IMU_OFFSET_CALI_UNFINISH,  //校准未完成
+}imu_offset_cali_state_e;
+
 /**
   * @brief          imu task, init bmi088, ist8310, calculate the euler angle
   * @param[in]      pvParameters: NULL

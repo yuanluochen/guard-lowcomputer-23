@@ -22,9 +22,9 @@
 //允许发弹角度误差 rad
 #define ALLOW_ATTACK_ERROR 0.04f
 //允许发弹距离 m 
-#define ALLOW_ATTACK_DISTANCE 4.0f
+#define ALLOW_ATTACK_DISTANCE 10.0f
 //允许发弹概率
-#define ALLOE_ATTACK_P 1.0f
+#define ALLOE_ATTACK_P 5.0f
 
 
 //延时等待
@@ -45,11 +45,11 @@
 
 
 //最小设定弹速
-#define MIN_SET_BULLET_SPEED 23.0f
+#define MIN_SET_BULLET_SPEED 25.0f
 //最大设定弹速
 #define MAX_SET_BULLET_SPEED 30.0f
 //弹速队列大小
-#define BULLET_SPEED_QUEUE_CAPACITY 20
+#define BULLET_SPEED_QUEUE_CAPACITY 3
 
 //空气阻力系数
 #define AIR_K1 0.076f

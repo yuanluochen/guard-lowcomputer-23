@@ -184,12 +184,12 @@ static int8_t get_control_temperature(void);
 #if IMU_OFFSET_CALI
 
 //默认校准未完毕
-static bool_t imu_offset_calc_finish_flag = 0;
+static imu_offset_cali_state_e imu_offset_cali_state = IMU_OFFSET_CALI_UNFINISH;
 
 #else
 
 //默认校准完毕
-static bool_t imu_offset_calc_finish_flag = 1;
+static imu_offset_cali_state_e imu_offset_cali_state = IMU_OFFSET_CALI_FINISH;
 
 #endif
 
@@ -311,8 +311,8 @@ void INS_task(void const *pvParameters)
             }
             else
             {
-                //imu校准完毕标志位置1
-                imu_offset_calc_finish_flag = 1;
+                
+                imu_offset_cali_state = IMU_OFFSET_CALI_FINISH;
             }
         }
 #endif
@@ -722,7 +722,7 @@ void DMA2_Stream2_IRQHandler(void)
 
 bool_t judge_imu_offset_calc_finish(void)
 {
-    return imu_offset_calc_finish_flag;
+    return imu_offset_cali_state == IMU_OFFSET_CALI_FINISH;
 }
 
 

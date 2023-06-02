@@ -43,8 +43,11 @@ static void assign_solve_trajectory_param(solve_trajectory_t* solve_trajectory, 
 static void select_optimal_target(solve_trajectory_t* solve_trajectory, target_data_t* vision_data, target_position_t* optimal_target_position);
 // 赋值云台瞄准位置
 static void calc_robot_gimbal_aim_vector(vector_t* robot_gimbal_aim_vector, target_position_t* target_position, fp32 vx, fp32 vy, fp32 vz, fp32 predict_time);
-// 计算子弹落点
+// 计算子弹落点 -- 水平空气阻力模型
 static float calc_bullet_drop(solve_trajectory_t* solve_trajectory, float x, float bullet_speed, float pitch);
+// 计算弹道落点 -- 完全空气阻力模型
+static float calc_bullet_drop_in_complete_air(solve_trajectory_t* solve_trajectory, float x, float bullet_speed, float pitch);
+
 // 二维平面弹道模型，计算pitch轴的高度
 static float calc_target_position_pitch_angle(solve_trajectory_t* solve_trajectory, fp32 x, fp32 z);
 
@@ -456,7 +459,7 @@ static void calc_robot_gimbal_aim_vector(vector_t* robot_gimbal_aim_vector, targ
 }
 
 /**
- * @brief 计算子弹落点
+ * @brief 计算子弹落点 -- 水平空气阻力模型 该模型适用于小仰角击打
  * 
  * @param solve_trajectory 弹道计算结构体
  * @param x 水平距离
@@ -469,6 +472,46 @@ static float calc_bullet_drop(solve_trajectory_t* solve_trajectory, float x, flo
     solve_trajectory->flight_time = (float)((exp(solve_trajectory->k1 * x) - 1) / (solve_trajectory->k1 * bullet_speed * cos(pitch)));
     //计算子弹落点高度
     fp32 bullet_drop_z = (float)(bullet_speed * sin(pitch) * solve_trajectory->flight_time - 0.5f * GRAVITY * pow(solve_trajectory->flight_time, 2));
+    return bullet_drop_z;
+}
+
+/**
+ * @brief 计算弹道落点 -- 完全空气阻力模型 该模型适用于大仰角击打的击打
+ * 
+ * @param solve_trajectory 弹道解算结构体
+ * @param x 距离
+ * @param bullet_speed 弹速
+ * @param pitch 仰角
+ * @return 弹道落点
+ */
+static float calc_bullet_drop_in_complete_air(solve_trajectory_t* solve_trajectory, float x, float bullet_speed, float pitch)
+{
+    //子弹落点高度
+    fp32 bullet_drop_z = 0;
+    //计算总飞行时间
+    solve_trajectory->flight_time = (float)((exp(solve_trajectory->k1 * x) - 1) / (solve_trajectory->k1 * bullet_speed * cos(pitch)));
+    //补偿空气阻力系数 对竖直方向
+    fp32 k_z = solve_trajectory->k1 * (1 / sin(pitch));
+    //上升段
+    //初始竖直飞行速度
+    fp32 v_z_0 = bullet_speed * sin(pitch);
+    //计算上升段最大飞行时间
+    fp32 max_flight_up_time = (1 / sqrt(k_z * GRAVITY)) * atan(sqrt(k_z / GRAVITY) * v_z_0);
+    //判断总飞行时间是否小于上升最大飞行时间
+    if (solve_trajectory->flight_time <= max_flight_up_time)
+    {
+        //子弹存在上升段
+        bullet_drop_z = (1 / k_z) * log(cos(sqrt(k_z * GRAVITY) * (max_flight_up_time - solve_trajectory->flight_time)) / cos(sqrt(k_z * GRAVITY) * max_flight_up_time));
+    }
+    else
+    {
+        //超过最大上升飞行时间 -- 存在下降段
+        //计算最大高度
+        fp32 z_max = (1 / (2 * k_z)) * log(1 + (k_z / GRAVITY) * pow(v_z_0, 2));
+        //计算下降
+        bullet_drop_z = z_max - 0.5f * GRAVITY * pow((solve_trajectory->flight_time - max_flight_up_time), 2);
+    }
+
     return bullet_drop_z;
 }
 
@@ -498,7 +541,7 @@ static float calc_target_position_pitch_angle(solve_trajectory_t* solve_trajecto
         // 计算仰角
         pitch = atan2(aim_z, x);
         // 计算子弹落点高度
-        bullet_drop_z = calc_bullet_drop(solve_trajectory, x, solve_trajectory->current_bullet_speed, pitch);
+        bullet_drop_z = calc_bullet_drop_in_complete_air(solve_trajectory, x, solve_trajectory->current_bullet_speed, pitch);
         // 计算误差
         calc_and_actual_error = z - bullet_drop_z;
         // 对瞄准高度进行补偿
