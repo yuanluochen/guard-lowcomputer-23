@@ -188,12 +188,12 @@
 //yaw轴扫描范围，以中心为基础 半个范围
 #define YAW_SCAN_RANGE  PI
 //pitch轴扫描范围，以中心值为基础
-#define PITCH_SCAN_RANGE 0.1f
+#define PITCH_SCAN_RANGE 0.15f
 
 //yaw轴扫描步长 rad/S
 #define YAW_SCAN_SPEED 0.4f
 //pitch轴扫描步长 rad/s
-#define PITCH_SCAN_SPEED 0.4f
+#define PITCH_SCAN_SPEED 0.6f
 
 //yaw轴扫描周期
 #define YAW_SCAN_PERIOD (2 * YAW_SCAN_RANGE / YAW_SCAN_SPEED)

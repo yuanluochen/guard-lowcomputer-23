@@ -202,6 +202,15 @@ typedef __packed struct
     uint8_t data[32];
 } ext_download_stream_data_t;
 
+typedef __packed struct
+{
+    float target_position_x;
+    float target_position_y;
+    float target_position_z;
+    uint8_t commd_keyboard;
+    uint16_t target_robot_ID;
+} ext_robot_command_t;
+
 extern ext_game_state_t game_state;
 extern ext_game_result_t game_result;
 extern ext_game_robot_HP_t game_robot_HP_t;
@@ -238,5 +247,7 @@ ext_game_robot_state_t* get_game_robot_status_point(void);
 ext_robot_hurt_t* get_robot_hurt_point(void);
 //获取发射机构弹速
 ext_shoot_data_t* get_shoot_data_point(void);
+//获取机器人命令数据指针
+ext_robot_command_t* get_robot_command_point(void);
 
 #endif

@@ -17,25 +17,26 @@
 
 typedef enum
 {
-    GAME_STATE_CMD_ID                 = 0x0001,
-    GAME_RESULT_CMD_ID                = 0x0002,
-    GAME_ROBOT_HP_CMD_ID              = 0x0003,
-    FIELD_EVENTS_CMD_ID               = 0x0101,
-    SUPPLY_PROJECTILE_ACTION_CMD_ID   = 0x0102,
-    SUPPLY_PROJECTILE_BOOKING_CMD_ID  = 0x0103,
-    REFEREE_WARNING_CMD_ID            = 0x0104,
-    ROBOT_STATE_CMD_ID                = 0x0201,
-    POWER_HEAT_DATA_CMD_ID            = 0x0202,
-    ROBOT_POS_CMD_ID                  = 0x0203,
-    BUFF_MUSK_CMD_ID                  = 0x0204,
-    AERIAL_ROBOT_ENERGY_CMD_ID        = 0x0205,
-    ROBOT_HURT_CMD_ID                 = 0x0206,
-    SHOOT_DATA_CMD_ID                 = 0x0207,
-    BULLET_REMAINING_CMD_ID           = 0x0208,
-	  RFID_STATE_CMD_ID                 = 0x0209,  
-    STUDENT_INTERACTIVE_DATA_CMD_ID   = 0x0301,
+    GAME_STATE_CMD_ID = 0x0001,
+    GAME_RESULT_CMD_ID = 0x0002,
+    GAME_ROBOT_HP_CMD_ID = 0x0003,
+    FIELD_EVENTS_CMD_ID = 0x0101,
+    SUPPLY_PROJECTILE_ACTION_CMD_ID = 0x0102,
+    SUPPLY_PROJECTILE_BOOKING_CMD_ID = 0x0103,
+    REFEREE_WARNING_CMD_ID = 0x0104,
+    ROBOT_STATE_CMD_ID = 0x0201,
+    POWER_HEAT_DATA_CMD_ID = 0x0202,
+    ROBOT_POS_CMD_ID = 0x0203,
+    BUFF_MUSK_CMD_ID = 0x0204,
+    AERIAL_ROBOT_ENERGY_CMD_ID = 0x0205,
+    ROBOT_HURT_CMD_ID = 0x0206,
+    SHOOT_DATA_CMD_ID = 0x0207,
+    BULLET_REMAINING_CMD_ID = 0x0208,
+    RFID_STATE_CMD_ID = 0x0209,
+    STUDENT_INTERACTIVE_DATA_CMD_ID = 0x0301,
+    ROBOT_COMMAND_ID = 0x303,
     IDCustomData,
-}referee_cmd_id_t;
+} referee_cmd_id_t;
 typedef  struct
 {
   uint8_t SOF;

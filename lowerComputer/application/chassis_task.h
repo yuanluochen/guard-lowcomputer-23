@@ -149,8 +149,8 @@
 #define AUTO_MOVE_MAX_OUTPUT_SPEED 5.0f
 //底盘自动移动最小输出速度 m/s
 #define AUTO_MOVE_MIN_OUTPUT_SPEED -5.0f
-//设定距离 m
-#define AUOT_MOVE_SET_DISTANCE 20.0f
+//自动跟随设定距离 m
+#define AUOT_MOVE_SET_DISTANCE 2.0f
 //自动模式下底盘跟随击打距离
 #define AUTO_MOVE_CHASSIS_FOLLOW_ATTACK_DISTANCE AUOT_MOVE_SET_DISTANCE
 

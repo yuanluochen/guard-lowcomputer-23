@@ -22,18 +22,20 @@
 static void vision_task_init(vision_control_t* init);
 // 视觉任务数据更新
 static void vision_task_feedback_update(vision_control_t* update);
+// 设置机器人模式
+static void vision_set_robot_mode(vision_control_t* set_robot_mode);
+// 设置目标装甲板颜色
+static void vision_set_target_armor_color(vision_control_t* set_detect_color);
+// 设置目标装甲板数数字
+static void vision_set_target_armor_num(vision_control_t* set_target_armor_num);
 // 判断是否识别到目标
 static void vision_judge_appear_target(vision_control_t* judge_appear_target);
-// 判断目标装甲板数据
-static void vision_judge_target_armor_data(vision_control_t* judge_target_armor_id);
 // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角
 static void vision_data_process(vision_control_t* vision_data);
 // 配置发送数据包
 static void set_vision_send_packet(vision_control_t* set_send_packet);
-// 判断敌方机器人装甲板颜色，返回0 则敌方为红色，返回1 则敌方为蓝色
-static void judge_enemy_robot_armor_color(vision_control_t* judge_detect_color);
 // 实时计算弹速
-static void calc_current_bullet_speed(vision_control_t* calc_cur_bullet_speed);
+static void calc_current_bullet_speed(vision_control_t* calc_cur_bullet_speed, bullet_type_e bullet_type, shooter_id_e shooter_id);
 
 // 初始化弹道解算的参数
 static void solve_trajectory_param_init(solve_trajectory_t* solve_trajectory, fp32 k1, fp32 init_flight_time, fp32 time_bias, fp32 z_static, fp32 distance_static);
@@ -43,11 +45,8 @@ static void assign_solve_trajectory_param(solve_trajectory_t* solve_trajectory, 
 static void select_optimal_target(solve_trajectory_t* solve_trajectory, target_data_t* vision_data, target_position_t* optimal_target_position);
 // 赋值云台瞄准位置
 static void calc_robot_gimbal_aim_vector(vector_t* robot_gimbal_aim_vector, target_position_t* target_position, fp32 vx, fp32 vy, fp32 vz, fp32 predict_time);
-// 计算子弹落点 -- 水平空气阻力模型
-static float calc_bullet_drop(solve_trajectory_t* solve_trajectory, float x, float bullet_speed, float pitch);
 // 计算弹道落点 -- 完全空气阻力模型
 static float calc_bullet_drop_in_complete_air(solve_trajectory_t* solve_trajectory, float x, float bullet_speed, float pitch);
-
 // 二维平面弹道模型，计算pitch轴的高度
 static float calc_target_position_pitch_angle(solve_trajectory_t* solve_trajectory, fp32 x, fp32 z);
 
@@ -76,10 +75,14 @@ void vision_task(void const* pvParameters)
     {
         // 更新数据
         vision_task_feedback_update(&vision_control);
+        //设置机器人模式
+        vision_set_robot_mode(&vision_control);
+        //设置目标装甲板颜色
+        vision_set_target_armor_color(&vision_control); 
+        //设置识别目标装甲板数字
+        vision_set_target_armor_num(&vision_control);
         //判断是否识别到目标
         vision_judge_appear_target(&vision_control);
-        //判断目标装甲板编号
-        vision_judge_target_armor_data(&vision_control);
         // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角,并设置控制命令
         vision_data_process(&vision_control);
 
@@ -103,17 +106,19 @@ static void vision_task_init(vision_control_t* init)
     init->robot_state_point = get_game_robot_status_point();
     // 获取发射机构弹速指针
     init->shoot_data_point = get_shoot_data_point();
+    // 获取机器人命令指针
+    init->robot_command_point = get_robot_command_point();
+
+
     //初始化发射模式为停止袭击
     init->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
     //初始化一些基本的弹道参数
-    solve_trajectory_param_init(&init->solve_trajectory, AIR_K1, INIT_FILIGHT_TIME, TIME_BIAS, Z_STATIC, DISTANCE_STATIC);
+    solve_trajectory_param_init(&init->solve_trajectory, AIR_K1, INIT_FILIGHT_TIME, TIME_MS_TO_S(TIME_BIAS), Z_STATIC, DISTANCE_STATIC);
     //创建偏差时间队列
     init->time_bias = queue_create(TIME_BIAS_QUEUE_CAPACITY);
     queue_append_data(init->time_bias, TIME_BIAS);
-    //创建弹速队列
-    init->bullet_speed = queue_create(BULLET_SPEED_QUEUE_CAPACITY);
-    // init->bullet_speed = MIN_SET_BULLET_SPEED;
-    queue_append_data(init->bullet_speed, MIN_SET_BULLET_SPEED);
+    //初始化弹速
+    init->bullet_speed = BEGIN_SET_BULLET_SPEED;
     //初始化视觉目标状态为未识别到目标
     init->vision_target_appear_state = TARGET_UNAPPEAR;
     //更新数据
@@ -126,14 +131,12 @@ static void vision_task_feedback_update(vision_control_t* update)
     update->imu_absolution_angle.yaw = *(update->vision_angle_point + INS_YAW_ADDRESS_OFFSET);
     update->imu_absolution_angle.pitch = *(update->vision_angle_point + INS_PITCH_ADDRESS_OFFSET);
     update->imu_absolution_angle.roll = *(update->vision_angle_point + INS_ROLL_ADDRESS_OFFSET);
-    // 判断敌方装甲板颜色
-    judge_enemy_robot_armor_color(update);
     // 修正当前弹速
-    calc_current_bullet_speed(update);
+    calc_current_bullet_speed(update, BULLET_17, SHOOTER_17_1);
     // 存放偏差时间
     queue_append_data(update->time_bias, update->vision_receive_point->interval_time);
     // 更新弹道计算的可变参数
-    assign_solve_trajectory_param(&update->solve_trajectory, update->imu_absolution_angle.pitch, update->imu_absolution_angle.yaw, queue_data_calc_average(update->bullet_speed), queue_data_calc_average(update->time_bias));
+    assign_solve_trajectory_param(&update->solve_trajectory, update->imu_absolution_angle.pitch, update->imu_absolution_angle.yaw, update->bullet_speed, queue_data_calc_average(update->time_bias));
 
     //获取目标数据
     if (update->vision_receive_point->receive_state == UNLOADED)
@@ -143,6 +146,124 @@ static void vision_task_feedback_update(vision_control_t* update)
         //接收数值状态置为已读取
         update->vision_receive_point->receive_state = LOADED;
     }
+}
+
+static void vision_set_robot_mode(vision_control_t* set_robot_mode)
+{
+    //根据云台手命令判断机器人模式
+    switch (set_robot_mode->robot_command_point->commd_keyboard)
+    {
+    case FOLLOW_PERSON_ENGINEER_KEYBOARD:
+        set_robot_mode->robot_mode = FOLLOW_PERSON_ENGINEER;
+        break;
+    case FOLLOW_PERSON_HERO_KEYBOARD:
+        set_robot_mode->robot_mode = FOLLOW_PERSON_HERO;
+        break;
+    case FOLLOW_PERSON_INFANTRY_3_KEYBOARD:
+        set_robot_mode->robot_mode = FOLLOW_PERSON_INFANTRY_3;
+        break;
+    case FOLLOW_PERSON_INFANTRY_4_KEYBOARD:
+        set_robot_mode->robot_mode = FOLLOW_PERSON_INFANTRY_4;
+        break;
+    case FOLLOW_PERSON_INFANTRY_5_KEYBOARD:
+        set_robot_mode->robot_mode = FOLLOW_PERSON_INFANTRY_5;
+        break;
+    case ATTACK_ENEMY_OUTPOST_KEYBOARD:
+        set_robot_mode->robot_mode = ATTACK_ENEMY_OUTPOST;
+        break;
+    case ATTACK_ENEMY_ROBOT_KEYBOARD:
+        set_robot_mode->robot_mode = ATTACK_ENEMY_ROBOT;
+        break;
+
+    default:
+        set_robot_mode->robot_mode = ATTACK_ENEMY_ROBOT;
+        break;
+    } 
+}
+
+static void vision_set_target_armor_color(vision_control_t* set_detect_color) 
+{
+
+    //己方机器人颜色
+    robot_armor_color_e person_armor_color;
+    //敌方机器人颜色
+    robot_armor_color_e enemy_armor_color;
+    //目标颜色
+    robot_armor_color_e target_armor_color;
+    //判断机器人id是否大于ROBOT_RED_AND_BULE_DIVIDE_VALUE这个值
+    if (set_detect_color->robot_state_point->robot_id > ROBOT_RED_AND_BLUE_DIVIDE_VALUE)
+    {
+        //自己为蓝色
+        person_armor_color = BLUE;
+        enemy_armor_color = RED;
+    }
+    else
+    {
+        person_armor_color = RED;
+        enemy_armor_color = BLUE;
+    } 
+
+    //根据机器人模式判断识别目标装甲板的颜色
+    switch (set_detect_color->robot_mode)
+    {
+    case FOLLOW_PERSON_ENGINEER:
+    case FOLLOW_PERSON_HERO: 
+    case FOLLOW_PERSON_INFANTRY_3:
+    case FOLLOW_PERSON_INFANTRY_4:
+    case FOLLOW_PERSON_INFANTRY_5:
+        //跟随己方机器人时识别己方机器人颜色
+        target_armor_color = person_armor_color;
+        break;
+
+    case ATTACK_ENEMY_OUTPOST:
+    case ATTACK_ENEMY_ROBOT:
+        //袭击对方机器人时识别对方机器人颜色
+        target_armor_color = enemy_armor_color; 
+        break;
+
+    default:
+        //其他, 识别对方机器人颜色
+        target_armor_color = enemy_armor_color;
+        break;
+    } 
+    //设置目标颜色为目标颜色
+    set_detect_color->detect_armor_color = target_armor_color;
+}
+
+static void vision_set_target_armor_num(vision_control_t* set_target_armor_num)
+{
+    //根据机器人模式判断目标装甲板数字
+    switch (set_target_armor_num->robot_mode)
+    {
+        //跟随己方工程
+    case FOLLOW_PERSON_ENGINEER:
+        set_target_armor_num->target_armor_id = ARMOR_ENGINEER;
+        break;
+        //跟随己方英雄
+    case FOLLOW_PERSON_HERO:
+        set_target_armor_num->target_armor_id = ARMOR_HERO;
+        break;
+        //跟随己方步兵3号
+    case FOLLOW_PERSON_INFANTRY_3:
+        set_target_armor_num->target_armor_id = ARMOR_INFANTRY3;
+        break;
+        //跟随己方步兵4号
+    case FOLLOW_PERSON_INFANTRY_4:
+        set_target_armor_num->target_armor_id = ARMOR_INFANTRY4;
+        break;
+        //跟随己方步兵5号
+    case FOLLOW_PERSON_INFANTRY_5:
+        set_target_armor_num->target_armor_id = ARMOR_INFANTRY5;
+        break;
+        //袭击敌方前哨站
+    case ATTACK_ENEMY_OUTPOST:
+        set_target_armor_num->target_armor_id = ARMOR_OUTPOST;
+        break;
+        //袭击敌方机器人
+    case ATTACK_ENEMY_ROBOT:
+        set_target_armor_num->target_armor_id = ARMOR_ALL_ROBOT;
+        break;
+    }    
 }
 
 static void vision_judge_appear_target(vision_control_t* judge_appear_target)
@@ -173,18 +294,39 @@ static void vision_judge_appear_target(vision_control_t* judge_appear_target)
         }
         else
         {
-            // 识别到目标
-            judge_appear_target->vision_target_appear_state = TARGET_APPEAR;
+            //判断识别目标装甲板类型
+            if (judge_appear_target->target_armor_id == ARMOR_ALL_ROBOT) //识别全部数字
+            {
+                //筛选掉基地和前哨站
+                if (judge_appear_target->target_armor_id == ARMOR_BASE || judge_appear_target->target_armor_id == ARMOR_OUTPOST)
+                {
+                    //设置不识别目标
+                    judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
+                }
+                else
+                {
+                    // 设置为识别到目标
+                    judge_appear_target->vision_target_appear_state = TARGET_APPEAR;
+                }
+            }
+            else //识别特定数字
+            {
+                //判断识别到目标装甲板的数字是否符合目标数字
+                if (judge_appear_target->target_data.armors_num == judge_appear_target->target_armor_id)
+                {
+                    //设置为识别到目标
+                    judge_appear_target->vision_target_appear_state = TARGET_APPEAR;
+                }
+                else
+                {
+                    //未识别到目标
+                    judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
+                }
+            }
         }
     }
 }
 
-
-static void vision_judge_target_armor_data(vision_control_t* judge_target_armor_id)
-{
-    //赋值装甲板id
-    judge_target_armor_id->target_armor_id = (armor_id_e)judge_target_armor_id->target_data.id; 
-}
 
 static void vision_data_process(vision_control_t* vision_data)
 {
@@ -199,10 +341,38 @@ static void vision_data_process(vision_control_t* vision_data)
         // 计算机器人pitch轴与yaw轴角度
         vision_data->gimbal_vision_control.gimbal_pitch = calc_target_position_pitch_angle(&vision_data->solve_trajectory, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)) - vision_data->solve_trajectory.distance_static, vision_data->robot_gimbal_aim_vector.z + vision_data->solve_trajectory.z_static);
         vision_data->gimbal_vision_control.gimbal_yaw = atan2(vision_data->robot_gimbal_aim_vector.y, vision_data->robot_gimbal_aim_vector.x);
-        //判断发射
-        vision_shoot_judge(vision_data, vision_data->gimbal_vision_control.gimbal_yaw - vision_data->imu_absolution_angle.yaw, vision_data->gimbal_vision_control.gimbal_pitch - vision_data->imu_absolution_angle.pitch, sqrt(pow(vision_data->target_data.x, 2) + pow(vision_data->target_data.y, 2)));
-        //赋值底盘控制命令 -- 我方机器人与目标的距离
-        vision_data->chassis_vision_control.distance = sqrt(pow(vision_data->target_data.x, 2) + pow(vision_data->target_data.y, 2));
+
+        // 根据机器人模式赋值发送以及运动跟随命令
+        switch (vision_data->robot_mode)
+        {
+        case FOLLOW_PERSON_ENGINEER:
+        case FOLLOW_PERSON_HERO:
+        case FOLLOW_PERSON_INFANTRY_3:
+        case FOLLOW_PERSON_INFANTRY_4:
+        case FOLLOW_PERSON_INFANTRY_5:
+            {
+                // 设置不发弹但是跟随
+                vision_data->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
+                // 设置底盘模式为跟随模式
+                vision_data->chassis_vision_control.vision_control_chassis_mode = FOLLOW_TARGET;
+                // 赋值底盘控制命令 -- 我方机器人与目标的距离
+                vision_data->chassis_vision_control.distance = sqrt(pow(vision_data->target_data.x, 2) + pow(vision_data->target_data.y, 2));
+            }
+            break;
+        case ATTACK_ENEMY_OUTPOST:
+        case ATTACK_ENEMY_ROBOT:
+            {
+                //设置判断发弹但不跟随
+                // 判断发射
+                vision_shoot_judge(vision_data, vision_data->gimbal_vision_control.gimbal_yaw - vision_data->imu_absolution_angle.yaw, vision_data->gimbal_vision_control.gimbal_pitch - vision_data->imu_absolution_angle.pitch, sqrt(pow(vision_data->target_data.x, 2) + pow(vision_data->target_data.y, 2)));
+                // 设置底盘模式为不跟随
+                vision_data->chassis_vision_control.vision_control_chassis_mode = UNFOLLOW_TARGET;
+                // 赋值底盘控制命令 -- 0
+                vision_data->chassis_vision_control.distance = 0;
+            }
+            break;
+        }
+
     }
     else
     {
@@ -230,10 +400,10 @@ void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw
     //判断目标距离
     if (target_distance <= ALLOW_ATTACK_DISTANCE)
     {
-        // 判断迹是否小于0.5
+        // 判断迹是否小于允许值
         if (shoot_judge->vision_receive_point->receive_packet.p < ALLOE_ATTACK_P)
         {
-            // 小于一定角度开始击打
+            // 小于一角度开始击打
             if (fabs(vision_begin_add_pitch_angle) <= ALLOW_ATTACK_ERROR && fabs(vision_begin_add_yaw_angle) <= ALLOW_ATTACK_ERROR)
             {
                 shoot_judge->shoot_vision_control.shoot_command = SHOOT_ATTACK;
@@ -254,8 +424,6 @@ void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw
 
 static void set_vision_send_packet(vision_control_t* set_send_packet)
 {
-    //判断敌方机器人颜色
-
     set_send_packet->send_packet.header = LOWER_TO_HIGH_HEAD;
     set_send_packet->send_packet.detect_color = set_send_packet->detect_armor_color;
     set_send_packet->send_packet.roll = set_send_packet->imu_absolution_angle.roll;
@@ -266,38 +434,26 @@ static void set_vision_send_packet(vision_control_t* set_send_packet)
     set_send_packet->send_packet.aim_z = set_send_packet->robot_gimbal_aim_vector.z;
 }
 
-static void judge_enemy_robot_armor_color(vision_control_t* judge_detect_color)
-{
-    //判断机器人id是否大于ROBOT_RED_AND_BULE_DIVIDE_VALUE这个值
-    if (judge_detect_color->robot_state_point->robot_id > ROBOT_RED_AND_BLUE_DIVIDE_VALUE)
-    {
-        //自己为蓝色，返回1，输出敌方为红色
-        judge_detect_color->detect_armor_color = RED;
-    }
-    else
-    {
-        judge_detect_color->detect_armor_color = BLUE;
-    }
-}
 
 /**
- * @brief 由于受天气温度影响，弹速可能会在直流信号上产生较大的变化，所以实时计算弹速 
+ * @brief 由于受天气温度影响，弹速可能会在直流信号上产生较大的变化，所以实时计算弹速，修正精度到整数
  * 
  * @param calc_cur_bullet_speed 视觉控制结构体
+ * @param bullet_type 子弹类型
+ * @param shooter_id 枪管id
  */
-static void calc_current_bullet_speed(vision_control_t* calc_cur_bullet_speed)
+static void calc_current_bullet_speed(vision_control_t* calc_cur_bullet_speed, bullet_type_e bullet_type, shooter_id_e shooter_id)
 {
     //判断子弹类型
-    if (calc_cur_bullet_speed->shoot_data_point->bullet_type == BULLET_17)
+    if (calc_cur_bullet_speed->shoot_data_point->bullet_type == bullet_type)
     {
-        if (calc_cur_bullet_speed->shoot_data_point->shooter_id == SHOOTER_17_1)
+        if (calc_cur_bullet_speed->shoot_data_point->shooter_id == shooter_id)
         {
             //筛选不合理的数据
             if (calc_cur_bullet_speed->shoot_data_point->bullet_speed >= MIN_SET_BULLET_SPEED && calc_cur_bullet_speed->shoot_data_point->bullet_speed <= MAX_SET_BULLET_SPEED)
             {
-                // 添加数据到队列中，取队列均值算出近似真实弹速
-                queue_append_data(calc_cur_bullet_speed->bullet_speed, calc_cur_bullet_speed->shoot_data_point->bullet_speed);
-                // calc_cur_bullet_speed->bullet_speed = (int16_t)calc_cur_bullet_speed->shoot_data_point->bullet_speed;
+                //修正弹速 -- 修正精度到整数
+                calc_cur_bullet_speed->bullet_speed = (int16_t)calc_cur_bullet_speed->shoot_data_point->bullet_speed;
             }
         }
     }
@@ -392,7 +548,7 @@ static void assign_solve_trajectory_param(solve_trajectory_t* solve_trajectory, 
 static void select_optimal_target(solve_trajectory_t* solve_trajectory, target_data_t* vision_data, target_position_t* optimal_target_position)
 {
     //计算预测时间 = 上一次的子弹飞行时间 + 固有偏移时间, 时间可能不正确，但可以接受
-    solve_trajectory->predict_time = solve_trajectory->flight_time + TIME_MS_TO_S(TIME_BIAS);
+    solve_trajectory->predict_time = solve_trajectory->flight_time + solve_trajectory->time_bias;
     //计算子弹到达目标时的yaw角度
     solve_trajectory->target_yaw = vision_data->yaw + vision_data->v_yaw * solve_trajectory->predict_time;
 
@@ -411,7 +567,7 @@ static void select_optimal_target(solve_trajectory_t* solve_trajectory, target_d
     //计算所有装甲板的位置
     for (int i = 0; i < solve_trajectory->armor_num; i++)
     {
-        //由于四块装甲板距离机器人中心距离不同，但是一般两两对称，所以进行计算装甲板位置时，第0 2块用当前半径，第1 3块用上一次半径
+        //由于装甲板距离机器人中心距离不同，但是一般两两对称，所以进行计算装甲板位置时，第0 2块用当前半径，第1 3块用上一次半径
         fp32 r = (i % 2 == 0) ? vision_data->r1 : vision_data->r2;
         solve_trajectory->all_target_position_point[i].yaw = solve_trajectory->target_yaw + i * (ALL_CIRCLE / solve_trajectory->armor_num);
         solve_trajectory->all_target_position_point[i].x = vision_data->x - r * cos(solve_trajectory->all_target_position_point[i].yaw);
@@ -419,20 +575,19 @@ static void select_optimal_target(solve_trajectory_t* solve_trajectory, target_d
         solve_trajectory->all_target_position_point[i].z = (i % 2 == 0) ? vision_data->z : vision_data->z + vision_data->dz;
     }
 
-    // 选择与机器人自身yaw差值最小的目标,冒泡排序选择最小目标
+    // 选择与机器人自身yaw差值最小的目标,排序选择最小目标
     fp32 yaw_error_min = fabsf(solve_trajectory->current_yaw - solve_trajectory->all_target_position_point[0].yaw);
 
     for (int i = 0; i < solve_trajectory->armor_num; i++)
     {
         fp32 yaw_error_temp = fabsf(solve_trajectory->current_yaw - solve_trajectory->all_target_position_point[i].yaw);
-        if (yaw_error_temp < yaw_error_min)
+        if (yaw_error_temp <= yaw_error_min)
         {
             yaw_error_min = yaw_error_temp;
             select_targrt_num = i;
         }
     }
-
-    //将选择的装甲板数据，拷贝打最优目标中去
+    // 将选择的装甲板数据，拷贝打最优目标中去
     memcpy(optimal_target_position, &solve_trajectory->all_target_position_point[select_targrt_num], sizeof(target_position_t));
     //释放开辟的内存
     free(solve_trajectory->all_target_position_point);
@@ -458,22 +613,7 @@ static void calc_robot_gimbal_aim_vector(vector_t* robot_gimbal_aim_vector, targ
     robot_gimbal_aim_vector->z = target_position->z + vz * predict_time;
 }
 
-/**
- * @brief 计算子弹落点 -- 水平空气阻力模型 该模型适用于小仰角击打
- * 
- * @param solve_trajectory 弹道计算结构体
- * @param x 水平距离
- * @param bullet_speed 弹速
- * @param pitch 仰角
- * @return 子弹落点
- */
-static float calc_bullet_drop(solve_trajectory_t* solve_trajectory, float x, float bullet_speed, float pitch)
-{
-    solve_trajectory->flight_time = (float)((exp(solve_trajectory->k1 * x) - 1) / (solve_trajectory->k1 * bullet_speed * cos(pitch)));
-    //计算子弹落点高度
-    fp32 bullet_drop_z = (float)(bullet_speed * sin(pitch) * solve_trajectory->flight_time - 0.5f * GRAVITY * pow(solve_trajectory->flight_time, 2));
-    return bullet_drop_z;
-}
+
 
 /**
  * @brief 计算弹道落点 -- 完全空气阻力模型 该模型适用于大仰角击打的击打
@@ -490,27 +630,37 @@ static float calc_bullet_drop_in_complete_air(solve_trajectory_t* solve_trajecto
     fp32 bullet_drop_z = 0;
     //计算总飞行时间
     solve_trajectory->flight_time = (float)((exp(solve_trajectory->k1 * x) - 1) / (solve_trajectory->k1 * bullet_speed * cos(pitch)));
-    //补偿空气阻力系数 对竖直方向
-    fp32 k_z = solve_trajectory->k1 * (1 / sin(pitch));
-    //上升段
-    //初始竖直飞行速度
-    fp32 v_z_0 = bullet_speed * sin(pitch);
-    //计算上升段最大飞行时间
-    fp32 max_flight_up_time = (1 / sqrt(k_z * GRAVITY)) * atan(sqrt(k_z / GRAVITY) * v_z_0);
-    //判断总飞行时间是否小于上升最大飞行时间
-    if (solve_trajectory->flight_time <= max_flight_up_time)
+    
+    if (pitch > 0) 
     {
-        //子弹存在上升段
-        bullet_drop_z = (1 / k_z) * log(cos(sqrt(k_z * GRAVITY) * (max_flight_up_time - solve_trajectory->flight_time)) / cos(sqrt(k_z * GRAVITY) * max_flight_up_time));
+        //补偿空气阻力系数 对竖直方向
+        //上升过程中 子弹速度方向向量的角度逐渐趋近于0，竖直空气阻力 hat(f_z) = f_z * sin(pitch) 会趋近于零 ，水平空气阻力 hat(f_x) = f_x * cos(pitch) 会趋近于 f_x ，所以要对竖直空气阻力系数进行补偿
+        fp32 k_z = solve_trajectory->k1 * (1 / sin(pitch));
+        // 上升段
+        // 初始竖直飞行速度
+        fp32 v_z_0 = bullet_speed * sin(pitch);
+        // 计算上升段最大飞行时间
+        fp32 max_flight_up_time = (1 / sqrt(k_z * GRAVITY)) * atan(sqrt(k_z / GRAVITY) * v_z_0);
+        // 判断总飞行时间是否小于上升最大飞行时间
+        if (solve_trajectory->flight_time <= max_flight_up_time)
+        {
+            // 子弹存在上升段
+            bullet_drop_z = (1 / k_z) * log(cos(sqrt(k_z * GRAVITY) * (max_flight_up_time - solve_trajectory->flight_time)) / cos(sqrt(k_z * GRAVITY) * max_flight_up_time));
+        }
+        else
+        {
+            // 超过最大上升飞行时间 -- 存在下降段
+            // 计算最大高度
+            fp32 z_max = (1 / (2 * k_z)) * log(1 + (k_z / GRAVITY) * pow(v_z_0, 2));
+            // 计算下降
+            bullet_drop_z = z_max - 0.5f * GRAVITY * pow((solve_trajectory->flight_time - max_flight_up_time), 2);
+        }
     }
     else
     {
-        //超过最大上升飞行时间 -- 存在下降段
-        //计算最大高度
-        fp32 z_max = (1 / (2 * k_z)) * log(1 + (k_z / GRAVITY) * pow(v_z_0, 2));
-        //计算下降
-        bullet_drop_z = z_max - 0.5f * GRAVITY * pow((solve_trajectory->flight_time - max_flight_up_time), 2);
+        bullet_drop_z = (float)(bullet_speed * sin(pitch) * solve_trajectory->flight_time - 0.5f * GRAVITY * pow(solve_trajectory->flight_time, 2));
     }
+
 
     return bullet_drop_z;
 }

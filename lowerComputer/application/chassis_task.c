@@ -298,12 +298,6 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_move_tra
         //小陀螺模式就近对位
         chassis_move_transit->mode_flag = 1;
     }
-    // if ((chassis_move_transit->last_chassis_mode == CHASSIS_VECTOR_NO_FOLLOW_YAW) &&
-    //     chassis_move_transit->chassis_mode == CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW)
-    // {
-    //     chassis_move_transit->mode_flag = 1;
-    // }
-
     chassis_move_transit->last_chassis_mode = chassis_move_transit->chassis_mode;
 }
 
@@ -450,23 +444,39 @@ void chassis_vision_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t
     fp32 vx = 0;
     fp32 vy = 0;
 
-    // 计算控制量
-    chassis_auto_move_controller_calc(&chassis_move_vision_to_vector->chassis_auto.chassis_auto_move_controller, AUOT_MOVE_SET_DISTANCE, chassis_move_vision_to_vector->chassis_auto.chassis_vision_control_point->distance);
-    // 输出控制量
-    vx = chassis_move_vision_to_vector->chassis_auto.chassis_auto_move_controller.output;
-    vy = 0;
-
-    // 一阶低通滤波处理数据
-    first_order_filter_cali(&chassis_move_vision_to_vector->chassis_cmd_slow_set_vx, vx);
-
-    if (vx == 0)
+    //根据运动模式判断是否要进行运动
+    if (chassis_move_vision_to_vector->chassis_auto.chassis_vision_control_point->vision_control_chassis_mode == FOLLOW_TARGET)
     {
-        chassis_move_vision_to_vector->chassis_cmd_slow_set_vx.out = 0;
-    }
+        // 计算控制量
+        chassis_auto_move_controller_calc(&chassis_move_vision_to_vector->chassis_auto.chassis_auto_move_controller, AUOT_MOVE_SET_DISTANCE, chassis_move_vision_to_vector->chassis_auto.chassis_vision_control_point->distance);
+        // 输出控制量
+        vx = chassis_move_vision_to_vector->chassis_auto.chassis_auto_move_controller.output;
+        vy = 0;
 
-    // 赋值
-    *vx_set = chassis_move_vision_to_vector->chassis_cmd_slow_set_vx.out;
-    *vy_set = vy;
+        // 一阶低通滤波处理数据
+        first_order_filter_cali(&chassis_move_vision_to_vector->chassis_cmd_slow_set_vx, vx);
+
+        if (vx == 0)
+        {
+            chassis_move_vision_to_vector->chassis_cmd_slow_set_vx.out = 0;
+        }
+
+        // 赋值
+        *vx_set = chassis_move_vision_to_vector->chassis_cmd_slow_set_vx.out;
+        *vy_set = vy;
+    }
+    else if (chassis_move_vision_to_vector->chassis_auto.chassis_vision_control_point->vision_control_chassis_mode == UNFOLLOW_TARGET)
+    {
+        //不移动
+        *vx_set = 0;
+        *vy_set = 0;
+    }
+    else
+    {
+        //不移动
+        *vx_set = 0;
+        *vy_set = 0;
+    }
 
     if (X_FLAG % 2 == 1)
     {

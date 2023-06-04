@@ -18,13 +18,14 @@
 #include "INS_task.h"
 #include "arm_math.h"
 #include "referee.h"
+#include "remote_control.h"
 
 //允许发弹角度误差 rad
 #define ALLOW_ATTACK_ERROR 0.04f
 //允许发弹距离 m 
 #define ALLOW_ATTACK_DISTANCE 10.0f
 //允许发弹概率
-#define ALLOE_ATTACK_P 5.0f
+#define ALLOE_ATTACK_P 2.0f
 
 
 //延时等待
@@ -45,14 +46,14 @@
 
 
 //最小设定弹速
-#define MIN_SET_BULLET_SPEED 25.0f
+#define MIN_SET_BULLET_SPEED 20.0f
 //最大设定弹速
 #define MAX_SET_BULLET_SPEED 30.0f
-//弹速队列大小
-#define BULLET_SPEED_QUEUE_CAPACITY 3
+//初始设定弹速
+#define BEGIN_SET_BULLET_SPEED 26.0f
 
 //空气阻力系数
-#define AIR_K1 0.076f
+#define AIR_K1 0.06f
 //初始子弹飞行迭代数值
 #define T_0 0.0f
 //迭代精度
@@ -70,9 +71,9 @@
 #define GRAVITY 9.79878f
 
 //固有时间偏移即上位机计算时间单位ms
-#define TIME_BIAS 25
+#define TIME_BIAS 6
 //偏差时间队列大小
-#define TIME_BIAS_QUEUE_CAPACITY 10
+#define TIME_BIAS_QUEUE_CAPACITY 10 
 
 //ms转s
 #ifndef TIME_MS_TO_S
@@ -84,7 +85,7 @@
 #define ALL_CIRCLE (2 * PI)
 
 //imu到枪口的竖直距离
-#define Z_STATIC 0.000f
+#define Z_STATIC 0.10f
 //枪口前推距离
 #define DISTANCE_STATIC 0.21085f
 //初始飞行时间
@@ -92,8 +93,7 @@
 
 
 //最大未接受数据的时间 s
-#define MAX_NOT_RECEIVE_DATA_TIME 0.2f
-
+#define MAX_NOT_RECEIVE_DATA_TIME 0.05f
 
 
 //子弹类型
@@ -101,15 +101,57 @@ typedef enum
 {
     BULLET_17 = 1,
     BULLET_42 = 2,
-}bullet_type_E;
+}bullet_type_e;
 
-//发射枪管id
+//机器人命令按键
+typedef enum
+{
+    //跟随己方工程
+    FOLLOW_PERSON_ENGINEER_KEYBOARD = KEY_PRESSED_OFFSET_X,
+    //跟随己方英雄
+    FOLLOW_PERSON_HERO_KEYBOARD = KEY_PRESSED_OFFSET_Z,
+    //跟随己方步兵3号
+    FOLLOW_PERSON_INFANTRY_3_KEYBOARD = KEY_PRESSED_OFFSET_A,
+    //跟随己方步兵4号
+    FOLLOW_PERSON_INFANTRY_4_KEYBOARD = KEY_PRESSED_OFFSET_S,
+    //跟随己方步兵5号
+    FOLLOW_PERSON_INFANTRY_5_KEYBOARD = KEY_PRESSED_OFFSET_D,
+
+    //袭击敌方机器人
+    ATTACK_ENEMY_ROBOT_KEYBOARD = KEY_PRESSED_OFFSET_E,
+    //击打对方前哨站
+    ATTACK_ENEMY_OUTPOST_KEYBOARD = KEY_PRESSED_OFFSET_Q,
+
+}robot_command_keyboard_e;
+
+//机器人模式
+typedef enum
+{
+    // 跟随己方工程
+    FOLLOW_PERSON_ENGINEER,
+    // 跟随己方英雄
+    FOLLOW_PERSON_HERO,
+    // 跟随己方步兵3号
+    FOLLOW_PERSON_INFANTRY_3,
+    // 跟随己方步兵4号
+    FOLLOW_PERSON_INFANTRY_4,
+    // 跟随己方步兵5号
+    FOLLOW_PERSON_INFANTRY_5,
+
+    // 袭击敌方机器人
+    ATTACK_ENEMY_ROBOT,
+    // 击打对方前哨站
+    ATTACK_ENEMY_OUTPOST,
+}robot_mode_e;
+
+
+// 发射枪管id
 typedef enum
 {
     SHOOTER_17_1 = 1,
     SHOOTER_17_2 = 2,
     SHOOTER_42 = 3,
-}shooter_id_e;
+} shooter_id_e;
 
 //接收数据状态
 typedef enum
@@ -119,6 +161,7 @@ typedef enum
     //已读取
     LOADED,
 }receive_state_e;
+
 
 //数据起始帧类型
 typedef enum
@@ -146,7 +189,9 @@ typedef enum
     ARMOR_INFANTRY4 = 4,
     ARMOR_INFANTRY5 = 5,
     ARMOR_GUARD = 6,
-    ARMOR_BASE = 7
+    ARMOR_BASE = 7,  
+    //全部机器人
+    ARMOR_ALL_ROBOT = 8,
 }armor_id_e;
 
 //哨兵发射命令
@@ -163,6 +208,13 @@ typedef enum
     TARGET_UNAPPEAR, // 未识别到目标
     TARGET_APPEAR,   // 识别到目标
 } vision_target_appear_state_e;
+
+//底盘运动模式
+typedef enum
+{
+    FOLLOW_TARGET,
+    UNFOLLOW_TARGET,
+}vision_control_chassis_mode_e;
 
 //欧拉角结构体
 typedef struct
@@ -268,9 +320,13 @@ typedef struct
     shoot_command_e shoot_command;
 } shoot_vision_control_t;
 
+
+
 //哨兵底盘控制命令
 typedef struct 
 {
+    //机器人底盘模式
+    vision_control_chassis_mode_e vision_control_chassis_mode;
     //我方机器人距离敌方机器人的距离
     fp32 distance;
 }chassis_vision_control_t;
@@ -329,10 +385,11 @@ typedef struct
     // 绝对角指针
     const fp32* vision_angle_point;
     // 当前弹速
-    // fp32 bullet_speed;
-    queue_t* bullet_speed;
+    fp32 bullet_speed;
     // 偏差时间
     queue_t* time_bias;
+    //机器人模式
+    robot_mode_e robot_mode;
     // 检测装甲板的颜色(敌方装甲板的颜色)
     uint8_t detect_armor_color;
 
@@ -353,6 +410,8 @@ typedef struct
     const ext_game_robot_state_t* robot_state_point;
     //发射机构弹速指针
     const ext_shoot_data_t* shoot_data_point;
+    //机器人命令数据指针
+    const ext_robot_command_t* robot_command_point;
 
     // 机器人云台瞄准位置向量
     vector_t robot_gimbal_aim_vector;
