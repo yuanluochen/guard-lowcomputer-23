@@ -99,7 +99,7 @@ void vision_task(void const* pvParameters)
 static void vision_task_init(vision_control_t* init)
 {
     // 获取陀螺仪绝对角指针                                                                                                                                                                                                                                                                                                                                                           init->vision_angle_point = get_INS_angle_point();
-    init->vision_angle_point = get_INS_angle_point();
+    init->vision_angle_point = get_INS_point();
     // 获取接收数据包指针
     init->vision_receive_point = get_vision_receive_point();
     // 获取机器人状态指针
@@ -128,9 +128,9 @@ static void vision_task_init(vision_control_t* init)
 static void vision_task_feedback_update(vision_control_t* update)
 {
     // 获取云台位姿数据
-    update->imu_absolution_angle.yaw = *(update->vision_angle_point + INS_YAW_ADDRESS_OFFSET);
-    update->imu_absolution_angle.pitch = *(update->vision_angle_point + INS_PITCH_ADDRESS_OFFSET);
-    update->imu_absolution_angle.roll = *(update->vision_angle_point + INS_ROLL_ADDRESS_OFFSET);
+    update->imu_absolution_angle.yaw = update->vision_angle_point->Yaw;
+    update->imu_absolution_angle.pitch = update->vision_angle_point->Pitch;
+    update->imu_absolution_angle.roll = update->vision_angle_point->Roll;
     // 修正当前弹速
     calc_current_bullet_speed(update, BULLET_17, SHOOTER_17_1);
     // 存放偏差时间

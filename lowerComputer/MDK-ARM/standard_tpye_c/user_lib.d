@@ -9,3 +9,4 @@ standard_tpye_c\user_lib.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
 standard_tpye_c\user_lib.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
 standard_tpye_c\user_lib.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\string.h
 standard_tpye_c\user_lib.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
+standard_tpye_c\user_lib.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdlib.h

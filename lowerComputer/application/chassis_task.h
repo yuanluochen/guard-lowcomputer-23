@@ -250,7 +250,7 @@ typedef struct
     const RC_ctrl_t *chassis_RC;               // 底盘使用的遥控器指针, the point to remote control
     const gimbal_motor_t *chassis_yaw_motor;   // will use the relative angle of yaw gimbal motor to calculate the euler angle.底盘使用到yaw云台电机的相对角度来计算底盘的欧拉角.
     const gimbal_motor_t *chassis_pitch_motor; // will use the relative angle of pitch gimbal motor to calculate the euler angle.底盘使用到pitch云台电机的相对角度来计算底盘的欧拉角
-    const fp32 *chassis_INS_angle;             // the point to the euler angle of gyro sensor.获取陀螺仪解算出的欧拉角指针
+    const INS_t* chassis_INS_point;             // the point to the euler angle of gyro sensor.获取陀螺仪解算出的欧拉角指针
     Power_Control power_control;
     chassis_mode_e chassis_mode;      // state machine. 底盘控制状态机
     chassis_mode_e last_chassis_mode; // last state machine.底盘上次控制状态机

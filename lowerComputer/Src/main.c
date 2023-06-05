@@ -51,6 +51,8 @@
 #include "voltage_task.h"
 #include "stm32.h"
 #include "stm32_private.h"
+#include "BMI088driver.h"
+#include "bsp_dwt.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -146,6 +148,11 @@ int main(void)
     delay_init();
     remote_control_init();
 
+    DWT_Init(168);
+    while (BMI088_init(&hspi1, 1) != BMI088_NO_ERROR)
+    {
+        ;
+    }
     /* USER CODE END 2 */
 
     /* Call init function for freertos objects (in freertos.c) */

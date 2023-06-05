@@ -249,8 +249,7 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_yaw_motor.gimbal_motor_measure = get_yaw_gimbal_motor_measure_point();
     init->gimbal_pitch_motor.gimbal_motor_measure = get_pitch_gimbal_motor_measure_point();
     // 陀螺仪数据指针获取
-    init->gimbal_INT_angle_point = get_INS_angle_point();
-    init->gimbal_INT_gyro_point = get_gyro_data_point();
+    init->gimbal_INS_point = get_INS_point();
     // 遥控器数据指针获取
     init->gimbal_rc_ctrl = get_remote_control_point();
     // 获取上位机视觉数据指针
@@ -324,14 +323,14 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
         return;
     }
     // 云台数据更新
-    feedback_update->gimbal_pitch_motor.absolute_angle = *(feedback_update->gimbal_INT_angle_point + INS_PITCH_ADDRESS_OFFSET);
+    feedback_update->gimbal_pitch_motor.absolute_angle = feedback_update->gimbal_INS_point->Pitch;
     feedback_update->gimbal_pitch_motor.relative_angle = -motor_ecd_to_angle_change(feedback_update->gimbal_pitch_motor.gimbal_motor_measure->ecd,
                                                                                     feedback_update->gimbal_pitch_motor.offset_ecd);
-    feedback_update->gimbal_pitch_motor.motor_gyro = *(feedback_update->gimbal_INT_gyro_point + INS_GYRO_Y_ADDRESS_OFFSET);
+    feedback_update->gimbal_pitch_motor.motor_gyro = feedback_update->gimbal_INS_point->Gyro[1];
 
-    feedback_update->gimbal_yaw_motor.absolute_angle = *(feedback_update->gimbal_INT_angle_point + INS_YAW_ADDRESS_OFFSET);
+    feedback_update->gimbal_yaw_motor.absolute_angle = feedback_update->gimbal_INS_point->Yaw;
     feedback_update->gimbal_yaw_motor.relative_angle = motor_ecd_to_angle_change(feedback_update->gimbal_yaw_motor.gimbal_motor_measure->ecd, feedback_update->gimbal_yaw_motor.frist_ecd);
-    feedback_update->gimbal_yaw_motor.motor_gyro = arm_cos_f32(feedback_update->gimbal_pitch_motor.relative_angle) * (*(feedback_update->gimbal_INT_gyro_point + INS_GYRO_Z_ADDRESS_OFFSET)) - arm_sin_f32(feedback_update->gimbal_pitch_motor.relative_angle) * (*(feedback_update->gimbal_INT_gyro_point + INS_GYRO_X_ADDRESS_OFFSET));
+    feedback_update->gimbal_yaw_motor.motor_gyro = arm_cos_f32(feedback_update->gimbal_pitch_motor.relative_angle) * (feedback_update->gimbal_INS_point->Gyro[Z]) - arm_sin_f32(feedback_update->gimbal_pitch_motor.relative_angle) * (feedback_update->gimbal_INS_point->Gyro[X]);
 }
 
 /**

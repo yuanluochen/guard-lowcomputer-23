@@ -1,6 +1,5 @@
 standard_tpye_c\bmi088middleware.o: ..\components\devices\BMI088Middleware.c
 standard_tpye_c\bmi088middleware.o: ..\components\devices\BMI088Middleware.h
-standard_tpye_c\bmi088middleware.o: ../application/struct_typedef.h
 standard_tpye_c\bmi088middleware.o: ../Inc/main.h
 standard_tpye_c\bmi088middleware.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 standard_tpye_c\bmi088middleware.o: ../Inc/stm32f4xx_hal_conf.h
@@ -46,18 +45,3 @@ standard_tpye_c\bmi088middleware.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4x
 standard_tpye_c\bmi088middleware.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 standard_tpye_c\bmi088middleware.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 standard_tpye_c\bmi088middleware.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-standard_tpye_c\bmi088middleware.o: ../Inc/FreeRTOSConfig.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
-standard_tpye_c\bmi088middleware.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-standard_tpye_c\bmi088middleware.o: ../bsp/boards/bsp_delay.h

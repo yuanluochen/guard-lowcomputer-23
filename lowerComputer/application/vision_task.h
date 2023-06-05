@@ -384,7 +384,7 @@ typedef struct
 typedef struct
 {
     // 绝对角指针
-    const fp32* vision_angle_point;
+    const INS_t* vision_angle_point;
     // 当前弹速
     fp32 bullet_speed;
     // 偏差时间

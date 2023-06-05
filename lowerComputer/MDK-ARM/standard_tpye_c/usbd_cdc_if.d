@@ -59,12 +59,14 @@ standard_tpye_c\usbd_cdc_if.o: ../application/vision_task.h
 standard_tpye_c\usbd_cdc_if.o: ../Inc/usart.h
 standard_tpye_c\usbd_cdc_if.o: ../Inc/dma.h
 standard_tpye_c\usbd_cdc_if.o: ../application/INS_task.h
-standard_tpye_c\usbd_cdc_if.o: ../application/struct_typedef.h
-standard_tpye_c\usbd_cdc_if.o: ../bsp/boards/bsp_buzzer.h
+standard_tpye_c\usbd_cdc_if.o: ../components/devices/BMI088driver.h
+standard_tpye_c\usbd_cdc_if.o: ../components/algorithm/QuaternionEKF.h
+standard_tpye_c\usbd_cdc_if.o: ../components/algorithm/kalman_filter.h
 standard_tpye_c\usbd_cdc_if.o: ../components/algorithm/Include/arm_math.h
 standard_tpye_c\usbd_cdc_if.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\usbd_cdc_if.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
 standard_tpye_c\usbd_cdc_if.o: ../application/referee.h
 standard_tpye_c\usbd_cdc_if.o: ../application/protocol/protocol.h
+standard_tpye_c\usbd_cdc_if.o: ../application/struct_typedef.h
 standard_tpye_c\usbd_cdc_if.o: ../application/remote_control.h
 standard_tpye_c\usbd_cdc_if.o: ../bsp/boards/bsp_rc.h

@@ -27,7 +27,6 @@
 #include "pid.h"
 #include "remote_control.h"
 #include "user_lib.h"
-#include "kalman.h"
 #include "vision_task.h"
 
 //pitch speed close-loop PID params, max out and max iout
@@ -166,9 +165,6 @@
 
 #define INS_YAW_ERROR 0
 
-//角度制转化为弧度制
-#define ANGLE_TO_RADIAN ((2 * PI) / 360)
-
 
 //云台初始化计数最大值
 #define INIT_STOP_COUNT  200
@@ -206,11 +202,11 @@
 #define PITCH_FEED_FORWARD 0.95f
 
 //角度误差项系数
-#define K_YAW_ANGLE_ERROR 100000.0f
-#define K_PITCH_ANGLE_ERROR 140000.0f
+#define K_YAW_ANGLE_ERROR 150000.0f
+#define K_PITCH_ANGLE_ERROR 250000.0f
 
 //速度项系数
-#define K_YAW_ANGLE_SPEED 5000.0f
+#define K_YAW_ANGLE_SPEED 6000.0f
 #define K_PITCH_ANGLE_SPEED 4000.0f
 
 //最大最小输出
@@ -319,10 +315,8 @@ typedef struct
 
     //自动扫描结构体
     scan_t gimbal_auto_scan;
-
-    const fp32 *gimbal_INT_angle_point;
-    const fp32 *gimbal_INT_gyro_point;
-
+    
+    const INS_t* gimbal_INS_point;
     gimbal_motor_t gimbal_yaw_motor;
     gimbal_motor_t gimbal_pitch_motor;
 

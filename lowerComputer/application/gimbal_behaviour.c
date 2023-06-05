@@ -282,111 +282,98 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
     {
         return;
     }
-    //判断imu是否校准完毕
-    if (judge_imu_offset_calc_finish())
+    // 判断是否为初始化模式
+    if (gimbal_behaviour == GIMBAL_INIT)
     {
-        //校准完毕云台进入其他模式
-        // 判断是否为初始化模式
-        if (gimbal_behaviour == GIMBAL_INIT)
+        // 初始化时间
+        static int init_time = 0;
+        if (switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
         {
-            // 初始化时间
-            static int init_time = 0;
-            if (switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
+            // 停止初始化
+            init_time = 0;
+        }
+        else
+        {
+            init_time++; // 初始化时间增加
+            // 是否初始化完成
+            if ((fabs(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR) ||
+                (fabs(gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_measure->ecd - gimbal_mode_set->gimbal_yaw_motor.frist_ecd) * MOTOR_ECD_TO_RAD > GIMBAL_INIT_ANGLE_ERROR))
             {
-                //停止初始化
-                init_time = 0;
-            }
-            else
-            {
-                init_time++; // 初始化时间增加
-                // 是否初始化完成
-                if ((fabs(gimbal_mode_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR) ||
-                    (fabs(gimbal_mode_set->gimbal_yaw_motor.gimbal_motor_measure->ecd - gimbal_mode_set->gimbal_yaw_motor.frist_ecd) * MOTOR_ECD_TO_RAD > GIMBAL_INIT_ANGLE_ERROR))
+                // 初始化未完成，判断初始化时间
+                if (init_time >= GIMBAL_INIT_TIME)
                 {
-                    // 初始化未完成，判断初始化时间
-                    if (init_time >= GIMBAL_INIT_TIME)
-                    {
-                        // 不进行任何行为，直接判断进入其他模式,计时归零
-                        init_time = 0;
-                    }
-                    else
-                    {
-                        // 退出模式选择，依旧为初始化模式
-                        return;
-                    }
+                    // 不进行任何行为，直接判断进入其他模式,计时归零
+                    init_time = 0;
                 }
                 else
                 {
-                    // 初始化完成,计时归零,重新计时
-                    init_time = 0;
-                    // 标志初始化完成
-                    gimbal_init_finish_flag = 1;
+                    // 退出模式选择，依旧为初始化模式
+                    return;
                 }
-                
-            }
-       }
-
-        if (switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
-        {
-            // 遥控器控制模式
-            gimbal_behaviour = GIMBAL_ZERO_FORCE;
-        }
-        if (switch_is_mid(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
-        {
-            // 切换到遥控器控制模式
-            gimbal_behaviour = GIMBAL_RC;
-        }
-        else if (switch_is_up(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
-        {
-            // 切换到云台自动模式
-
-            //根据视觉是否识别，自动控制模式
-            if (judge_vision_appear_target())
-            {
-                //识别到目标
-                gimbal_behaviour = GIMBAL_AUTO_ATTACK;  //云台自动袭击模式
             }
             else
             {
-                //未识别到目标
-                gimbal_behaviour = GIMBAL_AUTO_SCAN;   //云台自动扫描模式
-            }            
+                // 初始化完成,计时归零,重新计时
+                init_time = 0;
+                // 标志初始化完成
+                gimbal_init_finish_flag = 1;
+            }
         }
-        // 遥控器报错处理
-        if (toe_is_error(DBUS_TOE))
-        {
-            gimbal_behaviour = GIMBAL_ZERO_FORCE;
-        }
-
-        // 判断进入初始化模式
-        static gimbal_behaviour_e last_gimbal_behaviour = GIMBAL_ZERO_FORCE;
-        // 判断云台从无力模式转为其他模式,进入初始化状态
-        if (last_gimbal_behaviour == GIMBAL_ZERO_FORCE && gimbal_behaviour != GIMBAL_ZERO_FORCE)
-        {
-            gimbal_behaviour = GIMBAL_INIT;
-            // 标志初始化未完成
-            gimbal_init_finish_flag = 0;
-        }
-
-        // 判断是否发生云台从其他模式切入自动扫描模式模式
-        if (last_gimbal_behaviour != GIMBAL_AUTO_SCAN && gimbal_behaviour == GIMBAL_AUTO_SCAN)
-        {
-            // 用于自动扫描 -- 重新初始化扫描初始时间
-            gimbal_mode_set->gimbal_auto_scan.scan_begin_time = TIME_MS_TO_S(HAL_GetTick());
-            // 用于自动扫描 -- 重新设置云台yaw轴扫描中点，为当前位置
-            gimbal_mode_set->gimbal_auto_scan.yaw_center_value = gimbal_mode_set->gimbal_yaw_motor.absolute_angle;
-            gimbal_mode_set->gimbal_auto_scan.pitch_center_value = gimbal_mode_set->gimbal_pitch_motor.absolute_angle;
-
-        }
-        // 保存历史数据
-        last_gimbal_behaviour = gimbal_behaviour;
     }
-    else
+
+    if (switch_is_down(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
-        //imu校准未完毕，云台无力
+        // 遥控器控制模式
         gimbal_behaviour = GIMBAL_ZERO_FORCE;
     }
-    
+    if (switch_is_mid(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
+    {
+        // 切换到遥控器控制模式
+        gimbal_behaviour = GIMBAL_RC;
+    }
+    else if (switch_is_up(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
+    {
+        // 切换到云台自动模式
+
+        // 根据视觉是否识别，自动控制模式
+        if (judge_vision_appear_target())
+        {
+            // 识别到目标
+            gimbal_behaviour = GIMBAL_AUTO_ATTACK; // 云台自动袭击模式
+        }
+        else
+        {
+            // 未识别到目标
+            gimbal_behaviour = GIMBAL_AUTO_SCAN; // 云台自动扫描模式
+        }
+    }
+    // 遥控器报错处理
+    if (toe_is_error(DBUS_TOE))
+    {
+        gimbal_behaviour = GIMBAL_ZERO_FORCE;
+    }
+
+    // 判断进入初始化模式
+    static gimbal_behaviour_e last_gimbal_behaviour = GIMBAL_ZERO_FORCE;
+    // 判断云台从无力模式转为其他模式,进入初始化状态
+    if (last_gimbal_behaviour == GIMBAL_ZERO_FORCE && gimbal_behaviour != GIMBAL_ZERO_FORCE)
+    {
+        gimbal_behaviour = GIMBAL_INIT;
+        // 标志初始化未完成
+        gimbal_init_finish_flag = 0;
+    }
+
+    // 判断是否发生云台从其他模式切入自动扫描模式模式
+    if (last_gimbal_behaviour != GIMBAL_AUTO_SCAN && gimbal_behaviour == GIMBAL_AUTO_SCAN)
+    {
+        // 用于自动扫描 -- 重新初始化扫描初始时间
+        gimbal_mode_set->gimbal_auto_scan.scan_begin_time = TIME_MS_TO_S(HAL_GetTick());
+        // 用于自动扫描 -- 重新设置云台yaw轴扫描中点，为当前位置
+        gimbal_mode_set->gimbal_auto_scan.yaw_center_value = gimbal_mode_set->gimbal_yaw_motor.absolute_angle;
+        gimbal_mode_set->gimbal_auto_scan.pitch_center_value = gimbal_mode_set->gimbal_pitch_motor.absolute_angle;
+    }
+    // 保存历史数据
+    last_gimbal_behaviour = gimbal_behaviour;
 }
 /**
  * @brief          当云台行为模式是GIMBAL_ZERO_FORCE, 这个函数会被调用,云台控制模式是raw模式.原始模式意味着

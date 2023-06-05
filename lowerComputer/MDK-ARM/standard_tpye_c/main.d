@@ -86,14 +86,14 @@ standard_tpye_c\main.o: ../application/CAN_receive.h
 standard_tpye_c\main.o: ../application/gimbal_task.h
 standard_tpye_c\main.o: ../components/controller/pid.h
 standard_tpye_c\main.o: ../components/algorithm/user_lib.h
-standard_tpye_c\main.o: ../kalman/kalman.h
-standard_tpye_c\main.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdbool.h
+standard_tpye_c\main.o: ../application/vision_task.h
+standard_tpye_c\main.o: ../application/INS_task.h
+standard_tpye_c\main.o: ../components/devices/BMI088driver.h
+standard_tpye_c\main.o: ../components/algorithm/QuaternionEKF.h
+standard_tpye_c\main.o: ../components/algorithm/kalman_filter.h
 standard_tpye_c\main.o: ../components/algorithm/Include/arm_math.h
 standard_tpye_c\main.o: ../Drivers/CMSIS/Include/core_cm4.h
 standard_tpye_c\main.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
-standard_tpye_c\main.o: ../application/vision_task.h
-standard_tpye_c\main.o: ../application/INS_task.h
-standard_tpye_c\main.o: ../bsp/boards/bsp_buzzer.h
 standard_tpye_c\main.o: ../application/referee.h
 standard_tpye_c\main.o: ../application/protocol/protocol.h
 standard_tpye_c\main.o: ../application/detect_task.h
@@ -107,3 +107,4 @@ standard_tpye_c\main.o: ../stm32/rtwtypes.h
 standard_tpye_c\main.o: ../stm32/stm32_External_Functions.h
 standard_tpye_c\main.o: ../stm32/stm32_types.h
 standard_tpye_c\main.o: ../stm32/stm32_private.h
+standard_tpye_c\main.o: ../bsp/boards/bsp_dwt.h

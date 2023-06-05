@@ -30,7 +30,7 @@
 #include "chassis_task.h"
 #include "detect_task.h"
 #include "gimbal_task.h"
-#include "INS_task.h"
+#include "ins_task.h"
 #include "shoot_task.h"
 #include "led_flow_task.h"
 #include "oled_task.h"
@@ -44,13 +44,14 @@
 osThreadId chassisTaskHandle;
 osThreadId detect_handle;
 osThreadId gimbalTaskHandle;
-osThreadId imuTaskHandle;
+// osThreadId imuTaskHandle;
 osThreadId led_RGB_flow_handle;
 osThreadId oled_handle;
 osThreadId referee_usart_task_handle;
 osThreadId battery_voltage_handle;
 osThreadId shoot_task_handle;
 osThreadId vision_task_handle;
+osThreadId INSTaskHandle;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -71,7 +72,8 @@ osThreadId testHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-   
+
+void StartINSTask(void const * argument); 
 /* USER CODE END FunctionPrototypes */
 
 void test_task(void const * argument);
@@ -153,8 +155,10 @@ void MX_FREERTOS_Init(void) {
     osThreadDef(gimbalTask, gimbal_task, osPriorityHigh, 0, 512);
     gimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
 
-    osThreadDef(imuTask, INS_task, osPriorityRealtime, 0, 1024);
-    imuTaskHandle = osThreadCreate(osThread(imuTask), NULL);
+    // osThreadDef(imuTask, INS_Task, osPriorityRealtime, 0, 1024);
+    // imuTaskHandle = osThreadCreate(osThread(imuTask), NULL);
+    osThreadDef(INSTask, StartINSTask, osPriorityNormal, 0, 1024);
+    INSTaskHandle = osThreadCreate(osThread(INSTask), NULL);
 
     osThreadDef(led, led_RGB_flow_task, osPriorityNormal, 0, 256);
     led_RGB_flow_handle = osThreadCreate(osThread(led), NULL);
@@ -199,9 +203,22 @@ __weak void test_task(void const * argument)
   /* USER CODE END test_task */
 }
 
+
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-     
+
+void StartINSTask(void const * argument)
+{
+  /* USER CODE BEGIN StartINSTask */
+    INS_Init();
+    /* Infinite loop */
+    for (;;)
+    {
+        INS_Task();
+        osDelay(1);
+    }
+  /* USER CODE END StartINSTask */
+} 
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

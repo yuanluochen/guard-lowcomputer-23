@@ -1,6 +1,6 @@
 standard_tpye_c\bmi088driver.o: ..\components\devices\BMI088driver.c
 standard_tpye_c\bmi088driver.o: ..\components\devices\BMI088driver.h
-standard_tpye_c\bmi088driver.o: ../application/struct_typedef.h
+standard_tpye_c\bmi088driver.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdint.h
 standard_tpye_c\bmi088driver.o: ../Inc/main.h
 standard_tpye_c\bmi088driver.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 standard_tpye_c\bmi088driver.o: ../Inc/stm32f4xx_hal_conf.h
@@ -9,7 +9,6 @@ standard_tpye_c\bmi088driver.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ha
 standard_tpye_c\bmi088driver.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
 standard_tpye_c\bmi088driver.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
 standard_tpye_c\bmi088driver.o: ../Drivers/CMSIS/Include/core_cm4.h
-standard_tpye_c\bmi088driver.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\stdint.h
 standard_tpye_c\bmi088driver.o: ../Drivers/CMSIS/Include/cmsis_version.h
 standard_tpye_c\bmi088driver.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
 standard_tpye_c\bmi088driver.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
@@ -48,3 +47,5 @@ standard_tpye_c\bmi088driver.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll
 standard_tpye_c\bmi088driver.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
 standard_tpye_c\bmi088driver.o: ..\components\devices\BMI088reg.h
 standard_tpye_c\bmi088driver.o: ..\components\devices\BMI088Middleware.h
+standard_tpye_c\bmi088driver.o: ../bsp/boards/bsp_dwt.h
+standard_tpye_c\bmi088driver.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h
