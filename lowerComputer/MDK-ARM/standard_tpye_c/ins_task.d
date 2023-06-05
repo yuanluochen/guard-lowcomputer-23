@@ -70,3 +70,7 @@ standard_tpye_c\ins_task.o: ../components/controller/pid.h
 standard_tpye_c\ins_task.o: ../components/algorithm/ahrs.h
 standard_tpye_c\ins_task.o: ../components/algorithm/AHRS_MiddleWare.h
 standard_tpye_c\ins_task.o: ..\application\detect_task.h
+standard_tpye_c\ins_task.o: ../components/algorithm/Include/arm_math.h
+standard_tpye_c\ins_task.o: ../Drivers/CMSIS/Include/core_cm4.h
+standard_tpye_c\ins_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\string.h
+standard_tpye_c\ins_task.o: C:\Keil_v5\ARM\Ac506u7\Bin\..\include\math.h

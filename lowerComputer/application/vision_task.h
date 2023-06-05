@@ -84,8 +84,9 @@
 //全圆弧度
 #define ALL_CIRCLE (2 * PI)
 
+// 击打敌方机器人0.1
 //imu到枪口的竖直距离
-#define Z_STATIC 0.10f
+#define Z_STATIC 0.0f
 //枪口前推距离
 #define DISTANCE_STATIC 0.21085f
 //初始飞行时间
