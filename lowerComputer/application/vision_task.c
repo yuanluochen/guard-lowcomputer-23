@@ -18,6 +18,7 @@
 #include "usbd_cdc_if.h"
 #include "arm_math.h"
 
+
 // 视觉任务初始化
 static void vision_task_init(vision_control_t* init);
 // 视觉任务数据更新
@@ -108,7 +109,10 @@ static void vision_task_init(vision_control_t* init)
     init->shoot_data_point = get_shoot_data_point();
     // 获取机器人命令指针
     init->robot_command_point = get_robot_command_point();
-
+    // 获取场地状态指针
+    init->field_event_point = get_field_event_point();
+    // 获取比赛机器人血量指针
+    init->game_robot_HP_point = get_game_robot_HP_point();
 
     //初始化发射模式为停止袭击
     init->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
@@ -136,7 +140,7 @@ static void vision_task_feedback_update(vision_control_t* update)
     // 存放偏差时间
     queue_append_data(update->time_bias, update->vision_receive_point->interval_time);
     // 更新弹道计算的可变参数
-    assign_solve_trajectory_param(&update->solve_trajectory, update->imu_absolution_angle.pitch, update->imu_absolution_angle.yaw, update->bullet_speed, queue_data_calc_average(update->time_bias));
+    assign_solve_trajectory_param(&update->solve_trajectory, update->imu_absolution_angle.pitch, update->imu_absolution_angle.yaw, update->bullet_speed, queue_data_calc_average(update->time_bias) + TIME_MS_TO_S(ROBOT_TIMR_BIAS));
 
     //获取目标数据
     if (update->vision_receive_point->receive_state == UNLOADED)
@@ -156,21 +160,27 @@ static void vision_set_robot_mode(vision_control_t* set_robot_mode)
     case FOLLOW_PERSON_ENGINEER_KEYBOARD:
         set_robot_mode->robot_mode = FOLLOW_PERSON_ENGINEER;
         break;
+        
     case FOLLOW_PERSON_HERO_KEYBOARD:
         set_robot_mode->robot_mode = FOLLOW_PERSON_HERO;
         break;
+
     case FOLLOW_PERSON_INFANTRY_3_KEYBOARD:
         set_robot_mode->robot_mode = FOLLOW_PERSON_INFANTRY_3;
         break;
+
     case FOLLOW_PERSON_INFANTRY_4_KEYBOARD:
         set_robot_mode->robot_mode = FOLLOW_PERSON_INFANTRY_4;
         break;
+
     case FOLLOW_PERSON_INFANTRY_5_KEYBOARD:
         set_robot_mode->robot_mode = FOLLOW_PERSON_INFANTRY_5;
         break;
+
     case ATTACK_ENEMY_OUTPOST_KEYBOARD:
         set_robot_mode->robot_mode = ATTACK_ENEMY_OUTPOST;
         break;
+
     case ATTACK_ENEMY_ROBOT_KEYBOARD:
         set_robot_mode->robot_mode = ATTACK_ENEMY_ROBOT;
         break;
@@ -295,7 +305,7 @@ static void vision_judge_appear_target(vision_control_t* judge_appear_target)
         else
         {
             //判断识别目标装甲板类型
-            if (judge_appear_target->target_armor_id == ARMOR_ALL_ROBOT) //识别全部数字
+            if (judge_appear_target->target_armor_id == ARMOR_ALL_ROBOT) //识别全部机器人
             {
                 //筛选掉基地和前哨站
                 if (judge_appear_target->target_armor_id == ARMOR_BASE || judge_appear_target->target_armor_id == ARMOR_OUTPOST)
@@ -305,14 +315,39 @@ static void vision_judge_appear_target(vision_control_t* judge_appear_target)
                 }
                 else
                 {
+
                     // 设置为识别到目标
                     judge_appear_target->vision_target_appear_state = TARGET_APPEAR;
+
+                    //判断目标是否为哨兵 -- 分析是否要进行击打
+                    if (judge_appear_target->target_armor_id == ARMOR_GUARD)
+                    {
+                        //若敌方前哨站存活，则去掉哨兵这一目标
+                        //根据己方装甲板颜色，判断敌方前哨站是否摧毁
+                        if (judge_appear_target->detect_armor_color == BLUE)
+                        {
+                            //蓝色
+                            if (judge_appear_target->game_robot_HP_point->blue_outpost_HP > 0)
+                            {
+                                //敌方前哨战存活 -- 不击打哨兵
+                                judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
+                            } 
+                        }
+                        else if (judge_appear_target->detect_armor_color == RED)
+                        {
+                            // 红色
+                            if (judge_appear_target->game_robot_HP_point->red_outpost_HP > 0)
+                            {
+                                judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
+                            }
+                        }
+                    }
                 }
             }
             else //识别特定数字
             {
                 //判断识别到目标装甲板的数字是否符合目标数字
-                if (judge_appear_target->target_data.armors_num == judge_appear_target->target_armor_id)
+                if (judge_appear_target->target_data.id == judge_appear_target->target_armor_id)
                 {
                     //设置为识别到目标
                     judge_appear_target->vision_target_appear_state = TARGET_APPEAR;
@@ -323,6 +358,9 @@ static void vision_judge_appear_target(vision_control_t* judge_appear_target)
                     judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
                 }
             }
+
+
+
         }
     }
 }
@@ -380,9 +418,12 @@ static void vision_data_process(vision_control_t* vision_data)
         vision_data->gimbal_vision_control.gimbal_yaw = 0;
         vision_data->gimbal_vision_control.gimbal_pitch = 0;
         vision_data->chassis_vision_control.distance = 0;
+        vision_data->chassis_vision_control.vision_control_chassis_mode = UNFOLLOW_TARGET;
         //设置停止发射
         vision_data->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
     }
+
+    vision_data->gimbal_vision_control.robot_mode = vision_data->robot_mode;
 }
 
 

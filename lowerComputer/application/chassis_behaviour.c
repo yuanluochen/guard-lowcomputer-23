@@ -51,6 +51,9 @@
 #include "arm_math.h"
 #include "gimbal_behaviour.h"
 
+//前哨站状态
+#define PERSON_OUTPOST_STATE(event) (event & (1 << PERSON_OUTPOST_STATE_BIT))
+
 /**
   * @brief          底盘无力的行为状态机下，底盘模式是raw，故而设定值会直接发送到can总线上故而将设定值都设置为0
   * @author         RM
@@ -163,36 +166,52 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     }
     else if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_MODE_CHANNEL]))
     {
-        //上档为自动模式,底盘自动控制
+        // 上档为自动模式,底盘自动控制
+        //  底盘原地不动 -- 哨兵掉血 小陀螺
+        judge_chassis_auto_mode(chassis_move_mode);
+
 
         // 判断自动模式
         if (switch_is_down(chassis_move_mode->chassis_RC->rc.s[CHASSIS_AUTO_MODE]))
         {
-            //底盘原地不动
-            chassis_behaviour_mode = CHASSIS_NO_MOVE;
+            if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_ATTACK)
+            {
+                chassis_behaviour_mode = CHASSIS_NO_MOVE;
+            }
+            else if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_RUN)
+            {
+                chassis_behaviour_mode = CHASSIS_SPIN;
+            }
         }
         else if (switch_is_mid(chassis_move_mode->chassis_RC->rc.s[CHASSIS_AUTO_MODE]))
         {
-            //根据视觉是否识别到目标判断底盘自动模式
-            if (judge_vision_appear_target())
+            //根据视觉底盘运动命令判断底盘是否移动
+            if (chassis_move_mode->chassis_auto.chassis_vision_control_point->vision_control_chassis_mode == FOLLOW_TARGET)
             {
-                //识别到目标
-                //根据与目标距离判断底盘状态
-                if (chassis_move_mode->chassis_auto.chassis_vision_control_point->distance > AUTO_MOVE_CHASSIS_FOLLOW_ATTACK_DISTANCE)
-                {
-                    //大于底盘自动跟随击打距离 底盘自动跟随击打
-                    chassis_behaviour_mode = CHASSIS_AUTO_FOLLOW_TARGET;
-                }
-                else
-                {
-                    //底盘不动
-                    chassis_behaviour_mode = CHASSIS_NO_MOVE; 
-                }
+                chassis_behaviour_mode = CHASSIS_AUTO_FOLLOW_TARGET;
             }
-            else
+            else if (chassis_move_mode->chassis_auto.chassis_vision_control_point->vision_control_chassis_mode == UNFOLLOW_TARGET)
             {
-                //未识别到目标 -- 底盘不动
-                chassis_behaviour_mode = CHASSIS_NO_MOVE;
+                // //根据前哨站状态判断底盘是否小陀螺 
+                // if (PERSON_OUTPOST_STATE(chassis_move_mode->chassis_auto.field_event_point->event_type))
+                // {
+                //     //前哨站存活
+                //     chassis_behaviour_mode = CHASSIS_NO_MOVE;
+                // } 
+                // else
+                // {
+                //     //前哨站被击毁
+                //     chassis_behaviour_mode = CHASSIS_SPIN;
+                // }
+
+                if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_ATTACK)
+                {
+                    chassis_behaviour_mode = CHASSIS_NO_MOVE;
+                }
+                else if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_RUN)
+                {
+                    chassis_behaviour_mode = CHASSIS_SPIN;
+                }
             }
         }
         else if (switch_is_up(chassis_move_mode->chassis_RC->rc.s[CHASSIS_AUTO_MODE]))

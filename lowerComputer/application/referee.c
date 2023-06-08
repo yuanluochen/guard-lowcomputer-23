@@ -213,3 +213,14 @@ ext_robot_command_t* get_robot_command_point(void)
     return &robot_command_t;
 }
 
+//获取场地状态指针
+ext_event_data_t* get_field_event_point(void)
+{
+    return &field_event;
+}
+
+//获取比赛机器血量指针
+ext_game_robot_HP_t* get_game_robot_HP_point(void)
+{
+    return &game_robot_HP_t;
+}

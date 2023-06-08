@@ -51,7 +51,7 @@ void INS_Init(void)
 void INS_Task(void)
 {
     static uint32_t count = 0;
-    const float gravity[3] = {0, 0, 9.79878f};
+    const float gravity[3] = {0, 0, 9.7985f};
     dt = DWT_GetDeltaT(&INS_DWT_Count);
     t += dt;
 
@@ -93,15 +93,11 @@ void INS_Task(void)
         }
         BodyFrameToEarthFrame(INS.MotionAccel_b, INS.MotionAccel_n, INS.q); // �?换回导航系n
 
-        // 获取最终数�?
+        // 获取最终数值
         INS.Yaw = QEKF_INS.Yaw * ANGLE_TO_RADIAN;
         INS.Pitch = QEKF_INS.Pitch * ANGLE_TO_RADIAN;
         INS.Roll = QEKF_INS.Roll * ANGLE_TO_RADIAN;
         INS.YawTotalAngle = QEKF_INS.YawTotalAngle * ANGLE_TO_RADIAN;
-        // INS.Yaw = QEKF_INS.Yaw;
-        // INS.Pitch = QEKF_INS.Pitch;
-        // INS.Roll = QEKF_INS.Roll;
-        // INS.YawTotalAngle = QEKF_INS.YawTotalAngle;
     }
 
     // temperature control

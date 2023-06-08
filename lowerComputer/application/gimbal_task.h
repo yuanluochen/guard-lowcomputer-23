@@ -150,6 +150,9 @@
 #define MOTOR_ECD_TO_RAD 0.000766990394f //      2*  PI  /8192
 #endif
 
+//低通滤波系数
+#define GIMBAL_YAW_AUTO_SCAN_NUM 133.3f
+#define GIMBAL_PITCH_AUTO_SCAN_NUM 133.3f
 
 //云台pitch轴最大值相对角度
 #define GIMBAL_PITCH_MAX_ENCODE 946
@@ -175,7 +178,7 @@
 //云台pitch轴摇摆运动向上最大编码值
 #define GIMBAL_PITCH_SWING_UO_ECD GIMBAL_PITCH_MIN_ENCODE
 //云台yaw轴运动步长(单位为rad)
-#define GIMBAL_YAW_SWING_STEP 0.01f;
+#define GIMBAL_YAW_SWING_STE 0.01f;
 //云台pitch轴运动步长(单位为rad)
 #define GIMBAL_PITCH_SWING_STEP 0.01f
 //云台yaw轴pitch轴设置最大时间
@@ -189,7 +192,7 @@
 //yaw轴扫描步长 rad/S
 #define YAW_SCAN_SPEED 0.4f
 //pitch轴扫描步长 rad/s
-#define PITCH_SCAN_SPEED 0.6f
+#define PITCH_SCAN_SPEED 0.5f
 
 //yaw轴扫描周期
 #define YAW_SCAN_PERIOD (2 * YAW_SCAN_RANGE / YAW_SCAN_SPEED)
@@ -202,8 +205,8 @@
 #define PITCH_FEED_FORWARD 0.95f
 
 //角度误差项系数
-#define K_YAW_ANGLE_ERROR 150000.0f
-#define K_PITCH_ANGLE_ERROR 250000.0f
+#define K_YAW_ANGLE_ERROR 170000.0f
+#define K_PITCH_ANGLE_ERROR 150000.0f
 
 //速度项系数
 #define K_YAW_ANGLE_SPEED 6000.0f
@@ -225,6 +228,10 @@ typedef enum
 //哨兵扫描结构体，用于在上位机未识别到目标时自动扫描做准备
 typedef struct 
 {
+    // 扫描低通滤波结构体
+    first_order_filter_type_t pitch_auto_scan_first_order_filter;
+    first_order_filter_type_t yaw_auto_scan_first_order_filter;
+
     //yaw轴中心值
     fp32 yaw_center_value;
     //pitch轴中心值

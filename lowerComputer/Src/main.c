@@ -106,7 +106,8 @@ int main(void)
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 
 
- 	  HAL_Init();
+
+		HAL_Init();
 
     /* USER CODE BEGIN Init */
 
@@ -149,7 +150,7 @@ int main(void)
     remote_control_init();
 
     DWT_Init(168);
-    while (BMI088_init(&hspi1, 1) != BMI088_NO_ERROR)
+    while (BMI088_init(&hspi1, 0) != BMI088_NO_ERROR)
     {
         ;
     }

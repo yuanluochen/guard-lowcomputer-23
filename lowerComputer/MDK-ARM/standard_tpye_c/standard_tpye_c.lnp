@@ -115,7 +115,7 @@
 "standard_tpye_c\usbd_ctlreq.o"
 "standard_tpye_c\usbd_ioreq.o"
 "standard_tpye_c\usbd_cdc.o"
---library_type=microlib --strict --scatter "standard_tpye_c\standard_tpye_c.sct"
+--strict --scatter "standard_tpye_c\standard_tpye_c.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list "standard_tpye_c.map" -o standard_tpye_c\standard_tpye_c.axf

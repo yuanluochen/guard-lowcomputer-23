@@ -29,6 +29,7 @@
         "usbd_cdc_if.h": "c",
         "usb_device.h": "c",
         "solve_trajectory.h": "c",
-        "chassis_task.h": "c"
+        "chassis_task.h": "c",
+        "protocol.h": "c"
     }
 }

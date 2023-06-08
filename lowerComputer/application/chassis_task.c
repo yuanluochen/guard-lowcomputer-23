@@ -41,6 +41,9 @@
         }                                                \
     }
 
+
+
+
 /**
   * @brief          初始化"chassis_move"变量，包括pid初始化， 遥控器指针初始化，3508底盘电机指针初始化，云台电机初始化，陀螺仪角度指针初始化
   * @param[out]     chassis_move_init:"chassis_move"变量指针.
@@ -108,7 +111,7 @@ void chassis_task(void const *pvParameters)
     speed_set_x = 2.1f;
     speed_set_y = 1.82f;
     K = 105.f;
-    chassis_move.power_control.POWER_MAX = 145;
+    chassis_move.power_control.POWER_MAX = 140;
     //wait a time 
     //空闲一段时间
     vTaskDelay(CHASSIS_TASK_INIT_TIME);
@@ -207,6 +210,8 @@ static void chassis_init(chassis_move_t *chassis_move_init)
     chassis_move_init->chassis_auto.ext_robot_hurt_point = get_robot_hurt_point();
     //获取视觉控制指针
     chassis_move_init->chassis_auto.chassis_vision_control_point = get_vision_chassis_point();
+    //获取场地状态指针
+    chassis_move_init->chassis_auto.field_event_point = get_field_event_point();
     
     //get chassis motor data point,  initialize motor speed PID
     //获取底盘电机数据指针，初始化PID 

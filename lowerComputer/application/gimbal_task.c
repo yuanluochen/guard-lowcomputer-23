@@ -239,6 +239,10 @@ const gimbal_motor_t *get_pitch_motor_point(void)
  */
 static void gimbal_init(gimbal_control_t *init)
 {
+
+    const static fp32 gimbal_yaw_auto_scan_order_filter[1] = {GIMBAL_YAW_AUTO_SCAN_NUM};
+    const static fp32 gimbal_pitch_auto_scan_order_filter[1] = {GIMBAL_PITCH_AUTO_SCAN_NUM};
+
     // 给底盘跟随云台模式用的
     gimbal_control.gimbal_yaw_motor.zero_ecd_flag = GIMBAL_YAW_LAST_OFFSET_ENCODE;
     gimbal_control.gimbal_yaw_motor.last_zero_ecd = GIMBAL_YAW_LAST_OFFSET_ENCODE;
@@ -273,6 +277,10 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_pitch_motor.absolute_angle_set = init->gimbal_pitch_motor.absolute_angle;
     init->gimbal_pitch_motor.relative_angle_set = init->gimbal_pitch_motor.relative_angle;
     init->gimbal_pitch_motor.motor_gyro_set = init->gimbal_pitch_motor.motor_gyro;
+
+     //初始化云台自动扫描低通滤波
+    first_order_filter_init(&init->gimbal_auto_scan.pitch_auto_scan_first_order_filter, GIMBAL_CONTROL_TIME, gimbal_pitch_auto_scan_order_filter);
+    first_order_filter_init(&init->gimbal_auto_scan.yaw_auto_scan_first_order_filter, GIMBAL_CONTROL_TIME, gimbal_yaw_auto_scan_order_filter);
 
     //yaw轴云台初始化相对角度
     init->gimbal_yaw_motor.offset_ecd = GIMBAL_YAW_OFFSET_ENCODE;

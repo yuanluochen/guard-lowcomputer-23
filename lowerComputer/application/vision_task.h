@@ -53,7 +53,7 @@
 #define BEGIN_SET_BULLET_SPEED 26.0f
 
 //空气阻力系数
-#define AIR_K1 0.06f
+#define AIR_K1 0.036f
 //初始子弹飞行迭代数值
 #define T_0 0.0f
 //迭代精度
@@ -68,10 +68,12 @@
 //比例补偿器比例系数
 #define ITERATE_SCALE_FACTOR 0.3f
 //重力加速度
-#define GRAVITY 9.79878f
+#define GRAVITY 9.7985f
 
 //固有时间偏移即上位机计算时间单位ms
 #define TIME_BIAS 6
+//机器人自身固有时间偏差
+#define ROBOT_TIMR_BIAS 20
 //偏差时间队列大小
 #define TIME_BIAS_QUEUE_CAPACITY 10 
 
@@ -86,7 +88,7 @@
 
 // 击打敌方机器人0.1
 //imu到枪口的竖直距离
-#define Z_STATIC 0.0f
+#define Z_STATIC 0.1f
 //枪口前推距离
 #define DISTANCE_STATIC 0.21085f
 //初始飞行时间
@@ -108,20 +110,20 @@ typedef enum
 typedef enum
 {
     //跟随己方工程
-    FOLLOW_PERSON_ENGINEER_KEYBOARD = KEY_PRESSED_OFFSET_X,
+    FOLLOW_PERSON_ENGINEER_KEYBOARD = 'Q',
     //跟随己方英雄
-    FOLLOW_PERSON_HERO_KEYBOARD = KEY_PRESSED_OFFSET_Z,
+    FOLLOW_PERSON_HERO_KEYBOARD = 'W',
     //跟随己方步兵3号
-    FOLLOW_PERSON_INFANTRY_3_KEYBOARD = KEY_PRESSED_OFFSET_A,
+    FOLLOW_PERSON_INFANTRY_3_KEYBOARD = 'E',
     //跟随己方步兵4号
-    FOLLOW_PERSON_INFANTRY_4_KEYBOARD = KEY_PRESSED_OFFSET_S,
+    FOLLOW_PERSON_INFANTRY_4_KEYBOARD = 'R',
     //跟随己方步兵5号
-    FOLLOW_PERSON_INFANTRY_5_KEYBOARD = KEY_PRESSED_OFFSET_D,
+    FOLLOW_PERSON_INFANTRY_5_KEYBOARD = 'T',
 
     //袭击敌方机器人
-    ATTACK_ENEMY_ROBOT_KEYBOARD = KEY_PRESSED_OFFSET_E,
+    ATTACK_ENEMY_ROBOT_KEYBOARD = 'A',
     //击打对方前哨站
-    ATTACK_ENEMY_OUTPOST_KEYBOARD = KEY_PRESSED_OFFSET_Q,
+    ATTACK_ENEMY_OUTPOST_KEYBOARD = 'S',
 
 }robot_command_keyboard_e;
 
@@ -312,6 +314,8 @@ typedef struct
     fp32 gimbal_yaw;
     // 本次云台pitch轴数值
     fp32 gimbal_pitch;
+    //云台模式
+    robot_mode_e robot_mode;
 } gimbal_vision_control_t;
 
 // 哨兵发射电机运动控制命令
@@ -413,6 +417,10 @@ typedef struct
     const ext_shoot_data_t* shoot_data_point;
     //机器人命令数据指针
     const ext_robot_command_t* robot_command_point;
+    //场地事件数据指针
+    const ext_event_data_t* field_event_point;
+    //获取比赛机器人血量指针
+    const ext_game_robot_HP_t* game_robot_HP_point;
 
     // 机器人云台瞄准位置向量
     vector_t robot_gimbal_aim_vector;

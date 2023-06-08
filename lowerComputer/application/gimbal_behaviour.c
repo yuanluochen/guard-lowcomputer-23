@@ -464,6 +464,15 @@ static void gimbal_auto_scan_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *g
     fp32 pitch_set_angle = 0;
     fp32 yaw_set_angle = 0;
 
+    // 视觉模式判断pitch轴扫描中值
+    if (gimbal_control_set->gimbal_vision_point->robot_mode == ATTACK_ENEMY_OUTPOST)
+    {
+        gimbal_control_set->gimbal_auto_scan.pitch_center_value = -gimbal_control_set->gimbal_auto_scan.pitch_range;
+    }
+    else
+    {
+        gimbal_control_set->gimbal_auto_scan.pitch_center_value = gimbal_control_set->gimbal_auto_scan.pitch_range - 0.05f;
+    }
     // 计算过去设定角度与当前角度之间的差值
     yaw_error = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
     pitch_error = gimbal_control_set->gimbal_pitch_motor.absolute_angle_set - gimbal_control_set->gimbal_pitch_motor.absolute_angle;
@@ -477,15 +486,19 @@ static void gimbal_auto_scan_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *g
     scan_control_set(&auto_scan_AC_set_yaw, gimbal_control_set->gimbal_auto_scan.yaw_range, gimbal_control_set->gimbal_auto_scan.scan_yaw_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
     scan_control_set(&auto_scan_AC_set_pitch, gimbal_control_set->gimbal_auto_scan.pitch_range, gimbal_control_set->gimbal_auto_scan.scan_pitch_period, gimbal_control_set->gimbal_auto_scan.scan_run_time);
     // 赋值控制值  = 中心值 + 加上浮动函数
-    pitch_set_angle = auto_scan_AC_set_pitch;
-    // pitch_set_angle = 0.1;
     yaw_set_angle = auto_scan_AC_set_yaw + gimbal_control_set->gimbal_auto_scan.yaw_center_value;
+    pitch_set_angle = auto_scan_AC_set_pitch + gimbal_control_set->gimbal_auto_scan.pitch_center_value;
+
+    // 一阶低通使数据平滑
+    first_order_filter_cali(&gimbal_control_set->gimbal_auto_scan.yaw_auto_scan_first_order_filter, yaw_set_angle);
+    first_order_filter_cali(&gimbal_control_set->gimbal_auto_scan.pitch_auto_scan_first_order_filter, pitch_set_angle);
+
     // pitch_set_angle = gimbal_control_set->gimbal_auto_scan.pitch_center_value;
     // yaw_set_angle = gimbal_control_set->gimbal_auto_scan.yaw_center_value;
 
     // 赋值增量
-    *yaw = yaw_set_angle - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
-    *pitch = pitch_set_angle - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;
+    *yaw = gimbal_control_set->gimbal_auto_scan.yaw_auto_scan_first_order_filter.out - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
+    *pitch = gimbal_control_set->gimbal_auto_scan.pitch_auto_scan_first_order_filter.out - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;
 }
 /**
  * @brief          云台初始化控制，电机是陀螺仪角度控制，云台先抬起pitch轴，后旋转yaw轴

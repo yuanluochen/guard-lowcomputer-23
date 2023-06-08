@@ -154,6 +154,7 @@
 //自动模式下底盘跟随击打距离
 #define AUTO_MOVE_CHASSIS_FOLLOW_ATTACK_DISTANCE AUOT_MOVE_SET_DISTANCE
 
+#define PERSON_OUTPOST_STATE_BIT 10
 
 typedef enum
 {
@@ -232,6 +233,9 @@ typedef struct
 
     //裁判系统机器人状态指针
     ext_game_robot_state_t* ext_game_robot_state_point;
+    
+    // 场地事件数据指针
+    const ext_event_data_t* field_event_point;
 
     //伤害类型指针
     ext_robot_hurt_t* ext_robot_hurt_point;
