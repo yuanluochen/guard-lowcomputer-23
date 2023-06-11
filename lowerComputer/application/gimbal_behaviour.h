@@ -76,6 +76,7 @@ typedef enum
     GIMBAL_INIT,
     GIMBAL_AUTO_SCAN,   // 自动扫描模式
     GIMBAL_AUTO_ATTACK, // 自动击打模式
+    GIMBAL_AUTO_MOVE,   // 自动移动模式
     GIMBAL_RC,          // 遥控器控制模式
     GIMBAL_MOTIONLESS,
 } gimbal_behaviour_e;

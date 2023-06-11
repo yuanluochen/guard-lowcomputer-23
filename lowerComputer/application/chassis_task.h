@@ -156,6 +156,8 @@
 
 #define PERSON_OUTPOST_STATE_BIT 10
 
+#define HP_ALLOW_PROPORTION 0.95f
+
 typedef enum
 {
     CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW,  // chassis will follow yaw gimbal motor relative angle.底盘会跟随云台相对角度
@@ -220,7 +222,7 @@ typedef struct
     //距离误差项系数
     fp32 k_distance_error;
 
-}chassis_auto_move_controller_t;
+}chassis_follow_auto_move_controller_t;
 
 
 //底盘自动化控制结构体
@@ -233,7 +235,7 @@ typedef struct
 
     //裁判系统机器人状态指针
     ext_game_robot_state_t* ext_game_robot_state_point;
-    
+
     // 场地事件数据指针
     const ext_event_data_t* field_event_point;
 
@@ -242,9 +244,11 @@ typedef struct
 
     //视觉控制指针
     const chassis_vision_control_t* chassis_vision_control_point;
+    //自动移动控制指针
+    const auto_move_t* chassis_auto_move;
 
     //底盘自动移动控制器
-    chassis_auto_move_controller_t chassis_auto_move_controller;
+    chassis_follow_auto_move_controller_t chassis_auto_move_controller;
     
 }chassis_auto_t;
 
@@ -288,6 +292,8 @@ typedef struct
     //底盘自动模式
     chassis_auto_t chassis_auto;
 
+    //底盘自动
+
 } chassis_move_t;
 
 /**
@@ -330,6 +336,15 @@ extern void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_mov
   */
 extern void chassis_vision_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_move_vision_to_vector);
 
+/**
+  * @brief          计算纵向和横移速度
+  *                 
+  * @param[out]     vx_set: 纵向速度指针
+  * @param[out]     vy_set: 横向速度指针
+  * @param[out]     chassis_move_rc_to_vector: "chassis_move" 变量指针
+  * @retval         none
+  */
+extern void chassis_auto_move_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_auto_move_control_vector);
 
 /**
  * @brief 底盘自动移动控制器初始化
@@ -339,7 +354,7 @@ extern void chassis_vision_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis
  * @param max_out 最大输出
  * @param min_out 最小输出
  */
-void chassis_auto_move_controller_init(chassis_auto_move_controller_t* controller, fp32 k_distance_error, fp32 max_out, fp32 min_out);
+void chassis_auto_move_controller_init(chassis_follow_auto_move_controller_t* controller, fp32 k_distance_error, fp32 max_out, fp32 min_out);
 
 /**
  * @brief 比例计算实现底盘跟随敌方机器人中心的目标,计算移动速度
@@ -348,6 +363,6 @@ void chassis_auto_move_controller_init(chassis_auto_move_controller_t* controlle
  * @param set_distance 设定的距离
  * @param current_distance 当前距离
  */
-void chassis_auto_move_controller_calc(chassis_auto_move_controller_t* controller, fp32 set_distance, fp32 current_distance);
+void chassis_auto_move_controller_calc(chassis_follow_auto_move_controller_t* controller, fp32 set_distance, fp32 current_distance);
 
 #endif

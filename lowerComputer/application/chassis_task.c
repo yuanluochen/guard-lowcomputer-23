@@ -210,6 +210,8 @@ static void chassis_init(chassis_move_t *chassis_move_init)
     chassis_move_init->chassis_auto.ext_robot_hurt_point = get_robot_hurt_point();
     //获取视觉控制指针
     chassis_move_init->chassis_auto.chassis_vision_control_point = get_vision_chassis_point();
+    //获取自动移动控制指针
+    chassis_move_init->chassis_auto.chassis_auto_move = get_auto_move_point();
     //获取场地状态指针
     chassis_move_init->chassis_auto.field_event_point = get_field_event_point();
     
@@ -490,6 +492,29 @@ void chassis_vision_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t
     }
 }
 
+/**
+  * @brief          计算纵向和横移速度
+  *                 
+  * @param[out]     vx_set: 纵向速度指针
+  * @param[out]     vy_set: 横向速度指针
+  * @param[out]     chassis_move_rc_to_vector: "chassis_move" 变量指针
+  * @retval         none
+  */
+void chassis_auto_move_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_auto_move_control_vector)
+{
+    fp32 vx = chassis_auto_move_control_vector->chassis_auto.chassis_auto_move->command_chassis_vx;
+    // 一阶低通滤波处理数据
+    first_order_filter_cali(&chassis_auto_move_control_vector->chassis_cmd_slow_set_vx, vx);
+    if (vx == 0)
+    {
+        chassis_auto_move_control_vector->chassis_cmd_slow_set_vx.out = 0;
+    }
+
+    *vx_set = chassis_auto_move_control_vector->chassis_cmd_slow_set_vx.out;
+    *vy_set = 0;
+}
+
+
 
 /**
   * @brief          设置底盘控制设置值, 三运动控制值是通过chassis_behaviour_control_set函数设置的
@@ -743,14 +768,14 @@ void Angle_Error_Compare(int now_angle, int zero_angle, int last_zero_angle)
 }
 
 
-void chassis_auto_move_controller_init(chassis_auto_move_controller_t* controller, fp32 k_distance_error, fp32 max_out, fp32 min_out)
+void chassis_auto_move_controller_init(chassis_follow_auto_move_controller_t* controller, fp32 k_distance_error, fp32 max_out, fp32 min_out)
 {
     controller->k_distance_error = k_distance_error;
     controller->max_output = max_out;
     controller->min_output = min_out;
 }
 
-void chassis_auto_move_controller_calc(chassis_auto_move_controller_t* controller, fp32 set_distance, fp32 current_distance)
+void chassis_auto_move_controller_calc(chassis_follow_auto_move_controller_t* controller, fp32 set_distance, fp32 current_distance)
 {
     //赋值数值
     controller->set_distance = set_distance;

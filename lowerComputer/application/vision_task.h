@@ -25,7 +25,7 @@
 //允许发弹距离 m 
 #define ALLOW_ATTACK_DISTANCE 10.0f
 //允许发弹概率
-#define ALLOE_ATTACK_P 2.0f
+#define ALLOE_ATTACK_P 3.0f
 
 
 //延时等待
@@ -50,10 +50,10 @@
 //最大设定弹速
 #define MAX_SET_BULLET_SPEED 30.0f
 //初始设定弹速
-#define BEGIN_SET_BULLET_SPEED 26.0f
+#define BEGIN_SET_BULLET_SPEED 25.0f
 
 //空气阻力系数
-#define AIR_K1 0.036f
+#define AIR_K1 0.01f
 //初始子弹飞行迭代数值
 #define T_0 0.0f
 //迭代精度
@@ -98,6 +98,16 @@
 //最大未接受数据的时间 s
 #define MAX_NOT_RECEIVE_DATA_TIME 0.05f
 
+//红方蓝方角度误差
+#define RED_AND_BLUE_ANGLE_ERROR 180
+
+//距离转速度参数P 
+#define DISTANCE_TO_SPEED_P 0.7f
+//最大自动移动速度
+#define MAX_AUTO_MOVE_SPEED 5.0f
+//最小自动移动速度
+#define MIN_AUTO_MOVE_SPEED 0.2f
+
 
 //子弹类型
 typedef enum
@@ -109,23 +119,26 @@ typedef enum
 //机器人命令按键
 typedef enum
 {
-    //跟随己方工程
-    FOLLOW_PERSON_ENGINEER_KEYBOARD = 'Q',
-    //跟随己方英雄
-    FOLLOW_PERSON_HERO_KEYBOARD = 'W',
-    //跟随己方步兵3号
+    // 跟随己方英雄
+    FOLLOW_PERSON_HERO_KEYBOARD = 'Q',
+    // 跟随己方工程
+    FOLLOW_PERSON_ENGINEER_KEYBOARD = 'W',
+    // 跟随己方步兵3号
     FOLLOW_PERSON_INFANTRY_3_KEYBOARD = 'E',
-    //跟随己方步兵4号
+    // 跟随己方步兵4号
     FOLLOW_PERSON_INFANTRY_4_KEYBOARD = 'R',
-    //跟随己方步兵5号
+    // 跟随己方步兵5号
     FOLLOW_PERSON_INFANTRY_5_KEYBOARD = 'T',
 
-    //袭击敌方机器人
+    // 袭击敌方机器人
     ATTACK_ENEMY_ROBOT_KEYBOARD = 'A',
-    //击打对方前哨站
+    // 击打对方前哨站
     ATTACK_ENEMY_OUTPOST_KEYBOARD = 'S',
 
-}robot_command_keyboard_e;
+    // 自主移动目标点
+    AUTO_MOVE_TARGET_POINT_KEYBOARD = 'D',
+
+} robot_command_keyboard_e;
 
 //机器人模式
 typedef enum
@@ -145,6 +158,9 @@ typedef enum
     ATTACK_ENEMY_ROBOT,
     // 击打对方前哨站
     ATTACK_ENEMY_OUTPOST,
+
+    //自主移动目标点
+    AUTO_MOVE_TARGET_POINT,
 }robot_mode_e;
 
 
@@ -325,8 +341,6 @@ typedef struct
     shoot_command_e shoot_command;
 } shoot_vision_control_t;
 
-
-
 //哨兵底盘控制命令
 typedef struct 
 {
@@ -336,8 +350,6 @@ typedef struct
     fp32 distance;
 }chassis_vision_control_t;
 
-
-
 // 目标位置结构体
 typedef struct
 {
@@ -346,6 +358,28 @@ typedef struct
     float z;
     float yaw;
 } target_position_t;
+
+
+//自动移动结构体
+typedef struct
+{
+    //机器人当前位置
+    ext_game_robot_pos_t* game_robot_pos;
+    //目标位置
+    target_position_t target_pos;
+    //当前位置
+    target_position_t cur_pos;
+
+    //yaw轴初始角度 -- 正前角度
+    fp32 begin_yaw; 
+    //yaw轴命令角度 -- 绝对角
+    fp32 command_yaw;
+    //pitch轴命令角度 -- 绝对角
+    fp32 command_pitch;
+    //底盘移动速度命令 -- 底盘移动速度
+    fp32 command_chassis_vx;
+} auto_move_t;
+
 
 //弹道计算结构体
 typedef struct
@@ -442,6 +476,9 @@ typedef struct
     //底盘运动命令
     chassis_vision_control_t chassis_vision_control;
 
+    //机器人自主移动结构体
+    auto_move_t auto_move;
+
 } vision_control_t;
 
 // 视觉数据处理任务
@@ -456,12 +493,22 @@ const shoot_vision_control_t *get_vision_shoot_point(void);
 // 获取上位机底盘控制命令
 const chassis_vision_control_t* get_vision_chassis_point(void);
 
+//获取自动跟随命令指针
+const auto_move_t *get_auto_move_point(void);
+
 /**
  * @brief 判断视觉是否识别到目标
  * 
  * @return bool_t 返回1 识别到目标 返回0 未识别到目标
  */
 bool_t judge_vision_appear_target(void);
+/**
+ * @brief 判断当前机器人模式是否为自动移动模式
+ * 
+ * @return bool_t 返回1 当前模式为自动跟随模式 返回0 当前模式不是自动跟随模式
+ */
+bool_t judge_cur_mode_is_auto_move_mode(void);
+
 
 /**
  * @brief 分析视觉原始增加数据，根据原始数据，判断是否要进行发射，判断yaw轴pitch的角度，如果在一定范围内，则计算值增加，增加到一定数值则判断发射，如果yaw轴pitch轴角度大于该范围，则计数归零

@@ -224,3 +224,9 @@ ext_game_robot_HP_t* get_game_robot_HP_point(void)
 {
     return &game_robot_HP_t;
 }
+
+//获取机器人位置指针
+ext_game_robot_pos_t* get_game_robot_pos(void)
+{
+    return &game_robot_pos_t;
+}

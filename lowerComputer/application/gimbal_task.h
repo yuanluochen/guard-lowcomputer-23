@@ -187,12 +187,12 @@
 //yaw轴扫描范围，以中心为基础 半个范围
 #define YAW_SCAN_RANGE  PI
 //pitch轴扫描范围，以中心值为基础
-#define PITCH_SCAN_RANGE 0.15f
+#define PITCH_SCAN_RANGE 0.20f
 
 //yaw轴扫描步长 rad/S
-#define YAW_SCAN_SPEED 0.4f
+#define YAW_SCAN_SPEED 1.2f
 //pitch轴扫描步长 rad/s
-#define PITCH_SCAN_SPEED 0.5f
+#define PITCH_SCAN_SPEED 1.2f
 
 //yaw轴扫描周期
 #define YAW_SCAN_PERIOD (2 * YAW_SCAN_RANGE / YAW_SCAN_SPEED)
@@ -205,11 +205,11 @@
 #define PITCH_FEED_FORWARD 0.95f
 
 //角度误差项系数
-#define K_YAW_ANGLE_ERROR 170000.0f
+#define K_YAW_ANGLE_ERROR 50000.0f
 #define K_PITCH_ANGLE_ERROR 150000.0f
 
 //速度项系数
-#define K_YAW_ANGLE_SPEED 6000.0f
+#define K_YAW_ANGLE_SPEED 4000.0f
 #define K_PITCH_ANGLE_SPEED 4000.0f
 
 //最大最小输出
@@ -254,6 +254,7 @@ typedef struct
     fp32 scan_pitch_period;
 
 } scan_t;
+
 
 //云台电机二阶线性控制器
 typedef struct 
@@ -319,9 +320,14 @@ typedef struct
 
     //获取视觉上位机数据
     const gimbal_vision_control_t* gimbal_vision_point;
+    //云台自动移动结构体
+    const auto_move_t* auto_move_point;
 
     //自动扫描结构体
     scan_t gimbal_auto_scan;
+
+    //场地yaw轴正方向
+    fp32 yaw_positive_direction;
     
     const INS_t* gimbal_INS_point;
     gimbal_motor_t gimbal_yaw_motor;
@@ -349,6 +355,9 @@ extern const gimbal_motor_t *get_pitch_motor_point(void);
   * @param[in]      pvParameters: 空
   * @retval         none
   */
+
+//获取场地正方向
+fp32 get_yaw_positive_direction(void);
 
 extern void gimbal_task(void const *pvParameters);
 

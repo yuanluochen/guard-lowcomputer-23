@@ -14,6 +14,7 @@
 #include "task.h"
 #include "shoot_task.h"
 #include "gimbal_behaviour.h"
+#include "gimbal_task.h"
 #include "CRC8_CRC16.h"
 #include "usbd_cdc_if.h"
 #include "arm_math.h"
@@ -37,6 +38,14 @@ static void vision_data_process(vision_control_t* vision_data);
 static void set_vision_send_packet(vision_control_t* set_send_packet);
 // 实时计算弹速
 static void calc_current_bullet_speed(vision_control_t* calc_cur_bullet_speed, bullet_type_e bullet_type, shooter_id_e shooter_id);
+
+// 计算自动移动
+static void calc_auto_move_data(vision_control_t* robot_auto_move);
+//获取当前机器人位置
+static void get_robot_cur_pos(vision_control_t* robot_pos);
+//获取目标机器人位置
+static void get_robot_target_pos(vision_control_t* robot_pos);
+
 
 // 初始化弹道解算的参数
 static void solve_trajectory_param_init(solve_trajectory_t* solve_trajectory, fp32 k1, fp32 init_flight_time, fp32 time_bias, fp32 z_static, fp32 distance_static);
@@ -78,14 +87,25 @@ void vision_task(void const* pvParameters)
         vision_task_feedback_update(&vision_control);
         //设置机器人模式
         vision_set_robot_mode(&vision_control);
-        //设置目标装甲板颜色
-        vision_set_target_armor_color(&vision_control); 
-        //设置识别目标装甲板数字
-        vision_set_target_armor_num(&vision_control);
-        //判断是否识别到目标
-        vision_judge_appear_target(&vision_control);
-        // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角,并设置控制命令
-        vision_data_process(&vision_control);
+        //判断机器人是否处于自主移动到目标点这一模式
+        if (vision_control.robot_mode == AUTO_MOVE_TARGET_POINT)
+        {
+            //设置停止击打
+            vision_control.shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
+            //计算自动移动命令
+            calc_auto_move_data(&vision_control);
+        }
+        else
+        {
+            // 设置目标装甲板颜色
+            vision_set_target_armor_color(&vision_control);
+            // 设置识别目标装甲板数字
+            vision_set_target_armor_num(&vision_control);
+            // 判断是否识别到目标
+            vision_judge_appear_target(&vision_control);
+            // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角,并设置控制命令
+            vision_data_process(&vision_control);
+        }
 
         // 配置发送数据包
         set_vision_send_packet(&vision_control);
@@ -113,6 +133,8 @@ static void vision_task_init(vision_control_t* init)
     init->field_event_point = get_field_event_point();
     // 获取比赛机器人血量指针
     init->game_robot_HP_point = get_game_robot_HP_point();
+    //获取当前位置指针
+    init->auto_move.game_robot_pos = get_game_robot_pos();
 
     //初始化发射模式为停止袭击
     init->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
@@ -141,6 +163,8 @@ static void vision_task_feedback_update(vision_control_t* update)
     queue_append_data(update->time_bias, update->vision_receive_point->interval_time);
     // 更新弹道计算的可变参数
     assign_solve_trajectory_param(&update->solve_trajectory, update->imu_absolution_angle.pitch, update->imu_absolution_angle.yaw, update->bullet_speed, queue_data_calc_average(update->time_bias) + TIME_MS_TO_S(ROBOT_TIMR_BIAS));
+    // 获取地图正方向
+    update->auto_move.begin_yaw = get_yaw_positive_direction();
 
     //获取目标数据
     if (update->vision_receive_point->receive_state == UNLOADED)
@@ -154,6 +178,7 @@ static void vision_task_feedback_update(vision_control_t* update)
 
 static void vision_set_robot_mode(vision_control_t* set_robot_mode)
 {
+    
     //根据云台手命令判断机器人模式
     switch (set_robot_mode->robot_command_point->commd_keyboard)
     {
@@ -183,6 +208,10 @@ static void vision_set_robot_mode(vision_control_t* set_robot_mode)
 
     case ATTACK_ENEMY_ROBOT_KEYBOARD:
         set_robot_mode->robot_mode = ATTACK_ENEMY_ROBOT;
+        break;
+    
+    case AUTO_MOVE_TARGET_POINT_KEYBOARD:
+        set_robot_mode->robot_mode = AUTO_MOVE_TARGET_POINT;
         break;
 
     default:
@@ -294,6 +323,8 @@ static void vision_judge_appear_target(vision_control_t* judge_appear_target)
     }
     else
     {
+        //识别到目标
+
         //更新当前时间
         judge_appear_target->vision_receive_point->current_time = TIME_MS_TO_S(HAL_GetTick());
         //判断当前时间是否距离上次接收的时间过长
@@ -308,7 +339,7 @@ static void vision_judge_appear_target(vision_control_t* judge_appear_target)
             if (judge_appear_target->target_armor_id == ARMOR_ALL_ROBOT) //识别全部机器人
             {
                 //筛选掉基地和前哨站
-                if (judge_appear_target->target_armor_id == ARMOR_BASE || judge_appear_target->target_armor_id == ARMOR_OUTPOST)
+                if (judge_appear_target->target_data.id == ARMOR_BASE || judge_appear_target->target_data.id == ARMOR_OUTPOST)
                 {
                     //设置不识别目标
                     judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
@@ -319,30 +350,34 @@ static void vision_judge_appear_target(vision_control_t* judge_appear_target)
                     // 设置为识别到目标
                     judge_appear_target->vision_target_appear_state = TARGET_APPEAR;
 
-                    //判断目标是否为哨兵 -- 分析是否要进行击打
-                    if (judge_appear_target->target_armor_id == ARMOR_GUARD)
+                    // 判断当前模式为袭击对方机器人
+                    if (judge_appear_target->robot_mode == ATTACK_ENEMY_ROBOT)
                     {
-                        //若敌方前哨站存活，则去掉哨兵这一目标
-                        //根据己方装甲板颜色，判断敌方前哨站是否摧毁
-                        if (judge_appear_target->detect_armor_color == BLUE)
+                        // 判断目标是否为哨兵 -- 分析是否要进行击打
+                        if (judge_appear_target->target_data.id == ARMOR_GUARD)
                         {
-                            //蓝色
-                            if (judge_appear_target->game_robot_HP_point->blue_outpost_HP > 0)
+                            // 若敌方前哨站存活，则去掉哨兵这一目标
+                            // 根据己方装甲板颜色，判断敌方前哨站是否摧毁
+                            if (judge_appear_target->detect_armor_color == BLUE)
                             {
-                                //敌方前哨战存活 -- 不击打哨兵
-                                judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
-                            } 
-                        }
-                        else if (judge_appear_target->detect_armor_color == RED)
-                        {
-                            // 红色
-                            if (judge_appear_target->game_robot_HP_point->red_outpost_HP > 0)
+                                // 蓝色
+                                if (judge_appear_target->game_robot_HP_point->blue_outpost_HP > 1)
+                                {
+                                    // 敌方前哨站存活 -- 不击打哨兵
+                                    judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
+                                }
+                            }
+                            else if (judge_appear_target->detect_armor_color == RED)
                             {
-                                judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
+                                // 红色
+                                if (judge_appear_target->game_robot_HP_point->red_outpost_HP > 1)
+                                {
+                                    judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
+                                }
                             }
                         }
                     }
-                }
+               }
             }
             else //识别特定数字
             {
@@ -357,10 +392,15 @@ static void vision_judge_appear_target(vision_control_t* judge_appear_target)
                     //未识别到目标
                     judge_appear_target->vision_target_appear_state = TARGET_UNAPPEAR;
                 }
+
+
+                if (judge_appear_target->robot_mode == ATTACK_ENEMY_OUTPOST)
+                {
+                    //击打前哨战模式设置为识别所有数字
+                    //设置为识别所有数字
+                    judge_appear_target->vision_target_appear_state = TARGET_APPEAR;
+                }
             }
-
-
-
         }
     }
 }
@@ -500,6 +540,53 @@ static void calc_current_bullet_speed(vision_control_t* calc_cur_bullet_speed, b
     }
 }
 
+
+static void calc_auto_move_data(vision_control_t* robot_auto_move)
+{
+    fp32 relative_yaw_angle = 0;
+    // 获取当前位置
+    get_robot_cur_pos(robot_auto_move);
+    //获取机器人目标位置
+    get_robot_target_pos(robot_auto_move);
+    //计算相对yaw轴角度
+    relative_yaw_angle = atan2(robot_auto_move->auto_move.target_pos.y - robot_auto_move->auto_move.cur_pos.y, robot_auto_move->auto_move.target_pos.x - robot_auto_move->auto_move.cur_pos.x);
+
+    robot_auto_move->auto_move.command_yaw = rad_format(relative_yaw_angle + robot_auto_move->auto_move.begin_yaw);
+
+    //赋值运动速度 = 距离 * 系数
+    robot_auto_move->auto_move.command_chassis_vx = sqrt(pow((robot_auto_move->auto_move.target_pos.x - robot_auto_move->auto_move.cur_pos.x), 2) + pow((robot_auto_move->auto_move.target_pos.y - robot_auto_move->auto_move.cur_pos.y), 2)) * DISTANCE_TO_SPEED_P;
+    if (fabs(robot_auto_move->auto_move.command_chassis_vx) > MAX_AUTO_MOVE_SPEED)
+    {
+        robot_auto_move->auto_move.command_chassis_vx = MAX_AUTO_MOVE_SPEED;
+    }
+    else if (fabs(robot_auto_move->auto_move.command_chassis_vx) < MIN_AUTO_MOVE_SPEED)
+    {
+        robot_auto_move->auto_move.command_chassis_vx = 0;
+    }
+
+}
+
+
+static void get_robot_cur_pos(vision_control_t* robot_pos)
+{
+    robot_pos->auto_move.cur_pos.x = robot_pos->auto_move.game_robot_pos->x;
+    robot_pos->auto_move.cur_pos.y = robot_pos->auto_move.game_robot_pos->y;
+    robot_pos->auto_move.cur_pos.z = robot_pos->auto_move.game_robot_pos->z;
+    robot_pos->auto_move.cur_pos.yaw = robot_pos->auto_move.game_robot_pos->yaw;
+}
+
+
+static void get_robot_target_pos(vision_control_t* robot_pos)
+{
+    //判断是否处于自动移动模式
+    if (robot_pos->robot_mode == AUTO_MOVE_TARGET_POINT)
+    {
+        robot_pos->auto_move.target_pos.x = robot_pos->robot_command_point->target_position_x;
+        robot_pos->auto_move.target_pos.y = robot_pos->robot_command_point->target_position_y;
+        robot_pos->auto_move.target_pos.z = robot_pos->robot_command_point->target_position_z;
+    }
+}
+
 void send_packet(vision_control_t* send)
 {
     if (send == NULL)
@@ -618,7 +705,6 @@ static void select_optimal_target(solve_trajectory_t* solve_trajectory, target_d
 
     // 选择与机器人自身yaw差值最小的目标,排序选择最小目标
     fp32 yaw_error_min = fabsf(solve_trajectory->current_yaw - solve_trajectory->all_target_position_point[0].yaw);
-
     for (int i = 0; i < solve_trajectory->armor_num; i++)
     {
         fp32 yaw_error_temp = fabsf(solve_trajectory->current_yaw - solve_trajectory->all_target_position_point[i].yaw);
@@ -758,6 +844,12 @@ bool_t judge_vision_appear_target(void)
     return vision_control.vision_target_appear_state == TARGET_APPEAR;
 }
 
+//判断当前机器人模式是否为自动移动模式
+bool_t judge_cur_mode_is_auto_move_mode(void)
+{
+    return vision_control.robot_mode == AUTO_MOVE_TARGET_POINT;
+}
+
 // 获取上位机云台命令
 const gimbal_vision_control_t *get_vision_gimbal_point(void)
 {
@@ -774,6 +866,12 @@ const shoot_vision_control_t *get_vision_shoot_point(void)
 const chassis_vision_control_t* get_vision_chassis_point(void)
 {
     return &vision_control.chassis_vision_control;
+}
+
+//获取自动跟随命令指针
+const auto_move_t* get_auto_move_point(void)
+{
+    return &vision_control.auto_move;
 }
 
 

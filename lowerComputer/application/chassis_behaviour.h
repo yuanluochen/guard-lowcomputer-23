@@ -101,6 +101,7 @@ typedef enum
     CHASSIS_SPIN,
     CHASSIS_RC,   // 底盘遥控器控制模式，默认为底盘跟随云台
     CHASSIS_AUTO_FOLLOW_TARGET, // 底盘自动模式
+    CHASSIS_AUTO_MOVE,           //底盘自动移动
 
 } chassis_behaviour_e;
 
@@ -141,6 +142,8 @@ extern void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode);
   */
 
 extern void chassis_behaviour_control_set(fp32 *vx_set, fp32 *vy_set, fp32 *angle_set, chassis_move_t *chassis_move_rc_to_vector);
+
+
 
 
 /**

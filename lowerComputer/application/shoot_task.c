@@ -58,6 +58,14 @@ static void shoot_set_control_mode(fric_move_t* fric_set_control);
 static void shoot_mode_change_transit(void);
 
 /**
+ * @brief 判断是否卡弹
+ * 
+ * @param trigger_stuck 卡弹结构体
+ * @return bool_t 返回1 卡弹 返回0 不卡弹
+ */
+static bool_t judge_bullet_is_stuck(Shoot_Motor_t* trigger_stuck);
+
+/**
  * @brief  射击初始化
  */
 void shoot_init(void);
@@ -140,6 +148,13 @@ void shoot_init(void)
     const static fp32 fric_2_order_filter[1] = {0.1666666667f};
     first_order_filter_init(&fric_move.fric1_cmd_slow_set_speed, SHOOT_CONTROL_TIME, fric_1_order_filter);
     first_order_filter_init(&fric_move.fric2_cmd_slow_set_speed, SHOOT_CONTROL_TIME, fric_2_order_filter);
+
+    //初始化卡弹状态为不卡弹
+    trigger_motor.stuck_state = UNSTUCK;
+    // 初始化卡弹时间为0
+    trigger_motor.stuck_time = 0;
+    // 初始化卡弹回拨时间为0
+    trigger_motor.reverse_time = 0;
     Shoot_Feedback_Update();
 }
 
@@ -150,6 +165,44 @@ static void shoot_mode_change_transit(void)
         //模式发生切换,pid清除
         stm32_step_shoot_pid_clear();
     }
+}
+
+static bool_t judge_bullet_is_stuck(Shoot_Motor_t* trigger_stuck)
+{
+    //判断播弹电机电流值是否过大
+    if (fabs(trigger_stuck->given_current) > STUCK_CURRENT)
+    {
+        //计数卡弹时间
+        trigger_motor.stuck_time++;
+        //判断是否卡弹时间过长
+        if (trigger_motor.stuck_time > STUCK_TIME)
+        {
+            //标志卡弹
+            trigger_stuck->stuck_state = STUCK;
+            //卡弹时间归零
+            trigger_motor.stuck_time = 0;
+        }
+        else
+        {
+            //卡弹时间归零
+            trigger_motor.stuck_time = 0;
+        }
+
+        //判断是否卡弹
+        if (trigger_motor.stuck_state == STUCK)
+        {
+            trigger_motor.reverse_time++;
+            if (trigger_motor.reverse_time > REVERSE_TIME)
+            {
+                //标志不卡弹
+                trigger_motor.stuck_state = UNSTUCK;
+                //卡弹回拨时间归零
+                trigger_motor.reverse_time = 0;
+            }
+        }
+    }
+
+    return trigger_motor.stuck_state == STUCK;
 }
 
 /**
@@ -298,6 +351,9 @@ static void shoot_set_control_mode(fric_move_t *fric_set_control)
  */
 static void Shoot_Set_Mode(void)
 {
+
+    
+    
     //设置发射控制模式
     shoot_set_control_mode(&fric_move);
 
@@ -305,7 +361,8 @@ static void Shoot_Set_Mode(void)
     last_shoot_mode = shoot_mode;
 
     //更新当前射击模式
-
+    
+    
     //判断当前枪口热量是否即将到达最大值
     if (GUARD_MAX_MUZZLE_HEAT - power_heat_data_t.shooter_id1_17mm_cooling_heat >= GUARD_MAX_ALLOW_MUZZLE_HEAT_ERR0R &&
         GUARD_MAX_MUZZLE_HEAT - power_heat_data_t.shooter_id2_17mm_cooling_heat >= GUARD_MAX_ALLOW_MUZZLE_HEAT_ERR0R)
@@ -376,6 +433,7 @@ static void Shoot_Set_Mode(void)
             shoot_mode = SHOOT_STOP;
         }
     }
+    
 }
 /**
  * @brief          拨弹轮循环
@@ -449,20 +507,32 @@ void shoot_control_loop(void)
         fric = FRIC_MOTOR_STOP_SPEED;
         break;
     }
-    
+
+
     switch (trigger_motor_mode)
     {
     case SHOOT_MOTOR_RUN:
         trigger_motor.speed_set = TRIGGER_MOTOR_RUN_SPEED;
         break;
     case SHOOT_MOTOR_STOP:
+
         trigger_motor.speed_set = TRIGGER_MOTOR_STOP_SPEED;
         break;
     }
-
+ 
     // pid计算
     fric_control_loop(&fric_move);        // 摩擦轮控制
     trigger_control_loop(&trigger_motor); // 拨弹盘控制
+
+    //发弹停止
+    
+
+    //判断是否卡弹
+    if (judge_bullet_is_stuck(&trigger_motor))
+    {
+        //回拨
+        trigger_motor.given_current = -5;
+    }
 }
 
 /**

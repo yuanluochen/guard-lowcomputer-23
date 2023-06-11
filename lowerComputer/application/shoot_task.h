@@ -100,7 +100,14 @@
 #define GUARD_MAX_MUZZLE_HEAT 240
 
 //哨兵枪口热量距离最大值最大允许误差
-#define GUARD_MAX_ALLOW_MUZZLE_HEAT_ERR0R 20
+#define GUARD_MAX_ALLOW_MUZZLE_HEAT_ERR0R 50
+
+//卡弹电流
+#define STUCK_CURRENT 7000
+//卡弹时间
+#define STUCK_TIME 800
+//回拨时间
+#define REVERSE_TIME 110
 
 typedef enum
 {
@@ -127,6 +134,13 @@ typedef enum
     SHOOT_INIT_CONTROL,    //初始化控制模式
     SHOOT_STOP_CONTROL,    //停止控制模式
 }shoot_control_mode_e;
+
+// 卡弹状态
+typedef enum
+{
+    STUCK,   // 卡弹
+    UNSTUCK, // 不卡弹
+} stuck_state_e;
 
 typedef struct
 {
@@ -161,6 +175,11 @@ typedef struct
     fp32 blocking_angle_set;
     fp32 blocking_angle_current;
     int8_t blocking_ecd_count;
+
+    stuck_state_e stuck_state; // 卡弹状态
+    fp32 stuck_time;           // 卡弹时间
+    fp32 reverse_time;         // 卡弹回拨时间
+
 } Shoot_Motor_t;
 
 typedef struct

@@ -137,6 +137,15 @@ static void gimbal_auto_attack_control(fp32* yaw, fp32* pitch, gimbal_control_t*
  * @param gimbal_control_set  云台指针
  */
 static void gimbal_auto_scan_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
+/**
+ * @brief                     云台进入自动移动模式，云台姿态受命令，电机是绝对角度控制
+ *
+ * @param yaw                 yaw 轴角度增量
+ * @param pitch               pitch 轴角度增量
+ * @param gimbal_control_set  云台指针
+ */
+static void gimbal_auto_move_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set);
+
 
 /*----------------------------------结构体---------------------------*/
 //云台行为状态机
@@ -231,6 +240,10 @@ void gimbal_behaviour_control_set(fp32 *add_yaw, fp32 *add_pitch, gimbal_control
     case GIMBAL_AUTO_SCAN: //自动扫描模式
         gimbal_auto_scan_control(add_yaw, add_pitch, gimbal_control_set);
         break;
+
+    case GIMBAL_AUTO_MOVE: // 自动跟随模式
+        gimbal_auto_move_control(add_yaw, add_pitch, gimbal_control_set);
+        break;
     }
 }
 
@@ -313,10 +326,19 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
             }
             else
             {
+                //初始化次数
+                static int init_finish_count = 0;
+                init_finish_count++; 
+
                 // 初始化完成,计时归零,重新计时
                 init_time = 0;
                 // 标志初始化完成
                 gimbal_init_finish_flag = 1;
+                if (init_finish_count == 1)
+                {
+                    // 保留数据 -- 记录场地正方向
+                    gimbal_mode_set->yaw_positive_direction = gimbal_mode_set->gimbal_yaw_motor.absolute_angle_set;   
+                }
             }
         }
     }
@@ -334,17 +356,26 @@ static void gimbal_behavour_set(gimbal_control_t *gimbal_mode_set)
     else if (switch_is_up(gimbal_mode_set->gimbal_rc_ctrl->rc.s[GIMBAL_MODE_CHANNEL]))
     {
         // 切换到云台自动模式
-
-        // 根据视觉是否识别，自动控制模式
-        if (judge_vision_appear_target())
+        // 判断当前模式是否为自动移动模式
+        if (judge_cur_mode_is_auto_move_mode())
         {
-            // 识别到目标
-            gimbal_behaviour = GIMBAL_AUTO_ATTACK; // 云台自动袭击模式
+            //是自动移动模式
+            gimbal_behaviour = GIMBAL_AUTO_MOVE;  //云台自动移动模式
         }
         else
         {
-            // 未识别到目标
-            gimbal_behaviour = GIMBAL_AUTO_SCAN; // 云台自动扫描模式
+            // 不是自动移动模式
+            // 根据视觉是否识别，自动控制模式
+            if (judge_vision_appear_target())
+            {
+                // 识别到目标
+                gimbal_behaviour = GIMBAL_AUTO_ATTACK; // 云台自动袭击模式
+            }
+            else
+            {
+                // 未识别到目标
+                gimbal_behaviour = GIMBAL_AUTO_SCAN; // 云台自动扫描模式
+            }
         }
     }
     // 遥控器报错处理
@@ -467,11 +498,11 @@ static void gimbal_auto_scan_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *g
     // 视觉模式判断pitch轴扫描中值
     if (gimbal_control_set->gimbal_vision_point->robot_mode == ATTACK_ENEMY_OUTPOST)
     {
-        gimbal_control_set->gimbal_auto_scan.pitch_center_value = -gimbal_control_set->gimbal_auto_scan.pitch_range;
+        gimbal_control_set->gimbal_auto_scan.pitch_center_value = -gimbal_control_set->gimbal_auto_scan.pitch_range + 0.05f;
     }
     else
     {
-        gimbal_control_set->gimbal_auto_scan.pitch_center_value = gimbal_control_set->gimbal_auto_scan.pitch_range - 0.05f;
+        gimbal_control_set->gimbal_auto_scan.pitch_center_value = 0.05;
     }
     // 计算过去设定角度与当前角度之间的差值
     yaw_error = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
@@ -500,6 +531,36 @@ static void gimbal_auto_scan_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *g
     *yaw = gimbal_control_set->gimbal_auto_scan.yaw_auto_scan_first_order_filter.out - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
     *pitch = gimbal_control_set->gimbal_auto_scan.pitch_auto_scan_first_order_filter.out - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;
 }
+
+/**
+ * @brief                     云台进入自动移动模式，云台姿态受命令，电机是绝对角度控制
+ *
+ * @param yaw                 yaw 轴角度增量
+ * @param pitch               pitch 轴角度增量
+ * @param gimbal_control_set  云台指针
+ */
+static void gimbal_auto_move_control(fp32 *yaw, fp32 *pitch, gimbal_control_t *gimbal_control_set)
+{
+    // yaw pitch 轴设定值与当前值的差值
+    fp32 pitch_error = 0;
+    fp32 yaw_error = 0;
+
+    // pitch轴yaw轴设定角度
+    fp32 pitch_set_angle = 0;
+    fp32 yaw_set_angle = 0;
+
+    // 计算过去设定角度与当前角度之间的差值
+    yaw_error = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set - gimbal_control_set->gimbal_yaw_motor.absolute_angle;
+    pitch_error = gimbal_control_set->gimbal_pitch_motor.absolute_angle_set - gimbal_control_set->gimbal_pitch_motor.absolute_angle;
+    //  获取上位机视觉数据
+    yaw_set_angle = gimbal_control_set->auto_move_point->command_yaw;
+    pitch_set_angle = 0.0f;
+
+    // 赋值增量
+    *yaw = yaw_set_angle - gimbal_control_set->gimbal_yaw_motor.absolute_angle - yaw_error;
+    *pitch = pitch_set_angle - gimbal_control_set->gimbal_pitch_motor.absolute_angle - pitch_error;
+}
+
 /**
  * @brief          云台初始化控制，电机是陀螺仪角度控制，云台先抬起pitch轴，后旋转yaw轴
  */

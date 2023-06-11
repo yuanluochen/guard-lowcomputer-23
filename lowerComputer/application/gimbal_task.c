@@ -258,6 +258,8 @@ static void gimbal_init(gimbal_control_t *init)
     init->gimbal_rc_ctrl = get_remote_control_point();
     // 获取上位机视觉数据指针
     init->gimbal_vision_point = get_vision_gimbal_point();
+    // 获取自动移动结构体
+    init->auto_move_point = get_auto_move_point();
     // 初始化电机模式
     init->gimbal_yaw_motor.gimbal_motor_mode = init->gimbal_yaw_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_RAW;
     init->gimbal_pitch_motor.gimbal_motor_mode = init->gimbal_pitch_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_RAW;
@@ -716,3 +718,10 @@ static fp32 gimbal_motor_second_order_linear_controller_calc(gimbal_motor_second
 
     return controller->output;
 }
+
+//获取场地正方向
+fp32 get_yaw_positive_direction(void)
+{
+    return gimbal_control.yaw_positive_direction;
+}
+

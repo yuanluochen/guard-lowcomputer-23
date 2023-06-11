@@ -130,6 +130,15 @@ static void chassis_open_set_control(fp32 *vx_set, fp32 *vy_set, fp32 *wz_set, c
  */
 static void chassis_auto_follow_target_control(fp32* vx_set, fp32* vy_set, fp32* wz_set, chassis_move_t* chassis_move_vision_to_vector);
 
+/**
+ * @brief  底盘自动模式下底盘运动控制，根据读取视觉计算的我方机器人与敌方机器人的距离数据控制底盘移动
+ * 
+ * @param vx_set 正值 前进速度 负值 后退速度
+ * @param vy_set 正值 左移速度，负值 右移速度
+ * @param wz_set 旋转速度 正值 逆时针旋转 赋值 顺时针旋转
+ * @param chassis_auto_move_vision_to_vector 
+ */
+static void chassis_auto_move_control(fp32* vx_set, fp32* vy_set, fp32* wz_set, chassis_move_t* chassis_auto_move_to_vector);
 
 /*----------------------------------内部变量---------------------------*/
 //highlight, the variable chassis behaviour mode 
@@ -170,7 +179,6 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
         //  底盘原地不动 -- 哨兵掉血 小陀螺
         judge_chassis_auto_mode(chassis_move_mode);
 
-
         // 判断自动模式
         if (switch_is_down(chassis_move_mode->chassis_RC->rc.s[CHASSIS_AUTO_MODE]))
         {
@@ -185,32 +193,29 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
         }
         else if (switch_is_mid(chassis_move_mode->chassis_RC->rc.s[CHASSIS_AUTO_MODE]))
         {
-            //根据视觉底盘运动命令判断底盘是否移动
-            if (chassis_move_mode->chassis_auto.chassis_vision_control_point->vision_control_chassis_mode == FOLLOW_TARGET)
+            //判断是否为自动移动模式
+            if (judge_cur_mode_is_auto_move_mode())
             {
-                chassis_behaviour_mode = CHASSIS_AUTO_FOLLOW_TARGET;
+                chassis_behaviour_mode = CHASSIS_AUTO_MOVE;
             }
-            else if (chassis_move_mode->chassis_auto.chassis_vision_control_point->vision_control_chassis_mode == UNFOLLOW_TARGET)
+            else
             {
-                // //根据前哨站状态判断底盘是否小陀螺 
-                // if (PERSON_OUTPOST_STATE(chassis_move_mode->chassis_auto.field_event_point->event_type))
-                // {
-                //     //前哨站存活
-                //     chassis_behaviour_mode = CHASSIS_NO_MOVE;
-                // } 
-                // else
-                // {
-                //     //前哨站被击毁
-                //     chassis_behaviour_mode = CHASSIS_SPIN;
-                // }
-
-                if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_ATTACK)
+                // 根据视觉底盘运动命令判断底盘是否移动
+                if (chassis_move_mode->chassis_auto.chassis_vision_control_point->vision_control_chassis_mode == FOLLOW_TARGET)
                 {
-                    chassis_behaviour_mode = CHASSIS_NO_MOVE;
+                    chassis_behaviour_mode = CHASSIS_AUTO_FOLLOW_TARGET;
                 }
-                else if (chassis_move_mode->chassis_auto.chassis_auto_mode == CHASSIS_RUN)
+                else if (chassis_move_mode->chassis_auto.chassis_vision_control_point->vision_control_chassis_mode == UNFOLLOW_TARGET)
                 {
-                    chassis_behaviour_mode = CHASSIS_SPIN;
+                    // 若当前血量低于一定比例的最大血量，则开始小陀螺自保
+                    if (chassis_move_mode->chassis_auto.auto_HP.cur_HP >= chassis_move_mode->chassis_auto.auto_HP.max_HP * HP_ALLOW_PROPORTION)
+                    {
+                        chassis_behaviour_mode = CHASSIS_NO_MOVE;
+                    }
+                    else
+                    {
+                        chassis_behaviour_mode = CHASSIS_SPIN;
+                    }
                 }
             }
         }
@@ -273,6 +278,10 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
         chassis_move_mode->chassis_mode = CHASSIS_VECTOR_SPIN;
     }
     else if (chassis_behaviour_mode == CHASSIS_AUTO_FOLLOW_TARGET)
+    {
+        chassis_move_mode->chassis_mode = CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW;
+    }
+    else if (chassis_behaviour_mode == CHASSIS_AUTO_MOVE)
     {
         chassis_move_mode->chassis_mode = CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW;
     }
@@ -403,6 +412,10 @@ void chassis_behaviour_control_set(fp32 *vx_set, fp32 *vy_set, fp32 *angle_set, 
     else if (chassis_behaviour_mode == CHASSIS_AUTO_FOLLOW_TARGET)
     {
         chassis_auto_follow_target_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
+    }
+    else if (chassis_behaviour_mode == CHASSIS_AUTO_MOVE)
+    {
+        chassis_auto_move_control(vx_set, vy_set, angle_set, chassis_move_rc_to_vector);
     }
 }
 
@@ -593,5 +606,10 @@ static void chassis_auto_follow_target_control(fp32* vx_set, fp32* vy_set, fp32*
 
 }
 
+static void chassis_auto_move_control(fp32* vx_set, fp32* vy_set, fp32* wz_set, chassis_move_t* chassis_auto_move_to_vector)
+{
+    chassis_auto_move_control_vector(vx_set, vy_set, chassis_auto_move_to_vector);
+    *wz_set = 0;
+}
 
 
