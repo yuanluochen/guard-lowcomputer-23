@@ -8,6 +8,10 @@
 
 本工程在windwos环境下使用keil开发，用Visual Studio Code进行代码编辑。
 
+## 硬件
+
+本工程使用DJI RobotMaster 开发板C进行开发。
+
 ## 文件结构说明
 
 工程目录为[lowerComputer](lowerComputer)。其目录结构入下
