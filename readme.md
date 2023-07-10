@@ -1,4 +1,4 @@
-# RobotMaster 2023 赛季哨兵电控开源工程
+# RobotMaster 2023 赛季哨兵电控开源
 
 ## 简介
 
