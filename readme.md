@@ -8,7 +8,9 @@
 
 本工程在windwos环境下使用keil开发，用Visual Studio Code进行代码编辑。
 
-## 硬件
+## 硬件条件
+
+### 开发板
 
 本工程使用DJI RobotMaster 开发板C进行开发。
 
