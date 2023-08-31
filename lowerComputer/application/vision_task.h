@@ -160,7 +160,7 @@ typedef enum
     ATTACK_ENEMY_OUTPOST,
 
     //自主移动目标点
-    AUTO_MOVE_TARGET_POINT,
+    // AUTO_MOVE_TARGET_POINT,
 }robot_mode_e;
 
 

@@ -64,7 +64,7 @@ osThreadId INSTaskHandle;
 
 /* USER CODE END PM */
 
-/* Private variables -------------------------------    --------------------------*/
+/* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
@@ -202,7 +202,6 @@ __weak void test_task(void const * argument)
   }
   /* USER CODE END test_task */
 }
-
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */

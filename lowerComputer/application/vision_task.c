@@ -40,11 +40,11 @@ static void set_vision_send_packet(vision_control_t* set_send_packet);
 static void calc_current_bullet_speed(vision_control_t* calc_cur_bullet_speed, bullet_type_e bullet_type, shooter_id_e shooter_id);
 
 // 计算自动移动
-static void calc_auto_move_data(vision_control_t* robot_auto_move);
+// static void calc_auto_move_data(vision_control_t* robot_auto_move);
 //获取当前机器人位置
 static void get_robot_cur_pos(vision_control_t* robot_pos);
 //获取目标机器人位置
-static void get_robot_target_pos(vision_control_t* robot_pos);
+// static void get_robot_target_pos(vision_control_t* robot_pos);
 
 
 // 初始化弹道解算的参数
@@ -88,24 +88,15 @@ void vision_task(void const* pvParameters)
         //设置机器人模式
         vision_set_robot_mode(&vision_control);
         //判断机器人是否处于自主移动到目标点这一模式
-        if (vision_control.robot_mode == AUTO_MOVE_TARGET_POINT)
-        {
-            //设置停止击打
-            vision_control.shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
-            //计算自动移动命令
-            calc_auto_move_data(&vision_control);
-        }
-        else
-        {
-            // 设置目标装甲板颜色
-            vision_set_target_armor_color(&vision_control);
-            // 设置识别目标装甲板数字
-            vision_set_target_armor_num(&vision_control);
-            // 判断是否识别到目标
-            vision_judge_appear_target(&vision_control);
-            // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角,并设置控制命令
-            vision_data_process(&vision_control);
-        }
+
+        // 设置目标装甲板颜色
+        vision_set_target_armor_color(&vision_control);
+        // 设置识别目标装甲板数字
+        vision_set_target_armor_num(&vision_control);
+        // 判断是否识别到目标
+        vision_judge_appear_target(&vision_control);
+        // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角,并设置控制命令
+        vision_data_process(&vision_control);
 
         // 配置发送数据包
         set_vision_send_packet(&vision_control);
@@ -211,7 +202,7 @@ static void vision_set_robot_mode(vision_control_t* set_robot_mode)
         break;
     
     case AUTO_MOVE_TARGET_POINT_KEYBOARD:
-        set_robot_mode->robot_mode = AUTO_MOVE_TARGET_POINT;
+        // set_robot_mode->robot_mode = AUTO_MOVE_TARGET_POINT;
         break;
 
     default:
@@ -541,30 +532,30 @@ static void calc_current_bullet_speed(vision_control_t* calc_cur_bullet_speed, b
 }
 
 
-static void calc_auto_move_data(vision_control_t* robot_auto_move)
-{
-    fp32 relative_yaw_angle = 0;
-    // 获取当前位置
-    get_robot_cur_pos(robot_auto_move);
-    //获取机器人目标位置
-    get_robot_target_pos(robot_auto_move);
-    //计算相对yaw轴角度
-    relative_yaw_angle = atan2(robot_auto_move->auto_move.target_pos.y - robot_auto_move->auto_move.cur_pos.y, robot_auto_move->auto_move.target_pos.x - robot_auto_move->auto_move.cur_pos.x);
+// static void calc_auto_move_data(vision_control_t* robot_auto_move)
+// {
+//     fp32 relative_yaw_angle = 0;
+//     // 获取当前位置
+//     get_robot_cur_pos(robot_auto_move);
+//     //获取机器人目标位置
+//     get_robot_target_pos(robot_auto_move);
+//     //计算相对yaw轴角度
+//     relative_yaw_angle = atan2(robot_auto_move->auto_move.target_pos.y - robot_auto_move->auto_move.cur_pos.y, robot_auto_move->auto_move.target_pos.x - robot_auto_move->auto_move.cur_pos.x);
 
-    robot_auto_move->auto_move.command_yaw = rad_format(relative_yaw_angle + robot_auto_move->auto_move.begin_yaw);
+//     robot_auto_move->auto_move.command_yaw = rad_format(relative_yaw_angle + robot_auto_move->auto_move.begin_yaw);
 
-    //赋值运动速度 = 距离 * 系数
-    robot_auto_move->auto_move.command_chassis_vx = sqrt(pow((robot_auto_move->auto_move.target_pos.x - robot_auto_move->auto_move.cur_pos.x), 2) + pow((robot_auto_move->auto_move.target_pos.y - robot_auto_move->auto_move.cur_pos.y), 2)) * DISTANCE_TO_SPEED_P;
-    if (fabs(robot_auto_move->auto_move.command_chassis_vx) > MAX_AUTO_MOVE_SPEED)
-    {
-        robot_auto_move->auto_move.command_chassis_vx = MAX_AUTO_MOVE_SPEED;
-    }
-    else if (fabs(robot_auto_move->auto_move.command_chassis_vx) < MIN_AUTO_MOVE_SPEED)
-    {
-        robot_auto_move->auto_move.command_chassis_vx = 0;
-    }
+//     //赋值运动速度 = 距离 * 系数
+//     robot_auto_move->auto_move.command_chassis_vx = sqrt(pow((robot_auto_move->auto_move.target_pos.x - robot_auto_move->auto_move.cur_pos.x), 2) + pow((robot_auto_move->auto_move.target_pos.y - robot_auto_move->auto_move.cur_pos.y), 2)) * DISTANCE_TO_SPEED_P;
+//     if (fabs(robot_auto_move->auto_move.command_chassis_vx) > MAX_AUTO_MOVE_SPEED)
+//     {
+//         robot_auto_move->auto_move.command_chassis_vx = MAX_AUTO_MOVE_SPEED;
+//     }
+//     else if (fabs(robot_auto_move->auto_move.command_chassis_vx) < MIN_AUTO_MOVE_SPEED)
+//     {
+//         robot_auto_move->auto_move.command_chassis_vx = 0;
+//     }
 
-}
+// }
 
 
 static void get_robot_cur_pos(vision_control_t* robot_pos)
@@ -576,16 +567,16 @@ static void get_robot_cur_pos(vision_control_t* robot_pos)
 }
 
 
-static void get_robot_target_pos(vision_control_t* robot_pos)
-{
-    //判断是否处于自动移动模式
-    if (robot_pos->robot_mode == AUTO_MOVE_TARGET_POINT)
-    {
-        robot_pos->auto_move.target_pos.x = robot_pos->robot_command_point->target_position_x;
-        robot_pos->auto_move.target_pos.y = robot_pos->robot_command_point->target_position_y;
-        robot_pos->auto_move.target_pos.z = robot_pos->robot_command_point->target_position_z;
-    }
-}
+// static void get_robot_target_pos(vision_control_t* robot_pos)
+// {
+//     //判断是否处于自动移动模式
+//     if (robot_pos->robot_mode == AUTO_MOVE_TARGET_POINT)
+//     {
+//         robot_pos->auto_move.target_pos.x = robot_pos->robot_command_point->target_position_x;
+//         robot_pos->auto_move.target_pos.y = robot_pos->robot_command_point->target_position_y;
+//         robot_pos->auto_move.target_pos.z = robot_pos->robot_command_point->target_position_z;
+//     }
+// }
 
 void send_packet(vision_control_t* send)
 {
@@ -847,7 +838,8 @@ bool_t judge_vision_appear_target(void)
 //判断当前机器人模式是否为自动移动模式
 bool_t judge_cur_mode_is_auto_move_mode(void)
 {
-    return vision_control.robot_mode == AUTO_MOVE_TARGET_POINT;
+    // return vision_control.robot_mode == AUTO_MOVE_TARGET_POINT;
+    return 0;
 }
 
 // 获取上位机云台命令

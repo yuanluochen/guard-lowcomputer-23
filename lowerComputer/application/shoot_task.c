@@ -170,7 +170,7 @@ static void shoot_mode_change_transit(void)
 static bool_t judge_bullet_is_stuck(Shoot_Motor_t* trigger_stuck)
 {
     //判断播弹电机电流值是否过大
-    if (fabs(trigger_stuck->given_current) > STUCK_CURRENT)
+    if (abs(trigger_stuck->given_current) > STUCK_CURRENT)
     {
         //计数卡弹时间
         trigger_motor.stuck_time++;

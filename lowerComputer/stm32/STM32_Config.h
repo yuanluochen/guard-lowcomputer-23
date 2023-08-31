@@ -34,7 +34,8 @@
 #include "stm32f4xx_hal.h"
 
 /* For Error_Handler() declaration. */
-#include "main.h"
+// #include "main.h"
+#include "struct_typedef.h"
 #include "rtwtypes.h"
 #endif                                 /* RTW_HEADER_STM32_Config_h_ */
 

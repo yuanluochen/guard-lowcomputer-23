@@ -64,7 +64,7 @@ typedef void * TaskHandle_t;
  * Defines the prototype to which the application task hook function must
  * conform.
  */
-typedef BaseType_t (*TaskHookFunction_t)(void *);
+typedef BaseType_t (*TaskHookFunction_t)( void * );
 
 /* Task states returned by eTaskGetState. */
 typedef enum

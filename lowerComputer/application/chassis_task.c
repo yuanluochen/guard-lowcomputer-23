@@ -63,7 +63,7 @@ static void chassis_set_mode(chassis_move_t *chassis_move_mode);
   * @param[out]     chassis_move_transit:"chassis_move"变量指针.
   * @retval         none
   */
-void chassis_mode_change_control_transit(chassis_move_t *chassis_move_transit);
+static void chassis_mode_change_control_transit(chassis_move_t *chassis_move_transit);
 /**
   * @brief          底盘测量数据更新，包括电机速度，欧拉角度，机器人速度
   * @param[out]     chassis_move_update:"chassis_move"变量指针.

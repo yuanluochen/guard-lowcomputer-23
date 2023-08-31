@@ -45,7 +45,7 @@
 #define PM 2
 #define PB 3
 
-typedef __packed struct
+typedef __PACKED_STRUCT
 {
     float KpFuzzy;
     float KiFuzzy;
@@ -95,13 +95,13 @@ typedef enum errorType_e
     Motor_Blocked = 0x01U
 } ErrorType_e;
 
-typedef __packed struct
+typedef __PACKED_STRUCT
 {
     uint64_t ERRORCount;
     ErrorType_e ERRORType;
 } PID_ErrorHandler_t;
 
-typedef __packed struct pid_t
+typedef __PACKED_STRUCT pid_t
 {
     float Ref;
     float Kp;
@@ -170,7 +170,7 @@ void pid_init(
 float pid_calculate(PID_t *pid, float measure, float ref);
 
 /*************************** FEEDFORWARD CONTROL *****************************/
-typedef __packed struct
+typedef __PACKED_STRUCT
 {
     float c[3]; // G(s) = 1/(c2s^2 + c1s + c0)
 
@@ -209,7 +209,7 @@ void Feedforward_Init(
 float Feedforward_Calculate(Feedforward_t *ffc, float ref);
 
 /************************* LINEAR DISTURBANCE OBSERVER *************************/
-typedef __packed struct
+typedef __PACKED_STRUCT
 {
     float c[3]; // G(s) = 1/(c2s^2 + c1s + c0)
 
@@ -252,7 +252,7 @@ void LDOB_Init(
 float LDOB_Calculate(LDOB_t *ldob, float measure, float u);
 
 /*************************** Tracking Differentiator ***************************/
-typedef __packed struct
+typedef __PACKED_STRUCT
 {
     float Input;
 

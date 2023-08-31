@@ -53,6 +53,7 @@
 #ifndef DETECT_TASK_H
 #define DETECT_TASK_H
 #include "struct_typedef.h"
+#include "cmsis_armclang.h"
 
 
 #define DETECT_TASK_INIT_TIME 57
@@ -80,7 +81,7 @@ enum errorList
     ERROR_LIST_LENGHT,
 };
 
-typedef __packed struct
+typedef __PACKED_STRUCT
 {
     uint32_t new_time;
     uint32_t last_time;

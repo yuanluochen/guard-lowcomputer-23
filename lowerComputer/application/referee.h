@@ -37,7 +37,7 @@ typedef enum
 {
     ARMOR_HURT = 0x00,//×°¼×°åÉËº¦
 }hurt_type_t;
-typedef __packed struct // 0001
+typedef __PACKED_STRUCT // 0001
 {
     uint8_t game_type : 4;
     uint8_t game_progress : 4;
@@ -46,11 +46,11 @@ typedef __packed struct // 0001
     uint64_t SyncTimeStamp;
 } ext_game_state_t;
 
-typedef __packed struct // 0002
+typedef __PACKED_STRUCT // 0002
 {
     uint8_t winner;
 } ext_game_result_t;
-typedef __packed struct // 0003
+typedef __PACKED_STRUCT // 0003
 {
     uint16_t red_1_robot_HP;
     uint16_t red_2_robot_HP;
@@ -72,12 +72,12 @@ typedef __packed struct // 0003
     uint16_t blue_outpost_HP;
     uint16_t blue_base_HP;
 } ext_game_robot_HP_t;
-typedef __packed struct // 0x0101
+typedef __PACKED_STRUCT// 0x0101
 {
     uint32_t event_type;
 } ext_event_data_t;
 
-typedef __packed struct // 0x0102
+typedef __PACKED_STRUCT // 0x0102
 {
     uint8_t supply_projectile_id;
     uint8_t supply_robot_id;
@@ -85,20 +85,20 @@ typedef __packed struct // 0x0102
     uint8_t supply_projectile_num;
 } ext_supply_projectile_action_t;
 
-typedef __packed struct // 0x0103
+typedef __PACKED_STRUCT // 0x0103
 {
     uint8_t supply_projectile_id;
     uint8_t supply_robot_id;
     uint8_t supply_num;
 } ext_supply_projectile_booking_t;
 
-typedef __packed struct // 0x0104
+typedef __PACKED_STRUCT // 0x0104
 {
     uint8_t level;
     uint8_t foul_robot_id;
 } ext_referee_warning_t;
 
-typedef __packed struct // 0x0201
+typedef __PACKED_STRUCT // 0x0201
 {
     uint8_t robot_id;
     uint8_t robot_level;
@@ -119,7 +119,7 @@ typedef __packed struct // 0x0201
     uint8_t mains_power_shooter_output : 1;
 } ext_game_robot_state_t;
 
-typedef __packed struct // 0x0202
+typedef __PACKED_STRUCT // 0x0202
 {
     uint16_t chassis_volt;
     uint16_t chassis_current;
@@ -131,7 +131,7 @@ typedef __packed struct // 0x0202
     uint16_t shooter_id1_42mm_cooling_heat;
 } ext_power_heat_data_t;
 
-typedef __packed struct // 0x0203
+typedef __PACKED_STRUCT // 0x0203
 {
     float x;
     float y;
@@ -139,23 +139,23 @@ typedef __packed struct // 0x0203
     float yaw;
 } ext_game_robot_pos_t;
 
-typedef __packed struct // 0x0204
+typedef __PACKED_STRUCT // 0x0204
 {
     uint8_t power_rune_buff;
 } ext_buff_musk_t;
 
-typedef __packed struct // 0x0205
+typedef __PACKED_STRUCT // 0x0205
 {
     uint8_t attack_time;
 } aerial_robot_energy_t;
 
-typedef __packed struct // 0x0206
+typedef __PACKED_STRUCT // 0x0206
 {
     uint8_t armor_type : 4;
     uint8_t hurt_type : 4;
 } ext_robot_hurt_t;
 
-typedef __packed struct // 0x0207
+typedef __PACKED_STRUCT // 0x0207
 {
     uint8_t bullet_type;
     uint8_t shooter_id;
@@ -163,19 +163,19 @@ typedef __packed struct // 0x0207
     float bullet_speed;
 } ext_shoot_data_t;
 
-typedef __packed struct // 0x0208
+typedef __PACKED_STRUCT// 0x0208
 {
     uint16_t bullet_remaining_num_17mm;
     uint16_t bullet_remaining_num_42mm;
     uint16_t coin_remaining_num;
 } ext_bullet_remaining_t;
 
-typedef __packed struct // 0x0209
+typedef __PACKED_STRUCT // 0x0209
 {
     uint32_t rfid_status;
 } ext_rfid_status_t;
 
-typedef __packed struct // 0x0301
+typedef __PACKED_STRUCT // 0x0301
 {
     uint16_t send_ID;
     uint16_t receiver_ID;
@@ -184,7 +184,7 @@ typedef __packed struct // 0x0301
     uint8_t *data;
 } ext_student_interactive_data_t;
 
-typedef __packed struct
+typedef __PACKED_STRUCT
 {
     float data1;
     float data2;
@@ -192,17 +192,17 @@ typedef __packed struct
     uint8_t data4;
 } custom_data_t;
 
-typedef __packed struct
+typedef __PACKED_STRUCT
 {
     uint8_t data[64];
 } ext_up_stream_data_t;
 
-typedef __packed struct
+typedef __PACKED_STRUCT
 {
     uint8_t data[32];
 } ext_download_stream_data_t;
 
-typedef __packed struct
+typedef __PACKED_STRUCT
 {
     float target_position_x;
     float target_position_y;

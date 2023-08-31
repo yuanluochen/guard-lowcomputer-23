@@ -30,6 +30,10 @@
         "usb_device.h": "c",
         "solve_trajectory.h": "c",
         "chassis_task.h": "c",
-        "protocol.h": "c"
-    }
+        "protocol.h": "c",
+        "bsp_rc.h": "c",
+        "stm32_config.h": "c",
+        "rtwtypes.h": "c"
+    },
+    "commentTranslate.targetLanguage": "en"
 }
