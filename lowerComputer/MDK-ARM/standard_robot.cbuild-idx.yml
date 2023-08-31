@@ -1,0 +1,9 @@
+build-idx:
+  generated-by: csolution version 2.0.0
+  csolution: standard_robot.csolution.yaml
+  cprojects:
+    - cproject: standard_robot.cproject.yaml
+  cbuilds:
+    - cbuild: standard_robot+standardrobot.cbuild.yml
+      project: standard_robot
+      configuration: +standardrobot

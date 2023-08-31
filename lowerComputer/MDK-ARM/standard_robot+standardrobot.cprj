@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<cprj schemaVersion="2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="CPRJ.xsd">
+  <created timestamp="2023-08-31T17:50:19" tool="csolution 2.0.0"/>
+
+  <info isLayer="false">
+    <description>Automatically generated project</description>
+  </info>
+
+  <packages>
+    <package name="CMSIS" vendor="ARM" version="5.9.0:5.9.0"/>
+    <package name="STM32F4xx_DFP" vendor="Keil" version="2.17.1:2.17.1"/>
+  </packages>
+
+  <compilers>
+    <compiler name="AC6" version="6.20.0"/>
+  </compilers>
+
+  <target Dendian="Little-endian" Dfpu="SP_FPU" Dname="STM32F407IGHx" Dsecure="Non-secure" Dvendor="STMicroelectronics:13">
+    <output elf="standard_robot.axf" intdir="tmp/standard_robot/standardrobot" name="standard_robot" outdir="out/standard_robot/standardrobot" rtedir="RTE" type="exe"/>
+    <options debug="on" optimize="none"/>
+    <asflags add="-masm=auto" compiler="AC6"/>
+    <cflags add="-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -ffunction-sections -std=c99 -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality" compiler="AC6"/>
+    <cxxflags add="-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -ffunction-sections -std=c99 -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality" compiler="AC6"/>
+    <ldflags add="--map --load_addr_map_info --xref --callgraph --symbols --info sizes --info totals --info unused --info veneers --list --strict --summary_stderr --info summarysizes" compiler="AC6" file="standard_robot_standardrobot.sct"/>
+    <defines>USE_HAL_DRIVER;STM32F407xx;ARM_MATH_CM4;__FPU_USED=1U;__FPU_PRESENT=1U;ARM_MATH_MATRIX_CHECK;ARM_MATH_ROUNDING</defines>
+    <includes>../Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../application;../bsp/boards;../components/devices;../components/algorithm;../components/algorithm/Include;../components/support;../application/protocol;../components/controller;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;../stm32;../../standard;../fuzzypid</includes>
+  </target>
+
+  <components>
+    <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.6.0"/>
+  </components>
+
+  <files>
+    <group name="Application/MDK-ARM">
+      <file category="sourceAsm" name="startup_stm32f407xx.s"/>
+    </group>
+    <group name="Application/User">
+      <file category="sourceC" name="../Src/main.c"/>
+      <file category="sourceC" name="../Src/gpio.c"/>
+      <file category="sourceC" name="../Src/freertos.c"/>
+      <file category="sourceC" name="../Src/adc.c"/>
+      <file category="sourceC" name="../Src/can.c"/>
+      <file category="sourceC" name="../Src/crc.c"/>
+      <file category="sourceC" name="../Src/dma.c"/>
+      <file category="sourceC" name="../Src/i2c.c"/>
+      <file category="sourceC" name="../Src/rng.c"/>
+      <file category="sourceC" name="../Src/rtc.c"/>
+      <file category="sourceC" name="../Src/spi.c"/>
+      <file category="sourceC" name="../Src/tim.c"/>
+      <file category="sourceC" name="../Src/usart.c"/>
+      <file category="sourceC" name="../Src/usb_device.c"/>
+      <file category="sourceC" name="../Src/usbd_conf.c"/>
+      <file category="sourceC" name="../Src/usbd_desc.c"/>
+      <file category="sourceC" name="../Src/usbd_cdc_if.c"/>
+      <file category="sourceC" name="../Src/stm32f4xx_it.c"/>
+      <file category="sourceC" name="../Src/stm32f4xx_hal_msp.c"/>
+    </group>
+    <group name="Drivers/CMSIS">
+      <file category="sourceC" name="../Src/system_stm32f4xx.c"/>
+    </group>
+    <group name="boards">
+      <file category="sourceC" name="../bsp/boards/bsp_adc.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_buzzer.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_can.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_crc32.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_delay.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_flash.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_fric.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_imu_pwm.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_i2c.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_laser.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_led.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_rc.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_rng.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_spi.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_usart.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_servo_pwm.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_dwt.c"/>
+      <file category="sourceC" name="../bsp/boards/bsp_PWM.c"/>
+    </group>
+    <group name="applications">
+      <file category="sourceC" name="../application/chassis_behaviour.c"/>
+      <file category="sourceC" name="../application/chassis_power_control.c"/>
+      <file category="sourceC" name="../application/chassis_task.c"/>
+      <file category="sourceC" name="../application/detect_task.c"/>
+      <file category="sourceC" name="../application/gimbal_behaviour.c"/>
+      <file category="sourceC" name="../application/gimbal_task.c"/>
+      <file category="sourceC" name="../application/oled_task.c"/>
+      <file category="sourceC" name="../application/referee.c"/>
+      <file category="sourceC" name="../application/referee_usart_task.c"/>
+      <file category="sourceC" name="../application/remote_control.c"/>
+      <file category="sourceC" name="../application/test_task.c"/>
+      <file category="sourceC" name="../application/CAN_receive.c"/>
+      <file category="sourceC" name="../application/voltage_task.c"/>
+      <file category="sourceC" name="../application/led_flow_task.c"/>
+      <file category="sourceC" name="../application/shoot_task.c"/>
+      <file category="sourceC" name="../application/vision_task.c"/>
+      <file category="sourceC" name="../application/ins_task.c"/>
+    </group>
+    <group name="devices">
+      <file category="sourceC" name="../components/devices/OLED.c"/>
+      <file category="sourceC" name="../components/devices/BMI088driver.c"/>
+      <file category="sourceC" name="../components/devices/BMI088Middleware.c"/>
+      <file category="sourceC" name="../components/devices/ist8310driver.c"/>
+      <file category="sourceC" name="../components/devices/ist8310driver_middleware.c"/>
+    </group>
+    <group name="algorithm">
+      <file category="library" name="../components/algorithm/AHRS.lib"/>
+      <file category="sourceC" name="../components/algorithm/AHRS_middleware.c"/>
+      <file category="library" name="../components/algorithm/arm_cortexM4lf_math.lib"/>
+      <file category="sourceC" name="../components/algorithm/user_lib.c"/>
+      <file category="sourceC" name="../components/algorithm/QuaternionEKF.c"/>
+      <file category="sourceC" name="../components/algorithm/kalman_filter.c"/>
+    </group>
+    <group name="support">
+      <file category="sourceC" name="../components/support/CRC8_CRC16.c"/>
+      <file category="sourceC" name="../components/support/fifo.c"/>
+      <file category="sourceC" name="../components/support/mem_mang4.c"/>
+    </group>
+    <group name="controller">
+      <file category="sourceC" name="../components/controller/pid.c"/>
+      <file category="sourceC" name="../stm32/stm32.c"/>
+      <file category="sourceC" name="../components/controller/controller.c"/>
+    </group>
+    <group name="Drivers/STM32F4xx_HAL_Driver">
+      <options optimize="none"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c"/>
+      <file category="sourceC" name="../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c"/>
+    </group>
+    <group name="Middlewares/FreeRTOS">
+      <options optimize="none"/>
+      <file category="sourceC" name="../Middlewares/Third_Party/FreeRTOS/Source/croutine.c"/>
+      <file category="sourceC" name="../Middlewares/Third_Party/FreeRTOS/Source/event_groups.c"/>
+      <file category="sourceC" name="../Middlewares/Third_Party/FreeRTOS/Source/list.c"/>
+      <file category="sourceC" name="../Middlewares/Third_Party/FreeRTOS/Source/queue.c"/>
+      <file category="sourceC" name="../Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c"/>
+      <file category="sourceC" name="../Middlewares/Third_Party/FreeRTOS/Source/tasks.c"/>
+      <file category="sourceC" name="../Middlewares/Third_Party/FreeRTOS/Source/timers.c"/>
+      <file category="sourceC" name="../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c"/>
+      <file category="sourceC" name="../Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c"/>
+      <file category="sourceC" name="../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c"/>
+    </group>
+    <group name="Middlewares/USB_Device_Library">
+      <options optimize="none"/>
+      <file category="sourceC" name="../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c"/>
+      <file category="sourceC" name="../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c"/>
+      <file category="sourceC" name="../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c"/>
+      <file category="sourceC" name="../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c"/>
+    </group>
+    <group name="readme">
+      <file category="doc" name="../readme/readme.md"/>
+    </group>
+  </files>
+</cprj>
+
