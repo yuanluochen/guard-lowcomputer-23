@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "referee.h": "c",
+        "freertos.h": "c"
+    }
+}

@@ -64,7 +64,7 @@ typedef struct
   uint16_t       index;
 } unpack_data_t;
 
-typedef __PACKED_STRUCT
+typedef struct __attribute__((packed))
 {
   uint8_t robot_id;
   uint8_t robot_level;

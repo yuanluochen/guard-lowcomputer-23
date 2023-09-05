@@ -1,0 +1,13 @@
+# CMSIS Build Audit File generated on 2023-08-31T18:07:02
+
+# Project Description File: /home/yuanluochen/code/guard-lowcomputer-23/lowerComputer/MDK-ARM/standard_robot+standardrobot.cprj
+
+# Toolchain Configuration File: /home/yuanluochen/.vcpkg/artifacts/fd3d78d7/tools.open.cmsis.pack.cmsis.toolbox/2.0.0/etc/AC6.6.18.0.cmake
+
+# Package: ARM.CMSIS.5.9.0
+  Location: /home/yuanluochen/.cache/arm/packs/ARM/CMSIS/5.9.0/
+
+  * Component: ARM::CMSIS.CORE:5.6.0
+
+# Package: Keil.STM32F4xx_DFP.2.17.1
+  Location: /home/yuanluochen/.cache/arm/packs/Keil/STM32F4xx_DFP/2.17.1/

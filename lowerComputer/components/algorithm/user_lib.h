@@ -3,7 +3,7 @@
 #include "struct_typedef.h"
 #include "cmsis_armclang.h"
 
-typedef __PACKED_STRUCT
+typedef struct __attribute__((packed))
 {
     fp32 input;        //输入数据
     fp32 out;          //输出数据
@@ -12,7 +12,7 @@ typedef __PACKED_STRUCT
     fp32 frame_period; //时间间隔
 } ramp_function_source_t;
 
-typedef __PACKED_STRUCT
+typedef struct __attribute__((packed))
 {
     fp32 input;        //输入数据
     fp32 out;          //滤波输出的数据
@@ -21,7 +21,7 @@ typedef __PACKED_STRUCT
 } first_order_filter_type_t;
 
 
-typedef __PACKED_STRUCT
+typedef struct __attribute__((packed))
 {
     uint16_t Order;
     uint32_t Count;

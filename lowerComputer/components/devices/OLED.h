@@ -42,7 +42,7 @@ typedef enum
     PEN_INVERSION= 0x02,
 }pen_typedef;
 
-typedef __PACKED_STRUCT
+typedef struct __attribute__((packed))
 {
     uint8_t cmd_data;
     uint8_t OLED_GRAM[8][128];
