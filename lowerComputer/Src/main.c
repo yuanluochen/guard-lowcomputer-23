@@ -140,14 +140,15 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
-    can_filter_init();
-    delay_init();
-    remote_control_init();
+  MX_USB_DEVICE_Init();
+  can_filter_init();
+  delay_init();
+  remote_control_init();
 
-    DWT_Init(168);
-    while (BMI088_init(&hspi1, 0) != BMI088_NO_ERROR)
-    {
-        ;
+  DWT_Init(168);
+  while (BMI088_init(&hspi1, 0) != BMI088_NO_ERROR)
+  {
+      ;
     }
   /* USER CODE END 2 */
 

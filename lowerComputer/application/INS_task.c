@@ -10,7 +10,7 @@
  *
  ******************************************************************************
  */
-#include "ins_task.h"
+#include "INS_task.h"
 #include "controller.h"
 #include "QuaternionEKF.h"
 #include "bsp_PWM.h"
@@ -61,10 +61,10 @@ void INS_Task(void)
         BMI088_Read(&BMI088);
 
         INS.Accel[X] = BMI088.Accel[X];
-        INS.Accel[Y] = -BMI088.Accel[Y];
+        INS.Accel[Y] = BMI088.Accel[Y];
         INS.Accel[Z] = BMI088.Accel[Z];
         INS.Gyro[X] = BMI088.Gyro[X];
-        INS.Gyro[Y] = -BMI088.Gyro[Y];
+        INS.Gyro[Y] = BMI088.Gyro[Y];
         INS.Gyro[Z] = BMI088.Gyro[Z];
 
         // demo function,用于�?正安装�??�?,�?以不�?,本demo暂时没用

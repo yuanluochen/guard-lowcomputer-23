@@ -21,8 +21,8 @@
 #define ANGLE_TO_RADIAN ((2 * PI) / 360.0f)
 
 
-#define X 1
-#define Y 0
+#define X 0
+#define Y 1
 #define Z 2
 
 #define INS_TASK_PERIOD 1

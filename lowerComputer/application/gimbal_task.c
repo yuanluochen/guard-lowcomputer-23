@@ -39,6 +39,8 @@
 #include "pid.h"
 #include "stm32.h"
 #include "stm32_private.h"
+#include "chassis_task.h"
+
 // motor enconde value format, range[0-8191]
 // 电机编码值规整 0—8191
 #define ecd_format(ecd)         \
@@ -161,7 +163,7 @@ static void gimbal_motor_second_order_linear_controller_init(gimbal_motor_second
  * @return 返回系统输入 即电机电流值 
  */
 static fp32 gimbal_motor_second_order_linear_controller_calc(gimbal_motor_second_order_linear_controller_t* controller, fp32 set_angle, fp32 cur_angle, fp32 cur_angle_speed, fp32 cur_current);
-
+extern chassis_move_t chassis_move;
 //云台任务结构体
 gimbal_control_t gimbal_control;
 
@@ -202,7 +204,7 @@ void gimbal_task(void const *pvParameters)
             }
             else
             {
-                CAN_cmd_gimbal(gimbal_control.gimbal_yaw_motor.given_current, gimbal_control.gimbal_pitch_motor.given_current, 0);
+                CAN_cmd_gimbal(gimbal_control.gimbal_yaw_motor.given_current, -gimbal_control.gimbal_pitch_motor.given_current, 0);
             }
         }
         vTaskDelay(GIMBAL_CONTROL_TIME);
@@ -268,7 +270,7 @@ static void gimbal_init(gimbal_control_t *init)
     gimbal_motor_second_order_linear_controller_init(&init->gimbal_yaw_motor.gimbal_motor_second_order_linear_controller, YAW_FEED_FORWARD, K_YAW_ANGLE_ERROR, K_YAW_ANGLE_SPEED, YAW_MAX_OUT, YAW_MIX_OUT);
     gimbal_motor_second_order_linear_controller_init(&init->gimbal_pitch_motor.gimbal_motor_second_order_linear_controller, PITCH_FEED_FORWARD, K_PITCH_ANGLE_ERROR, K_PITCH_ANGLE_SPEED, PITCH_MAX_OUT, PITCH_MIX_OUT);
 
-    // 云台数据更新
+    // 云台数据更新     
     gimbal_feedback_update(init);
     
     // yaw轴电机初始化
@@ -336,7 +338,7 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
     feedback_update->gimbal_pitch_motor.absolute_angle = feedback_update->gimbal_INS_point->Pitch;
     feedback_update->gimbal_pitch_motor.relative_angle = -motor_ecd_to_angle_change(feedback_update->gimbal_pitch_motor.gimbal_motor_measure->ecd,
                                                                                     feedback_update->gimbal_pitch_motor.offset_ecd);
-    feedback_update->gimbal_pitch_motor.motor_gyro = feedback_update->gimbal_INS_point->Gyro[1];
+    feedback_update->gimbal_pitch_motor.motor_gyro = feedback_update->gimbal_INS_point->Gyro[0];
 
     feedback_update->gimbal_yaw_motor.absolute_angle = feedback_update->gimbal_INS_point->Yaw;
     feedback_update->gimbal_yaw_motor.relative_angle = motor_ecd_to_angle_change(feedback_update->gimbal_yaw_motor.gimbal_motor_measure->ecd, feedback_update->gimbal_yaw_motor.frist_ecd);
@@ -501,22 +503,22 @@ static void gimbal_absolute_angle_limit(gimbal_motor_t *gimbal_motor, fp32 add)
         // 当前误差角度
         static fp32 error_angle = 0;
         static fp32 angle_set = 0;
-        error_angle = rad_format((-gimbal_motor->absolute_angle_set) - (-gimbal_motor->absolute_angle));
+        error_angle = rad_format(gimbal_motor->absolute_angle_set - gimbal_motor->absolute_angle);
         // 云台相对角度+ 误差角度 + 新增角度 如果大于 最大机械角度
-        if (gimbal_motor->relative_angle + error_angle + (-add) > gimbal_motor->max_relative_angle)
+        if (gimbal_motor->relative_angle + error_angle + add < gimbal_motor->max_relative_angle)
         {
             // 如果是往最大机械角度控制方向
-            if ((-add) > 0.0f)
+            if (add < 0.0f)
             {
                 // 计算出一个最大的添加角度，
-                add = -(gimbal_motor->max_relative_angle - gimbal_motor->relative_angle - error_angle);
+                add = gimbal_motor->max_relative_angle - gimbal_motor->relative_angle - error_angle;
             }
         }
-        else if (gimbal_motor->relative_angle + error_angle + add < gimbal_motor->min_relative_angle)
+        else if (gimbal_motor->relative_angle + error_angle + add > gimbal_motor->min_relative_angle)
         {
-            if ((-add) < 0.0f)
+            if (add > 0.0f)
             {
-                add = -(gimbal_motor->min_relative_angle - gimbal_motor->relative_angle - error_angle);
+                add = gimbal_motor->min_relative_angle - gimbal_motor->relative_angle - error_angle;
             }
         }
         angle_set = gimbal_motor->absolute_angle_set;
@@ -724,4 +726,3 @@ fp32 get_yaw_positive_direction(void)
 {
     return gimbal_control.yaw_positive_direction;
 }
-

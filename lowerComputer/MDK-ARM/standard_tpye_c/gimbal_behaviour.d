@@ -3,9 +3,6 @@ standard_tpye_c/gimbal_behaviour.o: ..\application\gimbal_behaviour.c \
   ..\application\gimbal_task.h ..\application\CAN_receive.h \
   ..\components\controller\pid.h ..\application\remote_control.h \
   ..\bsp\boards\bsp_rc.h ..\Drivers\CMSIS\Include\cmsis_armclang.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\arm_compat.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\arm_acle.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
   ..\components\algorithm\user_lib.h ..\application\vision_task.h \
   ..\Inc\usart.h ..\Inc\main.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal.h \
@@ -15,12 +12,8 @@ standard_tpye_c/gimbal_behaviour.o: ..\application\gimbal_behaviour.c \
   ..\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h \
   ..\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h \
   ..\Drivers\CMSIS\Include\core_cm4.h \
-  ..\Drivers\CMSIS\Include\cmsis_version.h \
-  ..\Drivers\CMSIS\Include\cmsis_compiler.h \
-  ..\Drivers\CMSIS\Include\mpu_armv7.h \
   ..\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\Legacy\stm32_hal_legacy.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stddef.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_rcc_ex.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_exti.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_gpio.h \
@@ -53,10 +46,7 @@ standard_tpye_c/gimbal_behaviour.o: ..\application\gimbal_behaviour.c \
   ..\components\devices\BMI088driver.h \
   ..\components\algorithm\QuaternionEKF.h \
   ..\components\algorithm\kalman_filter.h \
-  ..\components\algorithm\Include\arm_math.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\math.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
-  ..\application\referee.h ..\application\protocol\protocol.h \
-  ..\bsp\boards\bsp_buzzer.h ..\application\detect_task.h \
-  ..\application\chassis_behaviour.h ..\application\chassis_task.h
+  ..\components\algorithm\Include\arm_math.h ..\application\referee.h \
+  ..\application\protocol\protocol.h ..\bsp\boards\bsp_buzzer.h \
+  ..\application\detect_task.h ..\application\chassis_behaviour.h \
+  ..\application\chassis_task.h
