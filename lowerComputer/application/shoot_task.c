@@ -114,7 +114,7 @@ void shoot_task(void const *pvParameters)
         if (!(toe_is_error(TRIGGER_MOTOR_TOE) && !toe_is_error(FRIC_LEFT_MOTOR_TOE) && !toe_is_error(FRIC_RIGHT_MOTOR_TOE)))
         {
             // 发送控制指令
-            CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
+            // CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], -trigger_motor.given_current, 0);
         }
         vTaskDelay(SHOOT_TASK_DELAY_TIME);
     }
@@ -334,16 +334,15 @@ static void shoot_set_control_mode(fric_move_t *fric_set_control)
         shoot_control_mode = SHOOT_STOP_CONTROL;
     }
 
-    // 判断进入初始化模式
-    static shoot_control_mode_e last_shoot_control_mode = SHOOT_STOP_CONTROL;
-    if (shoot_control_mode != SHOOT_STOP_CONTROL && last_shoot_control_mode == SHOOT_STOP_CONTROL)
-    {
-        // 进入初始化模式
-        shoot_control_mode = SHOOT_INIT_CONTROL;
-    }
-    last_shoot_control_mode = shoot_control_mode;
+//     // 判断进入初始化模式
+//     static shoot_control_mode_e last_shoot_control_mode = SHOOT_STOP_CONTROL;
+//     if (shoot_control_mode != SHOOT_STOP_CONTROL && last_shoot_control_mode == SHOOT_STOP_CONTROL)
+//     {
+//         // 进入初始化模式
+//         shoot_control_mode = SHOOT_INIT_CONTROL;
+//     }
+//     last_shoot_control_mode = shoot_control_mode;
 }
-
 /**
  * @brief          射击模式设置
  * @param[in]      void

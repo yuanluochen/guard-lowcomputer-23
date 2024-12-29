@@ -235,6 +235,16 @@ const gimbal_motor_t *get_pitch_motor_point(void)
 }
 
 /**
+ * @brief Get the gimbal control point object
+ * 
+ * @return const gimbal_control_t* 
+ */
+const gimbal_control_t *get_gimbal_control_point(void)
+{
+    return &gimbal_control;
+}
+
+/**
  * @brief          初始化"gimbal_control"变量，包括pid初始化， 遥控器指针初始化，云台电机指针初始化，陀螺仪角度指针初始化
  * @param[out]     init:"gimbal_control"变量指针.
  * @retval         none

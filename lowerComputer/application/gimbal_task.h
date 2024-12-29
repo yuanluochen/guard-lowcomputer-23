@@ -206,7 +206,7 @@
 
 //角度误差项系数
 #define K_YAW_ANGLE_ERROR 50000.0f
-#define K_PITCH_ANGLE_ERROR 150000.0f
+#define K_PITCH_ANGLE_ERROR 340000.0f
 
 //速度项系数
 #define K_YAW_ANGLE_SPEED 4000.0f
@@ -349,6 +349,13 @@ extern const gimbal_motor_t *get_yaw_motor_point(void);
   * @retval         pitch
   */
 extern const gimbal_motor_t *get_pitch_motor_point(void);
+
+/**
+ * @brief Get the gimbal control point object
+ * 
+ * @return const gimbal_control_t* 
+ */
+extern const gimbal_control_t *get_gimbal_control_point(void);
 
 /**
   * @brief          云台任务，间隔 GIMBAL_CONTROL_TIME 1ms

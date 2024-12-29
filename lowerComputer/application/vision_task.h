@@ -20,6 +20,7 @@
 #include "referee.h"
 #include "remote_control.h"
 
+
 //允许发弹角度误差 rad
 #define ALLOW_ATTACK_ERROR 0.04f
 //允许发弹距离 m 
@@ -96,7 +97,7 @@
 
 
 //最大未接受数据的时间 s
-#define MAX_NOT_RECEIVE_DATA_TIME 0.05f
+#define MAX_NOT_RECEIVE_DATA_TIME 3.0f
 
 //红方蓝方角度误差
 #define RED_AND_BLUE_ANGLE_ERROR 180
@@ -423,6 +424,7 @@ typedef struct
 {
     // 绝对角指针
     const INS_t* vision_angle_point;
+    // const gimbal_control_t* gimbal_data_point;
     // 当前弹速
     fp32 bullet_speed;
     // 偏差时间

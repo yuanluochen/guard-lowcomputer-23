@@ -56,11 +56,12 @@ standard_tpye_c/vision_task.o: ..\application\vision_task.c \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\list.h \
   ..\application\shoot_task.h ..\application\CAN_receive.h \
   ..\application\gimbal_task.h ..\components\controller\pid.h \
-  ..\components\algorithm\user_lib.h ..\application\gimbal_behaviour.h \
-  ..\components\support\CRC8_CRC16.h ..\Inc\usbd_cdc_if.h \
+  ..\components\algorithm\user_lib.h ..\components\support\CRC8_CRC16.h \
+  ..\Inc\usbd_cdc_if.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_def.h \
   ..\Inc\usbd_conf.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h \
-  ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h
+  ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h \
+  ..\application\gimbal_behaviour.h

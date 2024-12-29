@@ -13,12 +13,11 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "shoot_task.h"
-#include "gimbal_behaviour.h"
-#include "gimbal_task.h"
 #include "CRC8_CRC16.h"
 #include "usbd_cdc_if.h"
 #include "arm_math.h"
-
+#include "gimbal_behaviour.h"
+#include "gimbal_task.h"
 
 // 视觉任务初始化
 static void vision_task_init(vision_control_t* init);
@@ -112,6 +111,7 @@ static void vision_task_init(vision_control_t* init)
 {
     // 获取陀螺仪绝对角指针                                                                                                                                                                                                                                                                                                                                                           init->vision_angle_point = get_INS_angle_point();
     init->vision_angle_point = get_INS_point();
+    // init->gimbal_data_point = get_gimbal_control_point();
     // 获取接收数据包指针
     init->vision_receive_point = get_vision_receive_point();
     // 获取机器人状态指针
@@ -410,46 +410,9 @@ static void vision_data_process(vision_control_t* vision_data)
         // 计算机器人pitch轴与yaw轴角度
         vision_data->gimbal_vision_control.gimbal_pitch = calc_target_position_pitch_angle(&vision_data->solve_trajectory, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)) - vision_data->solve_trajectory.distance_static, vision_data->robot_gimbal_aim_vector.z + vision_data->solve_trajectory.z_static);
         vision_data->gimbal_vision_control.gimbal_yaw = atan2(vision_data->robot_gimbal_aim_vector.y, vision_data->robot_gimbal_aim_vector.x);
-
-        // 根据机器人模式赋值发送以及运动跟随命令
-        switch (vision_data->robot_mode)
-        {
-        case FOLLOW_PERSON_ENGINEER:
-        case FOLLOW_PERSON_HERO:
-        case FOLLOW_PERSON_INFANTRY_3:
-        case FOLLOW_PERSON_INFANTRY_4:
-        case FOLLOW_PERSON_INFANTRY_5:
-            {
-                // 设置不发弹但是跟随
-                vision_data->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
-                // 设置底盘模式为跟随模式
-                vision_data->chassis_vision_control.vision_control_chassis_mode = FOLLOW_TARGET;
-                // 赋值底盘控制命令 -- 我方机器人与目标的距离
-                vision_data->chassis_vision_control.distance = sqrt(pow(vision_data->target_data.x, 2) + pow(vision_data->target_data.y, 2));
-            }
-            break;
-        case ATTACK_ENEMY_OUTPOST:
-        case ATTACK_ENEMY_ROBOT:
-            {
-                //设置判断发弹但不跟随
-                // 判断发射
-                vision_shoot_judge(vision_data, vision_data->gimbal_vision_control.gimbal_yaw - vision_data->imu_absolution_angle.yaw, vision_data->gimbal_vision_control.gimbal_pitch - vision_data->imu_absolution_angle.pitch, sqrt(pow(vision_data->target_data.x, 2) + pow(vision_data->target_data.y, 2)));
-                // 设置底盘模式为不跟随
-                vision_data->chassis_vision_control.vision_control_chassis_mode = UNFOLLOW_TARGET;
-                // 赋值底盘控制命令 -- 0
-                vision_data->chassis_vision_control.distance = 0;
-            }
-            break;
-        }
-
     }
     else
     {
-        //未识别到目标 -- 控制值清零
-        vision_data->gimbal_vision_control.gimbal_yaw = 0;
-        vision_data->gimbal_vision_control.gimbal_pitch = 0;
-        vision_data->chassis_vision_control.distance = 0;
-        vision_data->chassis_vision_control.vision_control_chassis_mode = UNFOLLOW_TARGET;
         //设置停止发射
         vision_data->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
     }
