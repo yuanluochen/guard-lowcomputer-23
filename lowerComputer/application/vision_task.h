@@ -19,6 +19,7 @@
 #include "arm_math.h"
 #include "referee.h"
 #include "remote_control.h"
+#include "pid.h"
 
 
 //允许发弹角度误差 rad
@@ -74,7 +75,7 @@
 //固有时间偏移即上位机计算时间单位ms
 #define TIME_BIAS 6
 //机器人自身固有时间偏差
-#define ROBOT_TIMR_BIAS 20
+#define ROBOT_TIMR_BIAS 30
 //偏差时间队列大小
 #define TIME_BIAS_QUEUE_CAPACITY 10 
 
@@ -89,9 +90,9 @@
 
 // 击打敌方机器人0.1
 //imu到枪口的竖直距离
-#define Z_STATIC 0.1f
+#define Z_STATIC 0.05f
 //枪口前推距离
-#define DISTANCE_STATIC 0.21085f
+#define DISTANCE_STATIC 0.075f
 //初始飞行时间
 #define INIT_FILIGHT_TIME 0.5f
 
@@ -397,6 +398,7 @@ typedef struct
     fp32 flight_time;
     // 固有间隔时间
     fp32 time_bias;
+    // fp32 time
     //预测时间
     fp32 predict_time;
     
@@ -466,6 +468,8 @@ typedef struct
     //发送数据包
     send_packet_t send_packet;
 
+    pid_type_def yaw_gimbal_pid;
+    pid_type_def pitch_gimbal_pid; 
 
     // 视觉目标状态
     vision_target_appear_state_e vision_target_appear_state;

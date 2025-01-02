@@ -45,6 +45,7 @@ standard_tpye_c/vision_task.o: ..\application\vision_task.c \
   ..\application\protocol\protocol.h ..\application\struct_typedef.h \
   ..\application\remote_control.h ..\bsp\boards\bsp_rc.h \
   ..\Drivers\CMSIS\Include\cmsis_armclang.h \
+  ..\components\controller\pid.h \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\FreeRTOS.h \
   ..\Inc\FreeRTOSConfig.h \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\projdefs.h \
@@ -55,9 +56,8 @@ standard_tpye_c/vision_task.o: ..\application\vision_task.c \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\task.h \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\list.h \
   ..\application\shoot_task.h ..\application\CAN_receive.h \
-  ..\application\gimbal_task.h ..\components\controller\pid.h \
-  ..\components\algorithm\user_lib.h ..\components\support\CRC8_CRC16.h \
-  ..\Inc\usbd_cdc_if.h \
+  ..\application\gimbal_task.h ..\components\algorithm\user_lib.h \
+  ..\components\support\CRC8_CRC16.h ..\Inc\usbd_cdc_if.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_def.h \

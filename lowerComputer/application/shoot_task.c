@@ -89,7 +89,7 @@ shoot_init_state_e shoot_init_state = SHOOT_INIT_UNFINISH;        // Éä»÷³õÊ¼»¯Ã
 shoot_motor_control_mode_e fric_motor_mode = SHOOT_MOTOR_STOP;    // Ä¦²ÁÂÖµç»ú
 shoot_motor_control_mode_e trigger_motor_mode = SHOOT_MOTOR_STOP; // ²¦µ¯ÅÌµç»ú
 
-
+fp32 control_angle = 0.04f;
 /**
  * @brief          Éä»÷ÈÎÎñ£¬¼ä¸ô GIMBAL_CONTROL_TIME 1ms
  * @param[in]      pvParameters: ¿Õ
@@ -114,7 +114,7 @@ void shoot_task(void const *pvParameters)
         if (!(toe_is_error(TRIGGER_MOTOR_TOE) && !toe_is_error(FRIC_LEFT_MOTOR_TOE) && !toe_is_error(FRIC_RIGHT_MOTOR_TOE)))
         {
             // ·¢ËÍ¿ØÖÆÖ¸Áî
-            // CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], -trigger_motor.given_current, 0);
+            CAN_cmd_shoot(fric_move.fric_CAN_Set_Current[0], fric_move.fric_CAN_Set_Current[1], trigger_motor.given_current, 0);
         }
         vTaskDelay(SHOOT_TASK_DELAY_TIME);
     }

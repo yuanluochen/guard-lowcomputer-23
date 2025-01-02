@@ -67,6 +67,9 @@ vision_control_t vision_control = { 0 };
 // 视觉接收结构体
 vision_receive_t vision_receive = { 0 };
 
+fp32 allow_attack_error = 0.02;
+fp32 time_bias = 20.0f;
+
 void vision_task(void const* pvParameters)
 {
     // 延时等待，等待上位机发送数据成功
@@ -96,7 +99,7 @@ void vision_task(void const* pvParameters)
         vision_judge_appear_target(&vision_control);
         // 处理上位机数据,计算弹道的空间落点，并反解空间绝对角,并设置控制命令
         vision_data_process(&vision_control);
-
+        
         // 配置发送数据包
         set_vision_send_packet(&vision_control);
         // 发送数据包
@@ -109,6 +112,8 @@ void vision_task(void const* pvParameters)
 
 static void vision_task_init(vision_control_t* init)
 {
+    const static fp32 yaw_gimbal_pid[3] = {1, 0, 0.3};
+    const static fp32 pitch_gimbal_pid[3] = {1, 0, 0.3};
     // 获取陀螺仪绝对角指针                                                                                                                                                                                                                                                                                                                                                           init->vision_angle_point = get_INS_angle_point();
     init->vision_angle_point = get_INS_point();
     // init->gimbal_data_point = get_gimbal_control_point();
@@ -130,7 +135,7 @@ static void vision_task_init(vision_control_t* init)
     //初始化发射模式为停止袭击
     init->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
     //初始化一些基本的弹道参数
-    solve_trajectory_param_init(&init->solve_trajectory, AIR_K1, INIT_FILIGHT_TIME, TIME_MS_TO_S(TIME_BIAS), Z_STATIC, DISTANCE_STATIC);
+    solve_trajectory_param_init(&init->solve_trajectory, AIR_K1, INIT_FILIGHT_TIME, TIME_MS_TO_S(time_bias), Z_STATIC, DISTANCE_STATIC);
     //创建偏差时间队列
     init->time_bias = queue_create(TIME_BIAS_QUEUE_CAPACITY);
     queue_append_data(init->time_bias, TIME_BIAS);
@@ -153,7 +158,7 @@ static void vision_task_feedback_update(vision_control_t* update)
     // 存放偏差时间
     queue_append_data(update->time_bias, update->vision_receive_point->interval_time);
     // 更新弹道计算的可变参数
-    assign_solve_trajectory_param(&update->solve_trajectory, update->imu_absolution_angle.pitch, update->imu_absolution_angle.yaw, update->bullet_speed, queue_data_calc_average(update->time_bias) + TIME_MS_TO_S(ROBOT_TIMR_BIAS));
+    assign_solve_trajectory_param(&update->solve_trajectory, update->imu_absolution_angle.pitch, update->imu_absolution_angle.yaw, update->bullet_speed, TIME_MS_TO_S(ROBOT_TIMR_BIAS));
     // 获取地图正方向
     update->auto_move.begin_yaw = get_yaw_positive_direction();
 
@@ -408,8 +413,17 @@ static void vision_data_process(vision_control_t* vision_data)
         // 计算机器人瞄准位置
         calc_robot_gimbal_aim_vector(&vision_data->robot_gimbal_aim_vector, &vision_data->target_position, vision_data->target_data.vx, vision_data->target_data.vy, vision_data->target_data.vz, vision_data->solve_trajectory.predict_time);
         // 计算机器人pitch轴与yaw轴角度
-        vision_data->gimbal_vision_control.gimbal_pitch = calc_target_position_pitch_angle(&vision_data->solve_trajectory, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)) - vision_data->solve_trajectory.distance_static, vision_data->robot_gimbal_aim_vector.z + vision_data->solve_trajectory.z_static);
-        vision_data->gimbal_vision_control.gimbal_yaw = atan2(vision_data->robot_gimbal_aim_vector.y, vision_data->robot_gimbal_aim_vector.x);
+        fp32 pitch_set =  calc_target_position_pitch_angle(&vision_data->solve_trajectory, sqrt(pow(vision_data->robot_gimbal_aim_vector.x, 2) + pow(vision_data->robot_gimbal_aim_vector.y, 2)) - vision_data->solve_trajectory.distance_static, vision_data->robot_gimbal_aim_vector.z + vision_data->solve_trajectory.z_static);
+        fp32 yaw_set = atan2(vision_data->robot_gimbal_aim_vector.y, vision_data->robot_gimbal_aim_vector.x);
+
+        //pid计算
+        // PID_calc(&vision_data->yaw_gimbal_pid, vision_data->imu_absolution_angle.yaw, yaw_set);
+        // PID_calc(&vision_data->pitch_gimbal_pid, vision_data->imu_absolution_angle.pitch, pitch_set);
+        //out
+        vision_data->gimbal_vision_control.gimbal_pitch = pitch_set;
+        vision_data->gimbal_vision_control.gimbal_yaw = yaw_set;
+        vision_shoot_judge(vision_data, vision_data->gimbal_vision_control.gimbal_yaw - vision_data->imu_absolution_angle.yaw, vision_data->gimbal_vision_control.gimbal_pitch - vision_data->imu_absolution_angle.pitch, sqrt(pow(vision_data->target_data.x, 2) + pow(vision_data->target_data.y, 2)));
+
     }
     else
     {
@@ -436,18 +450,18 @@ void vision_shoot_judge(vision_control_t* shoot_judge, fp32 vision_begin_add_yaw
     if (target_distance <= ALLOW_ATTACK_DISTANCE)
     {
         // 判断迹是否小于允许值
-        if (shoot_judge->vision_receive_point->receive_packet.p < ALLOE_ATTACK_P)
+        // if (shoot_judge->vision_receive_point->receive_packet.p < ALLOE_ATTACK_P)
+        // {
+        // 小于一角度开始击打
+        if (fabs(vision_begin_add_yaw_angle) <= allow_attack_error)
         {
-            // 小于一角度开始击打
-            if (fabs(vision_begin_add_pitch_angle) <= ALLOW_ATTACK_ERROR && fabs(vision_begin_add_yaw_angle) <= ALLOW_ATTACK_ERROR)
-            {
-                shoot_judge->shoot_vision_control.shoot_command = SHOOT_ATTACK;
-            }
-            else
-            {
-                shoot_judge->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
-            }
+            shoot_judge->shoot_vision_control.shoot_command = SHOOT_ATTACK;
         }
+        else
+        {
+            shoot_judge->shoot_vision_control.shoot_command = SHOOT_STOP_ATTACK;
+        }
+        // }
     }
     else
     {

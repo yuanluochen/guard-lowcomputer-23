@@ -67,7 +67,7 @@ void INS_Task(void)
         INS.Gyro[Y] = BMI088.Gyro[Y];
         INS.Gyro[Z] = BMI088.Gyro[Z];
 
-        // demo function,用于�?正安装�??�?,�?以不�?,本demo暂时没用
+        //修正安装方式，主要是将imu旋转至正方向
         IMU_Param_Correction(&IMU_Param, INS.Gyro, INS.Accel);
 
         // 计算重力加速度矢量和b系的XY两轴的夹�?,�?用作功能扩展,本demo暂时没用

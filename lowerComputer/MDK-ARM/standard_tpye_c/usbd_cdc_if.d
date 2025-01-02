@@ -49,4 +49,5 @@ standard_tpye_c/usbd_cdc_if.o: ..\Src\usbd_cdc_if.c ..\Inc\usbd_cdc_if.h \
   ..\components\algorithm\Include\arm_math.h ..\application\referee.h \
   ..\application\protocol\protocol.h ..\application\struct_typedef.h \
   ..\application\remote_control.h ..\bsp\boards\bsp_rc.h \
-  ..\Drivers\CMSIS\Include\cmsis_armclang.h
+  ..\Drivers\CMSIS\Include\cmsis_armclang.h \
+  ..\components\controller\pid.h
