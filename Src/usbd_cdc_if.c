@@ -263,7 +263,7 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
-    //Êý¾Ý½âÂë
+    //ï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½
     receive_decode(Buf, *Len);
 
     USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);

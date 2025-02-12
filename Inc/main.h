@@ -55,14 +55,14 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-typedef unsigned char    uint8;      // ÎÞ·ûºÅ8Î»×Ö·ûÐÍ±äÁ¿
-typedef signed   char    int8;       // ÓÐ·ûºÅ8Î»×Ö·ûÐÍ±äÁ¿
-typedef unsigned short   uint16;     // ÎÞ·ûºÅ16Î»¶ÌÕûÐÍ±äÁ¿
-typedef signed   short   int16;      // ÓÐ·ûºÅ16Î»¶ÌÕûÐÍ±äÁ¿
-typedef unsigned int     uint32;     // ÎÞ·ûºÅ32Î»ÕûÐÍ±äÁ¿
-typedef signed   int     int32;      // ÓÐ·ûºÅ32Î»ÕûÐÍ±äÁ¿
-// typedef double           fp64;       // Ë«¾«¶È¸¡µãÊý£¨64Î»³¤¶È£©
-// typedef float            fp32;       // µ¥¾«¶È¸¡µãÊý£¨32Î»³¤¶È£©
+typedef unsigned char    uint8;      // ï¿½Þ·ï¿½ï¿½ï¿½8Î»ï¿½Ö·ï¿½ï¿½Í±ï¿½ï¿½ï¿½
+typedef signed   char    int8;       // ï¿½Ð·ï¿½ï¿½ï¿½8Î»ï¿½Ö·ï¿½ï¿½Í±ï¿½ï¿½ï¿½
+typedef unsigned short   uint16;     // ï¿½Þ·ï¿½ï¿½ï¿½16Î»ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½
+typedef signed   short   int16;      // ï¿½Ð·ï¿½ï¿½ï¿½16Î»ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½
+typedef unsigned int     uint32;     // ï¿½Þ·ï¿½ï¿½ï¿½32Î»ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½
+typedef signed   int     int32;      // ï¿½Ð·ï¿½ï¿½ï¿½32Î»ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½
+// typedef double           fp64;       // Ë«ï¿½ï¿½ï¿½È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½64Î»ï¿½ï¿½ï¿½È£ï¿½
+// typedef float            fp32;       // ï¿½ï¿½ï¿½ï¿½ï¿½È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½32Î»ï¿½ï¿½ï¿½È£ï¿½
 
 #define ABS(x) ((x)>0? (x):(-(x))) 
 #define LIMIT_MAX_MIN(x, max, min)	(((x) <= (min)) ? (min):(((x) >= (max)) ? (max) : (x)))
